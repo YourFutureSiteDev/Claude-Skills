@@ -228,18 +228,30 @@ def cmd_kill(args):
             print(f"[sbx] no sandbox named '{args.name}'", file=sys.stderr)
             return 1
         targets = {entry["id"]}
-    for sid in targets:
-        try:
-            Sandbox.connect(sid).kill()
-            print(f"[sbx] killed {sid}", file=sys.stderr)
-        except Exception:
-            print(f"[sbx] {sid} was already gone", file=sys.stderr)
-    for name in [n for n, e in state.items() if e["id"] in targets]:
-        state.pop(name)
-    save_state(state)
     if not targets:
         print("[sbx] nothing was running", file=sys.stderr)
-    return 0
+        return 0
+
+    # Ask afterwards rather than trusting the call. A kill that throws and gets
+    # swallowed leaves a box running with nothing pointing at it, and it bills
+    # until somebody happens to look.
+    for sid in targets:
+        try:
+            Sandbox.kill(sid)
+        except Exception as e:
+            print(f"[sbx] kill failed for {sid} ({e}); checking anyway", file=sys.stderr)
+
+    still = set(live_ids()) & targets
+    gone = targets - still
+    for sid in gone:
+        print(f"[sbx] killed {sid}", file=sys.stderr)
+    for name in [n for n, e in state.items() if e["id"] in gone]:
+        state.pop(name)
+    save_state(state)
+
+    for sid in still:
+        print(f"[sbx] STILL RUNNING and still billing: {sid}", file=sys.stderr)
+    return 1 if still else 0
 
 
 def main():
