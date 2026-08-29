@@ -182,38 +182,63 @@ def cmd_info(args):
     return 0
 
 
+def live_ids():
+    """Every sandbox running on the account, tracked here or not.
+
+    A sandbox started by something else - a test run, another project, a script
+    that crashed before it cleaned up - still bills. Asking the account is the
+    only way to see those, so cost control does not depend on this machine's
+    bookkeeping being complete.
+    """
+    try:
+        return [s.sandbox_id for s in Sandbox.list().next_items()]
+    except Exception as e:
+        print(f"[sbx] could not list the account's sandboxes: {e}", file=sys.stderr)
+        return []
+
+
 def cmd_ls(args):
     state = load_state()
-    if not state:
-        print("no tracked sandboxes")
+    running = set(live_ids())
+    named = {entry["id"]: name for name, entry in state.items()}
+    if not running and not state:
+        print("nothing running")
         return 0
+    for sid in running:
+        name = named.get(sid, "(untracked)")
+        age = ""
+        if sid in named:
+            started = state[named[sid]].get("started")
+            if started:
+                age = f"{int(time.time() - started)}s old"
+        print(f"{name:14} {sid:24} live  {age}")
     for name, entry in state.items():
-        age = int(time.time() - entry.get("started", time.time()))
-        alive = "?"
-        try:
-            Sandbox.connect(entry["id"])
-            alive = "live"
-        except Exception:
-            alive = "dead"
-        print(f"{name:12} {entry['id']:24} {alive:5} {age}s old")
+        if entry["id"] not in running:
+            print(f"{name:14} {entry['id']:24} dead")
     return 0
 
 
 def cmd_kill(args):
     state = load_state()
-    names = list(state) if args.all else [args.name]
-    for name in names:
-        entry = state.get(name)
+    if args.all:
+        targets = set(live_ids()) | {e["id"] for e in state.values()}
+    else:
+        entry = state.get(args.name)
         if not entry:
-            print(f"[sbx] no sandbox named '{name}'", file=sys.stderr)
-            continue
+            print(f"[sbx] no sandbox named '{args.name}'", file=sys.stderr)
+            return 1
+        targets = {entry["id"]}
+    for sid in targets:
         try:
-            Sandbox.connect(entry["id"]).kill()
-            print(f"[sbx] killed '{name}' ({entry['id']})", file=sys.stderr)
-        except Exception as e:
-            print(f"[sbx] '{name}' already gone ({e})", file=sys.stderr)
-        state.pop(name, None)
+            Sandbox.connect(sid).kill()
+            print(f"[sbx] killed {sid}", file=sys.stderr)
+        except Exception:
+            print(f"[sbx] {sid} was already gone", file=sys.stderr)
+    for name in [n for n, e in state.items() if e["id"] in targets]:
+        state.pop(name)
     save_state(state)
+    if not targets:
+        print("[sbx] nothing was running", file=sys.stderr)
     return 0
 
 

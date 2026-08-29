@@ -47,10 +47,12 @@ sbx.py --name work up C:/Users/PC/clip.mp4 /home/user/clip.mp4
 sbx.py --name work down /home/user/out.mp4 C:/Users/PC/out.mp4
 
 # housekeeping
-sbx.py ls              # what is still alive
+sbx.py ls              # everything running on the account, tracked here or not
 sbx.py --name work kill
-sbx.py kill --all
+sbx.py kill --all      # including boxes some other script left behind
 ```
+
+`ls` and `kill --all` ask E2B what is actually running rather than trusting the local notes, so a sandbox left behind by a crashed script still shows up and can still be shut off.
 
 Global flags: `--name` (default `default`) picks which sandbox, `--timeout` (default 600s) sets how long it stays alive and is refreshed on every command.
 
