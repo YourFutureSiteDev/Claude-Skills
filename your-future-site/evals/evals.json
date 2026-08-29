@@ -1,0 +1,87 @@
+{
+  "skill_name": "your-future-site",
+  "evals": [
+    {
+      "id": 0,
+      "name": "store-cleanup-credential-probe",
+      "prompt": "got a new client, FiveM server called Los Santos Roleplay, their store is store.tebex.io/lsrp and it looks rough. they want it cleaned up and made to look like their server properly. theyve offered to just send me their tebex login so i can get in and do it. what do i do and whats the quote",
+      "expected_output": "Refuses the shared login and routes to Tebex Team Accounts. Runs the eligibility check (plan, storefront system) before promising any theming. Does not promise a custom themed Tebex store. Quotes the $120 store cleanup, and explains the ceiling of in-panel work plus the $150 Makeover Plus bridge.",
+      "files": [],
+      "assertions": [
+        "Declines to use the client's shared Tebex login or password",
+        "Routes access through Tebex Team Accounts instead",
+        "Runs the Tebex eligibility check: which plan, and legacy vs new storefront",
+        "Notes that the tebex.io subdomain signals the free plan",
+        "Does NOT promise a fully custom-themed Tebex store",
+        "Quotes $120 for the Tebex store cleanup",
+        "States the ceiling of in-panel work and bridges to the $150 Makeover Plus"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "starter-site-tier-id",
+      "prompt": "make a basic startup website for a rust server called Rustoria, about 300 players, they sell kits and vip on tebex. i have their headless token",
+      "expected_output": "Identifies this as Makeover Plus, the starter key, at $150. Uses the Tebex Headless API for the live catalog rather than proposing to theme the Tebex store. Mentions the free mockup before deposit. Does not invent a fourth tier or quote above $750.",
+      "files": [],
+      "assertions": [
+        "Identifies this as Makeover Plus, the entry rung",
+        "Quotes $150",
+        "Uses the Tebex Headless API to render the live catalog",
+        "Does NOT propose theming or restyling the hosted Tebex store",
+        "Mentions the free homepage mockup before any deposit",
+        "Stays inside the three-tier structure: no invented tier, nothing quoted above $750"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "care-plus-activation",
+      "prompt": "we are activating a care plus plan on this tebex store store.tebex.io/nightcity, they just added 8 new packages this week",
+      "expected_output": "Confirms Care Plus at $40/mo. Baselines the catalog, checks site health before starting the plan. Handles the 8 new packages: detailed images made individually (Plus level, not basic template images), correct categories, real descriptions. Mentions the Discord /tier command.",
+      "files": [],
+      "assertions": [
+        "Confirms Care Plus at $40 per month",
+        "Specifies DETAILED images made individually, not basic template images",
+        "Baselines or diffs the catalog to identify what is genuinely new",
+        "Checks the site is healthy before starting the plan",
+        "Covers the new-package workflow: correct category, real description, image",
+        "References the Discord /tier command to grant the care plan role"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "makeover-scope-creep",
+      "prompt": "doing the $150 makeover plus on a fivem server called Redline County. site is redlinecounty.net, wordpress, looks dated. while im in there they have also asked if i can add a staff page and an about page, redo their logo because they hate it, and sort out their tebex store descriptions. said theyre happy for me to just do it all as part of the job. how do i handle it and what do i actually build",
+      "expected_output": "Does not agree to do the extra work inside the $150. Surfaces each request as a separate decision and routes each to the add-on or tier that actually carries it: the two extra pages to Extra page $50 each or Makeover Pro $350, the logo to Logo and brand kit $100, the store descriptions to Tebex store cleanup $120. States the four hour ceiling and why. Does NOT offer any upgrade credit, since it was retired with the $99. Ends with the scope ledger, including which payoff was secured.",
+      "files": [],
+      "assertions": [
+        "Refuses to absorb the extra requests into the $150 job",
+        "Does not begin any out-of-scope work on the assumption the client will agree",
+        "Routes the extra pages to Extra page $50, or to Makeover Pro $350 since two pages take it past three",
+        "Routes the logo to the Logo and brand kit add-on at $100",
+        "Routes the Tebex store descriptions to the Tebex store cleanup add-on at $120",
+        "States the four hour ceiling and that $150 over six hours earns less than the ad hoc rate",
+        "Does NOT promise a 60 day upgrade credit: it was retired with the $99 on 10 August 2026",
+        "Produces the scope ledger, showing what was asked for and where each request went",
+        "Does not invent a fourth tier, and does not quote above $750",
+        "Does not promise in-game delivery of any package"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "makeover-overrun-decision",
+      "prompt": "im three and a half hours into a $150 makeover plus for a server called Ashfall RP and the mobile layout is a mess, their theme is fighting me. i reckon another two hours to get it right. should i just push on and finish it properly",
+      "expected_output": "Does not say to push on silently. Treats a two hour overrun as a decision that goes to the client rather than something absorbed. Offers the three routes: cut scope and name what gets dropped, convert to the tier the work really is and charge the difference, or accept the overrun once deliberately with the reason recorded. Notes that six hours at $150 earns $25 an hour against the $40 ad hoc rate. Reminds that the handover block still has to happen, because that is where the care plan, the upgrade and the add-on are secured.",
+      "files": [],
+      "assertions": [
+        "Does not advise silently absorbing the overrun",
+        "Treats the overrun as a decision to put to the client",
+        "Offers cutting scope, naming specifically what would be dropped",
+        "Offers converting to the tier the work really is, charging the difference rather than crediting anything",
+        "Allows accepting the overrun once, deliberately, with the reason recorded",
+        "States the economics: six hours at $150 is about $25 an hour",
+        "Insists the handover block still happens, since that is where the payoff is secured",
+        "Mentions recording the outcome in the scope ledger"
+      ]
+    }
+  ]
+}

@@ -4,16 +4,43 @@ My personal Claude Code skills. This folder is `~/.claude/skills` on each machin
 
 ## Skills here
 
-Loaded by Claude:
+**Business**
 
+- `your-future-site` — Your Future Site job runner: quotes, builds, delivery
+- `client-portal` — one client's branded Square payment page
+- `discord-bot` — the Your Future Site Discord bot and server
+- `lead-research-assistant` — find and qualify leads for a product or service
+
+**Design and build**
+
+- `ui-ux-pro-max` — design system lookup: UI styles, palettes, font pairings, UX rules, motion presets
+- `hallmark` — anti-slop design: greenfield pages, audits, redesigns, extraction from a URL
+- `scroll-world` — scroll-scrubbed fly-through landing pages (MIT, cyw)
+- `framer` — design, edit and publish Framer sites
+- `framer-code-components` — Framer code component authoring rules
+
+**Writing and comms**
+
+- `stop-slop` — strip AI writing patterns out of prose (MIT, Hardik Pandya)
+- `caveman` — ultra-compressed replies, cuts output tokens
+
+**Knowledge and memory**
+
+- `graphify` — turn any input into a queryable knowledge graph
+- `mempalace` — mine projects and conversations into a searchable memory palace
+- `mempalace-recall` — search the palace before answering about past work
+- `session-retro` — mine a finished session for corrections, write permanent fixes
+
+**Workflow**
+
+- `project-folder` — decide where new work lives on disk and set it up
 - `watch` — download a video, pull frames and a transcript, answer questions about it
-- `website` — design system lookup: UI styles, palettes, font pairings, UX rules, motion presets
 
-Backup only, not loaded (see `account-skills/README.md`):
+**Account skills**
 
-- `account-skills/` — the 14 skills attached to your Claude account, including
-  the two you wrote yourself, `chatgpt-photos` and `no-em-dashes`. Claude pulls
-  these down on any machine you sign in to, so this copy is a safety net.
+`account-skills/` mirrors the skills that come with the account rather than this
+folder. They are kept here for reference. They are one level down on purpose so
+Claude does not load them twice.
 
 ## Set up on a new machine
 
@@ -43,10 +70,7 @@ On the other machine:
 
     cd ~/.claude/skills && git pull
 
-## Not in here
+## Notes
 
-Plugin skills from the official marketplace (plugin-dev, skill-creator,
-claude-security and the rest). They are a third-party repo, not yours, and
-would go stale if copied. Add the marketplace on the new machine instead:
-
-    /plugin marketplace add anthropics/claude-plugins-official
+`scroll-world` and `stop-slop` are third-party MIT skills. Their LICENSE files
+travel with them.
