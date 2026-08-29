@@ -74,3 +74,10 @@ On the other machine:
 
 `scroll-world` and `stop-slop` are third-party MIT skills. Their LICENSE files
 travel with them.
+
+## Marketplace plugins
+
+This Mac also has 38 plugins from the official marketplace installed. To get
+the same set on another machine, run `install-plugins.sh` from this folder and
+restart Claude. Roughly a third of them are language servers that need the
+matching compiler or runtime installed to do anything.
