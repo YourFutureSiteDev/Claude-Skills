@@ -13,11 +13,11 @@ Clone straight into the skills path.
 
 macOS / Linux:
 
-    git clone git@github.com:USER/REPO.git ~/.claude/skills
+    git clone git@github.com:YourFutureSiteDev/Claude-Skills.git ~/.claude/skills
 
 Windows:
 
-    git clone git@github.com:USER/REPO.git %USERPROFILE%\.claude\skills
+    git clone git@github.com:YourFutureSiteDev/Claude-Skills.git %USERPROFILE%\.claude\skills
 
 If that folder already exists and has files in it, clone elsewhere and move the
 skill folders across by hand, then point the repo at the real location.
