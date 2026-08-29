@@ -4,8 +4,16 @@ My personal Claude Code skills. This folder is `~/.claude/skills` on each machin
 
 ## Skills here
 
+Loaded by Claude:
+
 - `watch` — download a video, pull frames and a transcript, answer questions about it
 - `website` — design system lookup: UI styles, palettes, font pairings, UX rules, motion presets
+
+Backup only, not loaded (see `account-skills/README.md`):
+
+- `account-skills/` — the 14 skills attached to your Claude account, including
+  the two you wrote yourself, `chatgpt-photos` and `no-em-dashes`. Claude pulls
+  these down on any machine you sign in to, so this copy is a safety net.
 
 ## Set up on a new machine
 
@@ -37,5 +45,8 @@ On the other machine:
 
 ## Not in here
 
-The `anthropic-skills:*` skills come from the official plugin marketplace, not
-from this folder. Add the marketplace on the new machine and they show up.
+Plugin skills from the official marketplace (plugin-dev, skill-creator,
+claude-security and the rest). They are a third-party repo, not yours, and
+would go stale if copied. Add the marketplace on the new machine instead:
+
+    /plugin marketplace add anthropics/claude-plugins-official
