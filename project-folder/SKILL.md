@@ -48,10 +48,22 @@ in Random turns out to matter, that is Step 3.
 
 ## Step 2b: project gets its own folder
 
-Default location: `C:\Users\PC\OneDrive\Desktop\Claude\<Project Name>`
+**Read `C:\Users\PC\OneDrive\Desktop\Claude\CLAUDE.md` first.** It is the map of
+what already exists, and the work may belong inside a folder that is already
+there rather than needing a new one.
 
-Use the name Byron uses, in the capitalisation he uses. The existing four are
-`YourFutureSite`, `Fineline`, `Perform By Paige`, `LSPDFR`.
+New projects go inside one of three buckets, never at the Desktop\Claude root:
+
+| Bucket | Pick it when |
+|---|---|
+| `Desktop\Claude\Apps\<Name>` | It is software with users or a running server |
+| `Desktop\Claude\Projects\<Name>` | It is client work or a venture that ships a deliverable |
+| `Desktop\Claude\Skills\<Name>` | It is tooling, infra or an experiment serving other work |
+
+The root holds only the four businesses — `YourFutureSite`, `Content Engine`,
+`Fineline`, `Brain` — plus the buckets and `Random`. Do not add a fifth.
+
+Use the name Byron uses, in the capitalisation he uses.
 
 **The size exception.** That Desktop is OneDrive backed. If the project will
 hold more than roughly a gigabyte, or is mostly binaries that are
@@ -72,9 +84,14 @@ Then create these:
 3. **Subfolders only once you know what they are.** An empty `assets/` folder
    created out of habit is noise. Add each one the first time something needs it.
 
-Finally, **write a memory** for the project: type `project`, describing what it
-is and where it lives, and add its one-line pointer to `MEMORY.md`. Link it to
-[[project-file-routing]], which is the standing rule this skill implements.
+Finally, two registrations, both in the same session:
+
+1. **Add a row to the map** at `C:\Users\PC\OneDrive\Desktop\Claude\CLAUDE.md`,
+   under the bucket it went into. A folder missing from the map costs every
+   future chat a disk search.
+2. **Write a memory** for the project: type `project`, describing what it is and
+   where it lives, with its one-line pointer in `MEMORY.md`. Link it to
+   [[project-file-routing]], the standing rule this skill implements.
 
 ### CLAUDE.md template
 
