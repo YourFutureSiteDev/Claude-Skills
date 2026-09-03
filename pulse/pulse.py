@@ -1,24 +1,34 @@
 #!/usr/bin/env python3
-"""Send Byron a Pulse: a phone notification with the Pulse icon that opens the Pulse app.
+"""Send Byron a Pulse: a phone notification with the Pulse icon (and photo) that opens the Pulse app.
 
 Usage:
   pulse.py "Title" "Body text" [--kind todo|alert|win|info] [--item "line"]... [--image URL] [--link URL] [--silent]
 
-The token is read from ~/.config/pulse/token (never from the repo). The app URL
-defaults to https://pulse.yourfuturesitedev.workers.dev, override with PULSE_URL.
+Stores the item through the Pulse worker, then sends the ntfy notification from
+this machine (ntfy throttles photo attachments coming from Cloudflare's shared
+address, so the phone push goes direct). Token: ~/.config/pulse/token,
+topic: ~/.config/pulse/topic. Override the app URL with PULSE_URL.
 """
 import argparse, json, os, sys, urllib.request, urllib.error
 
 URL = os.environ.get("PULSE_URL", "https://pulse.yourfuturesitedev.workers.dev")
+UA = "Mozilla/5.0 pulse-cli/1.1"
+TAGS = {"todo": "clipboard", "alert": "rotating_light", "win": "tada", "info": "bell"}
 
-def token():
-    for p in (os.environ.get("PULSE_TOKEN"), os.path.expanduser("~/.config/pulse/token"), r"C:\Users\PC\.config\pulse\token"):
-        if not p: continue
-        if os.path.exists(p):
-            return open(p, encoding="utf-8").read().strip()
-        if p and not os.path.sep in p and len(p) > 20:
-            return p
-    sys.exit("pulse: no token found at ~/.config/pulse/token")
+def secret(name):
+    env = os.environ.get("PULSE_" + name.upper())
+    if env: return env.strip()
+    for p in (os.path.expanduser("~/.config/pulse/" + name), r"C:\Users\PC\.config\pulse\\" + name):
+        if os.path.exists(p): return open(p, encoding="utf-8").read().strip()
+    sys.exit(f"pulse: no {name} found at ~/.config/pulse/{name}")
+
+def post(url, data, headers):
+    req = urllib.request.Request(url, data=data, method="POST", headers={"user-agent": UA, **headers})
+    try:
+        with urllib.request.urlopen(req, timeout=25) as r:
+            return r.status, r.read().decode(errors="ignore")
+    except urllib.error.HTTPError as e:
+        return e.code, e.read().decode(errors="ignore")[:300]
 
 def main():
     ap = argparse.ArgumentParser(description="Send a Pulse to Byron's phone")
@@ -30,18 +40,36 @@ def main():
     ap.add_argument("--source", default="claude")
     ap.add_argument("--silent", action="store_true", help="add to the app without a phone notification")
     a = ap.parse_args()
-    payload = {"title": a.title, "body": a.body, "kind": a.kind, "items": a.item, "image": a.image, "link": a.link, "source": a.source, "silent": a.silent}
-    req = urllib.request.Request(URL + "/api/push", data=json.dumps(payload).encode(), method="POST",
-                                 headers={"content-type": "application/json", "authorization": "Bearer " + token(), "user-agent": "Mozilla/5.0 pulse-cli/1.0"})
-    try:
-        with urllib.request.urlopen(req, timeout=20) as r:
-            out = json.load(r)
-    except urllib.error.HTTPError as e:
-        sys.exit(f"pulse: HTTP {e.code} {e.read().decode(errors='ignore')[:200]}")
-    push = out.get("push", {})
-    ok = push.get("ok") or push.get("skipped")
-    print(f"pulse sent: id={out.get('id')} push={'ok' if push.get('ok') else push.get('skipped') or 'FAILED ' + str(push)}")
-    if not ok: sys.exit(1)
+
+    payload = {"title": a.title, "body": a.body, "kind": a.kind, "items": a.item, "image": a.image,
+               "link": a.link, "source": a.source, "silent": True}
+    code, text = post(URL + "/api/push", json.dumps(payload).encode(),
+                      {"content-type": "application/json", "authorization": "Bearer " + secret("token")})
+    if code != 200:
+        sys.exit(f"pulse: store failed HTTP {code} {text}")
+    item_id = json.loads(text).get("id", "")
+    if a.silent:
+        print(f"pulse stored silently: id={item_id}"); return
+
+    body = a.body
+    if a.item:
+        body += ("\n" if body else "") + "\n".join("• " + s for s in a.item)
+    headers = {
+        "Title": a.title, "Tags": TAGS[a.kind],
+        "Priority": "high" if a.kind == "alert" else "default",
+        "Click": f"{URL}/#{item_id}", "Icon": f"{URL}/icons/icon-192.png",
+    }
+    if a.link: headers["Actions"] = f"view, Open, {a.link}, clear=true"
+    topic = secret("topic")
+    sent_with_image = False
+    if a.image:
+        code, text = post(f"https://ntfy.sh/{topic}", body.encode("utf-8"), {**headers, "Attach": a.image})
+        sent_with_image = code == 200
+    if not sent_with_image:
+        code, text = post(f"https://ntfy.sh/{topic}", body.encode("utf-8"), headers)
+    if code != 200:
+        sys.exit(f"pulse: stored id={item_id} but phone push failed HTTP {code} {text}")
+    print(f"pulse sent: id={item_id} photo={'yes' if sent_with_image else 'no'}")
 
 if __name__ == "__main__":
     main()
