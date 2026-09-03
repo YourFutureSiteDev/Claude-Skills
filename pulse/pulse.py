@@ -32,7 +32,7 @@ def main():
     a = ap.parse_args()
     payload = {"title": a.title, "body": a.body, "kind": a.kind, "items": a.item, "image": a.image, "link": a.link, "source": a.source, "silent": a.silent}
     req = urllib.request.Request(URL + "/api/push", data=json.dumps(payload).encode(), method="POST",
-                                 headers={"content-type": "application/json", "authorization": "Bearer " + token()})
+                                 headers={"content-type": "application/json", "authorization": "Bearer " + token(), "user-agent": "Mozilla/5.0 pulse-cli/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
             out = json.load(r)
