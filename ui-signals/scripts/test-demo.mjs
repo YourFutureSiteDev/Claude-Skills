@@ -148,7 +148,11 @@ check('18 nav-underline: active link underlined, others not', nv.active === 'mat
 
 // 19 count-up + 20 skeleton
 await page.locator('#s19').scrollIntoViewIfNeeded();
-await page.waitForTimeout(1300);
+const t0 = Date.now();
+await page.waitForTimeout(900);
+const early = await page.evaluate(() => document.querySelector('[data-sig-count]').textContent);
+check('19 count-up: still counting at 0.9s (slow on purpose)', early !== '398', 'at 0.9s: ' + early);
+await page.waitForTimeout(1800);
 const cu = await page.evaluate(() => [...document.querySelectorAll('[data-sig-count]')].map(e => e.textContent));
 check('19 count-up: stats land on their values with prefix and suffix', cu[0] === '398' && cu[1] === '4.5%' && cu[2] === 'A$20/yr', JSON.stringify(cu));
 const sk = await page.evaluate(() => ({ anim: getComputedStyle(document.querySelector('.sig-skeleton'), '::after').animationName }));

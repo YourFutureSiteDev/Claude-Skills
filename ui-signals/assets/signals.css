@@ -15,7 +15,7 @@
   --sig-dur-state: 150ms;
   --sig-dur-enter: 220ms;
   --sig-dur-reveal: 400ms;
-  --sig-dur-count: 800ms;
+  --sig-dur-count: 2000ms;  /* Byron: numbers must load much slower than the rest, never under 2s */
 
   --sig-accent-soft: color-mix(in srgb, var(--sig-accent) 22%, transparent);
   --sig-accent-faint: color-mix(in srgb, var(--sig-accent) 10%, transparent);

@@ -270,7 +270,10 @@
       var prefix = el.getAttribute('data-prefix') || '';
       var suffix = el.getAttribute('data-suffix') || '';
       var decimals = (el.getAttribute('data-decimals') | 0);
-      var dur = 800;
+      // Slow on purpose. Byron rejects fast count-ups; 2s is the floor, the
+      // token in signals.css or data-duration on the element can go longer.
+      var tokenDur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sig-dur-count')) || 2000;
+      var dur = Math.max(2000, parseFloat(el.getAttribute('data-duration')) || tokenDur);
       function paint(v) { el.textContent = prefix + v.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix; }
       if (reduce) { paint(target); return; }
       var start = performance.now();

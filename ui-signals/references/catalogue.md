@@ -110,6 +110,11 @@ The element the user typed into or dropped is never removed.
 `data-retry` is wired by `Signals.progress`; pass `onResume(fromPercent)` to
 restart the transfer with a range header or your own resume logic.
 
+Only promise a resume the server can keep. A plain form post to a static
+host cannot pick up at 90%, so "Resuming from 90%" there is a lie. In that
+case the honest version is `submit-states` going to "Try again" with
+everything the user typed and attached still in place, and no percentage.
+
 ---
 
 ## 04 upload-preview
@@ -138,6 +143,11 @@ animates; the content is the feedback.
 var pv = Signals.preview(card, file);  // fills name, size, type, image thumb
 pv.hide();
 ```
+
+On a form where the file only goes up when the form is sent (most contact
+forms), show the card at attach time instead, because a bare filename is
+still worse. Then the proof line says "Attached and ready to send", not
+"Uploaded", and the tick waits for the real success.
 
 ---
 
@@ -406,12 +416,18 @@ hover (gated) and stays on `aria-current="page"`.
 **Never on:** prices in a checkout, totals, table cells, anything the user
 is about to act on.
 
-**What moves:** the number eases from 0 to its value over 800ms (cubic
-ease-out), once, at 50% visibility, with tabular-nums so the width holds.
-Reduced motion jumps straight to the value.
+**What moves:** the number eases from 0 to its value over 2 seconds (cubic
+ease-out, so the last digits settle slowly), once, at 50% visibility, with
+tabular-nums so the width holds. Reduced motion jumps straight to the value.
+
+**Byron's rule, 11 Sep 2026: numbers load much slower than everything else.**
+2s is the floor, not the default. `signals.js` clamps anything shorter back
+up to 2s; make it longer with `--sig-dur-count` in `signals.css` or
+`data-duration="3000"` on the element. A count-up that flicks to its value
+in under a second is the thing he sends back.
 
 ```html
-<b data-sig-count="398">0</b> <b data-sig-count="4.5" data-decimals="1" data-suffix="%">0</b> <b data-sig-count="20" data-prefix="A$" data-suffix="/yr">0</b>
+<b data-sig-count="398">0</b> <b data-sig-count="4.5" data-decimals="1" data-suffix="%">0</b> <b data-sig-count="20" data-prefix="A$" data-suffix="/yr" data-duration="3000">0</b>
 ```
 
 ---

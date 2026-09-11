@@ -97,7 +97,7 @@ lands fewer. Never all twenty.
 | `section-reveal` | Below-fold sections | Above-the-fold content, first section | intersection, once |
 | `card-lift` | Clickable cards | Static cards, table rows | hover, hover-gated |
 | `nav-underline` | Primary nav links | Footer links, in-text links | hover, active |
-| `count-up` | Stats section | Prices in a checkout, table cells | intersection, once |
+| `count-up` | Stats section, 2s or slower | Prices in a checkout, table cells | intersection, once |
 | `skeleton` | Async content | Content already in the HTML | until loaded |
 
 Recipes, values and the HTML they expect are in `references/catalogue.md`.
@@ -173,7 +173,7 @@ All timings and curves come from `animate`. The ones this catalogue uses:
 --sig-dur-state: 150ms;    /* focus, hover, copy swap */
 --sig-dur-enter: 220ms;    /* toast, error row, preview card */
 --sig-dur-reveal: 400ms;   /* below-fold sections, marketing tier */
---sig-dur-count: 800ms;    /* count-up */
+--sig-dur-count: 2000ms;   /* count-up, deliberately slow, Byron rejects fast ones */
 ```
 
 Progress bars move with `transform: scaleX()` on a `linear` curve, never
@@ -196,6 +196,7 @@ again. Do not report the work as finished until all of them pass.
 - [ ] Reduced motion was checked and the page still reads with movement removed
 - [ ] No `transition: all`, no `scale(0)` entrance, no `ease-in`, no animated `width`/`height`/`top`/`left` (progress bars use `scaleX`)
 - [ ] The reply names what was left out and why, and names the source of anything lifted (this reel, a React Bits component, a Preline or daisyUI component)
+- [ ] Every count-up runs for at least two seconds (Byron sent back the 0.8s version on 11 Sep 2026: "make sure when the numbers load they do much slower")
 - [ ] No em dashes, no emojis, in the reply or in any copy written into the site
 
 If a line cannot be checked without Byron (for example, whether a card is
