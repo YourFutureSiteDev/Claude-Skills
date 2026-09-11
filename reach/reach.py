@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reach Byron through Offsider: app message + phone notification (+ text for todo/alert).
+"""Reach Byron through Offsider: app message + phone notification (text only if the push fails, for todo/alert).
 
 Usage:
   reach.py "Title" "Body" [--kind todo|alert|win|info] [--item "line"]... [--link URL] [--image URL]
