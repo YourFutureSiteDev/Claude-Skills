@@ -1,0 +1,451 @@
+/* ui-signals: feedback and state animations for hand-written sites.
+   Dependency free. Link after the project's own stylesheet.
+   Set the first three tokens from the project's palette before shipping.
+   Every signal is opt-in by class or data attribute; nothing here is global
+   except the tokens. Recipes and placement rules: references/catalogue.md */
+
+:root {
+  --sig-accent: #2dd4bf;   /* set from the project palette, never leave the demo teal on a client site */
+  --sig-danger: #f0506e;
+  --sig-surface: #15181d;
+
+  --sig-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --sig-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --sig-dur-press: 120ms;
+  --sig-dur-state: 150ms;
+  --sig-dur-enter: 220ms;
+  --sig-dur-reveal: 400ms;
+  --sig-dur-count: 800ms;
+
+  --sig-accent-soft: color-mix(in srgb, var(--sig-accent) 22%, transparent);
+  --sig-accent-faint: color-mix(in srgb, var(--sig-accent) 10%, transparent);
+  --sig-danger-soft: color-mix(in srgb, var(--sig-danger) 18%, transparent);
+  --sig-line: color-mix(in srgb, currentColor 14%, transparent);
+  --sig-line-strong: color-mix(in srgb, currentColor 26%, transparent);
+}
+
+/* ------------------------------------------------------------------ */
+/* copy-swap: one container, several [data-when] children, JS marks one
+   .is-on. Old copy fades down, new copy rises in. Used by the dropzone. */
+
+.sig-swap { display: grid; }
+.sig-swap > [data-when] {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity var(--sig-dur-state) var(--sig-ease-out),
+              transform var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-swap > [data-when].is-on {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* state-glow: a soft radial behind the one element that is live.
+   JS (Signals.glow) removes it from everything else first. */
+
+.sig-glow { position: relative; isolation: isolate; }
+.sig-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(60% 70% at 50% 50%, var(--sig-accent-soft), transparent 72%);
+  opacity: 0;
+  transition: opacity var(--sig-dur-state) var(--sig-ease-out);
+  pointer-events: none;
+}
+.sig-glow.is-active::before,
+.sig-glow[data-state="over"]::before,
+.sig-glow[data-state="active"]::before { opacity: 1; }
+
+/* ------------------------------------------------------------------ */
+/* drop-answer: the dropzone answers a drag with border, glow and copy. */
+
+.sig-dropzone {
+  position: relative;
+  border: 1.5px dashed var(--sig-line-strong);
+  border-radius: 14px;
+  background: var(--sig-surface);
+  overflow: hidden;
+  transition: border-color var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-dropzone[data-state="over"] { border-color: var(--sig-accent); }
+.sig-dropzone .sig-icon {
+  display: inline-block;
+  transition: transform var(--sig-dur-state) var(--sig-ease-out), color var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-dropzone[data-state="over"] .sig-icon { transform: translateY(-3px); color: var(--sig-accent); }
+
+/* ------------------------------------------------------------------ */
+/* honest-progress: percent, time left, rate. Bar moves with scaleX on a
+   linear curve. Never animate width. */
+
+.sig-progress { --p: 0; }
+.sig-progress-pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--sig-accent);
+  transition: color var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-bar {
+  height: 4px;
+  border-radius: 99px;
+  background: var(--sig-line);
+  overflow: hidden;
+}
+.sig-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--sig-accent);
+  transform-origin: left center;
+  transform: scaleX(var(--p));
+  transition: transform 200ms linear, background-color var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-progress-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.sig-progress-meta > span {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--sig-dur-enter) var(--sig-ease-out), transform var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-progress-meta > span.is-on { opacity: 1; transform: none; }
+.sig-progress[data-state="error"] .sig-progress-pct { color: var(--sig-danger); }
+.sig-progress[data-state="error"] .sig-bar-fill { background: var(--sig-danger); }
+.sig-progress[data-state="done"] .sig-bar-fill { background: var(--sig-accent); }
+
+/* ------------------------------------------------------------------ */
+/* inline-retry: the error row grows in under the bar. The file stays.
+   Height via grid-template-rows is the one sanctioned height animation. */
+
+.sig-retry-row {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-retry-row > * {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity var(--sig-dur-enter) var(--sig-ease-out), transform var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-progress[data-state="error"] .sig-retry-row { grid-template-rows: 1fr; }
+.sig-progress[data-state="error"] .sig-retry-row > * { opacity: 1; transform: none; }
+.sig-retry-card {
+  border: 1px solid var(--sig-danger-soft);
+  background: color-mix(in srgb, var(--sig-danger) 8%, transparent);
+  border-radius: 10px;
+}
+
+/* ------------------------------------------------------------------ */
+/* upload-preview: the card that replaces "filename uploaded". */
+
+.sig-preview {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--sig-dur-enter) var(--sig-ease-out), transform var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-preview.is-in { opacity: 1; transform: none; }
+.sig-preview .sig-thumb {
+  background: linear-gradient(135deg, var(--sig-accent-soft), var(--sig-accent-faint));
+  border-radius: 10px;
+}
+.sig-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--sig-accent-soft);
+  color: var(--sig-accent);
+  font-size: 0.75em;
+  letter-spacing: 0.02em;
+}
+
+/* ------------------------------------------------------------------ */
+/* own-lane-queue: each row owns its bar. The counter is plain text. */
+
+.sig-queue-item { --p: 0; }
+.sig-queue-item .sig-queue-pct {
+  font-variant-numeric: tabular-nums;
+  transition: opacity var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-queue-item[data-state="done"] .sig-queue-pct { opacity: 0; }
+.sig-queue-item .sig-tick-wrap {
+  opacity: 0;
+  transition: opacity var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-queue-item[data-state="done"] .sig-tick-wrap { opacity: 1; }
+.sig-queue-item[data-state="error"] .sig-bar-fill { background: var(--sig-danger); }
+.sig-queue-item[data-state="error"] .sig-queue-pct { color: var(--sig-danger); }
+
+/* ------------------------------------------------------------------ */
+/* press: buttons and button-styled links only. */
+
+.sig-press {
+  transition: transform var(--sig-dur-press) var(--sig-ease-out),
+              background-color var(--sig-dur-state) var(--sig-ease-out),
+              border-color var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-press:active { transform: scale(0.97); }
+
+/* ------------------------------------------------------------------ */
+/* focus-glow: text inputs only. The ring replaces the outline, it does
+   not remove focus visibility. */
+
+.sig-focus {
+  transition: border-color var(--sig-dur-state) var(--sig-ease-out),
+              box-shadow var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-focus:focus-visible {
+  outline: none;
+  border-color: var(--sig-accent);
+  box-shadow: 0 0 0 4px var(--sig-accent-soft);
+}
+
+/* ------------------------------------------------------------------ */
+/* submit-states: idle, loading, done, error. Width is locked by JS so
+   the button never jumps. Label, spinner and tick share one grid cell. */
+
+.sig-submit { position: relative; }
+.sig-submit .sig-submit-stack { display: grid; place-items: center; }
+.sig-submit .sig-submit-stack > * {
+  grid-area: 1 / 1;
+  transition: opacity var(--sig-dur-state) var(--sig-ease-out), transform var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-submit .sig-submit-label { opacity: 1; }
+.sig-submit .sig-spinner,
+.sig-submit .sig-submit-done,
+.sig-submit .sig-submit-error { opacity: 0; transform: translateY(4px); }
+.sig-submit[data-state="loading"] .sig-submit-label,
+.sig-submit[data-state="done"] .sig-submit-label,
+.sig-submit[data-state="error"] .sig-submit-label { opacity: 0; transform: translateY(-4px); }
+.sig-submit[data-state="loading"] .sig-spinner,
+.sig-submit[data-state="done"] .sig-submit-done,
+.sig-submit[data-state="error"] .sig-submit-error { opacity: 1; transform: none; }
+.sig-submit[data-state="error"] {
+  animation: sig-shake 300ms var(--sig-ease-out);
+  background: var(--sig-danger);
+  border-color: var(--sig-danger);
+}
+.sig-submit[data-state="loading"] { cursor: progress; }
+@keyframes sig-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+/* spinner: a ring. Constant motion, linear. */
+.sig-spinner {
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  animation: sig-spin 700ms linear infinite;
+}
+@keyframes sig-spin { to { transform: rotate(360deg); } }
+
+/* ------------------------------------------------------------------ */
+/* field-error: the message grows under the field. Only that field. */
+
+.sig-field .sig-field-msg {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-field .sig-field-msg > * {
+  min-height: 0;
+  overflow: hidden;
+  color: var(--sig-danger);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity var(--sig-dur-enter) var(--sig-ease-out), transform var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-field[data-state="error"] .sig-field-msg { grid-template-rows: 1fr; }
+.sig-field[data-state="error"] .sig-field-msg > * { opacity: 1; transform: none; }
+.sig-field[data-state="error"] .sig-focus { border-color: var(--sig-danger); }
+.sig-field[data-state="error"] .sig-focus:focus-visible { box-shadow: 0 0 0 4px var(--sig-danger-soft); }
+
+/* ------------------------------------------------------------------ */
+/* tick-draw: a checkmark that draws itself on success. */
+
+.sig-tick { overflow: visible; }
+.sig-tick .sig-tick-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  transition: stroke-dashoffset 300ms var(--sig-ease-out) 60ms;
+}
+.sig-tick .sig-tick-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  opacity: 0.6;
+  transform: scale(0.9);
+  transform-origin: center;
+  transition: transform var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-tick.is-on .sig-tick-path,
+.is-in .sig-tick .sig-tick-path,
+.is-on .sig-tick .sig-tick-path,
+[data-state="done"] .sig-tick .sig-tick-path { stroke-dashoffset: 0; }
+.sig-tick.is-on .sig-tick-ring,
+.is-in .sig-tick .sig-tick-ring,
+.is-on .sig-tick .sig-tick-ring,
+[data-state="done"] .sig-tick .sig-tick-ring { transform: none; }
+
+/* ------------------------------------------------------------------ */
+/* toast: enters from the bottom, leaves the same way. Transition, not
+   keyframes, so a second toast retargets instead of restarting. */
+
+.sig-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--sig-dur-enter) var(--sig-ease-out), opacity var(--sig-dur-enter) var(--sig-ease-out);
+  z-index: 50;
+}
+.sig-toast.is-on { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.sig-toast[data-kind="error"] { border-color: var(--sig-danger-soft); }
+
+/* ------------------------------------------------------------------ */
+/* chip-stagger: tags arrive in sequence, once, when the list enters view.
+   JS sets --i on each child. */
+
+.sig-chips > * {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--sig-dur-enter) var(--sig-ease-out), transform var(--sig-dur-enter) var(--sig-ease-out);
+  transition-delay: calc(var(--i, 0) * 40ms);
+}
+.sig-chips.is-in > * { opacity: 1; transform: none; }
+
+/* ------------------------------------------------------------------ */
+/* headline-emphasis: the hero H1 settles, then one phrase takes the
+   accent. Once per load. Wrap the phrase in <em>. */
+
+[data-sig-headline] {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--sig-dur-reveal) var(--sig-ease-out), transform var(--sig-dur-reveal) var(--sig-ease-out);
+}
+[data-sig-headline] em {
+  font-style: normal;
+  color: inherit;
+  transition: color var(--sig-dur-reveal) var(--sig-ease-out) 350ms;
+}
+[data-sig-headline].is-in { opacity: 1; transform: none; }
+[data-sig-headline].is-in em { color: var(--sig-accent); }
+
+/* ------------------------------------------------------------------ */
+/* section-reveal: below-fold sections only. JS refuses above-fold ones. */
+
+[data-sig-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--sig-dur-reveal) var(--sig-ease-out), transform var(--sig-dur-reveal) var(--sig-ease-out);
+}
+[data-sig-reveal].is-in { opacity: 1; transform: none; }
+
+/* ------------------------------------------------------------------ */
+/* card-lift: clickable cards, hover gated. */
+
+@media (hover: hover) and (pointer: fine) {
+  .sig-card {
+    transition: transform var(--sig-dur-state) var(--sig-ease-out),
+                box-shadow var(--sig-dur-state) var(--sig-ease-out),
+                border-color var(--sig-dur-state) var(--sig-ease-out);
+  }
+  .sig-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--sig-line-strong);
+    box-shadow: 0 10px 30px -12px color-mix(in srgb, #000 60%, transparent);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* nav-underline: grows from the left on hover, stays on the active link. */
+
+.sig-nav a { position: relative; text-decoration: none; }
+.sig-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 180ms var(--sig-ease-out);
+}
+.sig-nav a[aria-current="page"]::after { transform: scaleX(1); }
+@media (hover: hover) and (pointer: fine) {
+  .sig-nav a:hover::after { transform: scaleX(1); }
+}
+
+/* ------------------------------------------------------------------ */
+/* count-up: stats only. JS animates the number; CSS keeps it steady. */
+
+[data-sig-count] { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------------ */
+/* skeleton: for content that arrives after first paint. */
+
+.sig-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--sig-line);
+  color: transparent;
+}
+.sig-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, currentColor 10%, transparent), transparent);
+  transform: translateX(-100%);
+  animation: sig-shimmer 1.4s linear infinite;
+}
+@keyframes sig-shimmer { to { transform: translateX(100%); } }
+
+/* ------------------------------------------------------------------ */
+/* reduced motion: keep colour and opacity, drop movement. Not zero. */
+
+@media (prefers-reduced-motion: reduce) {
+  .sig-swap > [data-when],
+  .sig-progress-meta > span,
+  .sig-retry-row > *,
+  .sig-field .sig-field-msg > *,
+  .sig-preview,
+  .sig-chips > *,
+  [data-sig-headline],
+  [data-sig-reveal],
+  .sig-toast,
+  .sig-submit .sig-submit-stack > * { transform: none !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
+  .sig-press:active,
+  .sig-card:hover,
+  .sig-dropzone[data-state="over"] .sig-icon { transform: none; }
+  .sig-submit[data-state="error"] { animation: none; }
+  .sig-skeleton::after { animation: none; }
+  .sig-bar-fill { transition-duration: 1ms; }
+  .sig-tick .sig-tick-path { transition-duration: 1ms; stroke-dashoffset: 0; }
+  .sig-tick .sig-tick-ring { transform: none; }
+}

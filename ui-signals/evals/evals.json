@@ -1,0 +1,43 @@
+{
+  "skill_name": "ui-signals",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "animate this site, make it feel alive. it's a static html site for a plumber, files are in the site folder. don't add any frameworks",
+      "expected_output": "The reply lists a page inventory. Signals land only on matching elements: press on the two buttons, focus-glow on the inputs, submit-states on the form button, field-error wiring, nav-underline on the nav, card-lift on the two link cards but not the licence card, count-up on the three stats but not the pricing table, section-reveal on below-fold sections but not the hero, headline-emphasis on the H1, drop-answer only if the file input is turned into a dropzone. Nothing on the pricing table or footer. signals.css and signals.js land in css/ and js/, not a new folder. Tokens set to the site's teal, not the demo teal. No React, no library. Reply names what was left out and the source.",
+      "files": ["ui-signals-workspace/fixture/"],
+      "assertions": [
+        "index.html does not put data-sig-reveal on the hero section or the header",
+        "The licence card (the div.card that is not a link) does not have class sig-card",
+        "No pricing table cell has data-sig-count",
+        "signals.css is linked from css/ and signals.js from js/ (no new top-level folder)",
+        "No <script> tag loads React, Vue, Motion, GSAP or any CDN library",
+        "The reply text contains an inventory and a line naming what was deliberately left out",
+        "--sig-accent in the shipped signals.css is not #2dd4bf"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "the upload box on the client portal does nothing when you drag a file over it, and when the upload fails you just get a red 'error' and have to start again. make it feel like a real app",
+      "expected_output": "drop-answer on the dropzone, honest-progress with percent, time left and rate, inline-retry with the file kept and resume from where it stopped, upload-preview after success. Nothing added elsewhere on the page. Reply names the reel as the source.",
+      "files": [],
+      "assertions": [
+        "The dropzone element gains data-sig-dropzone and a sig-swap with idle and over copy",
+        "The progress element uses scaleX via --p, not width",
+        "A retry control exists inside the progress element with data-retry",
+        "No other element on the page gained a sig- class or data-sig- attribute"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "can you add some motion to the pricing table and the footer links, the page feels flat",
+      "expected_output": "Push back: the pricing table is data people read and the footer links are low-frequency navigation, neither takes a signal from this catalogue. Offer the signals that do fit the rest of the page instead (nav-underline for the primary nav, press on the CTA, section-reveal on the sections that are below the fold), and say plainly that the table and footer were left alone and why.",
+      "files": [],
+      "assertions": [
+        "No sig- class or data-sig- attribute is added to the table or its cells",
+        "No sig- class or data-sig- attribute is added to footer links",
+        "The reply says the table and footer were left alone and gives the reason"
+      ]
+    }
+  ]
+}

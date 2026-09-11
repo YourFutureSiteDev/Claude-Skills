@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Signals</title>
+<style>
+  /* Demo layout only. Nothing here belongs in a client site.
+     signals.css is linked AFTER this block on purpose: its state rules must
+     beat the base button and panel styles, which is the install rule. */
+  :root {
+    --bg: #0c0e12;
+    --ink: #e6e9ee;
+    --muted: #8a93a3;
+    --panel: #15181d;
+    --line: rgba(255,255,255,0.09);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    color: var(--ink);
+    background:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 40px 40px,
+      var(--bg);
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 72px 20px 120px; }
+  h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 12px; }
+  .lede { color: var(--muted); margin: 0 0 8px; max-width: 48ch; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  section { margin-top: 72px; }
+  section h2 { font-size: 24px; letter-spacing: -0.01em; margin: 0 0 6px; }
+  section h2 em { font-style: normal; color: var(--sig-accent); }
+  section > p { color: var(--muted); margin: 0 0 20px; max-width: 52ch; }
+  .rule { font-size: 12px; color: var(--muted); border-left: 2px solid var(--sig-accent); padding-left: 10px; margin: 0 0 20px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    appearance: none; cursor: pointer; font: inherit; color: var(--ink);
+    background: #1d2129; border: 1px solid var(--line); border-radius: 10px; padding: 9px 16px;
+  }
+  .btn.primary { background: var(--sig-accent); color: #06221f; border-color: transparent; font-weight: 600; }
+  .btn.ghost { background: transparent; }
+  .demo-actions { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .demo-actions .btn { font-size: 13px; padding: 7px 12px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  input.field, textarea.field {
+    width: 100%; font: inherit; color: var(--ink); background: #0f1216;
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+  }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* dropzone content */
+  .dz { min-height: 180px; display: grid; place-items: center; text-align: center; padding: 28px; cursor: pointer; }
+  .dz .sig-icon { width: 34px; height: 34px; color: var(--muted); }
+  .dz h3 { margin: 10px 0 2px; font-size: 17px; }
+  .dz p { margin: 0; color: var(--muted); font-size: 13px; }
+  .dz input { display: none; }
+
+  /* progress card */
+  .up-head { display: flex; align-items: center; gap: 12px; }
+  .up-ico { width: 40px; height: 40px; border-radius: 10px; background: #1d2129; display: grid; place-items: center; color: var(--muted); }
+  .up-name { font-weight: 600; }
+  .up-sub { color: var(--muted); font-size: 12px; }
+  .up-pct { margin-left: auto; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+  .sig-bar { margin: 12px 0 8px; }
+  .up-status { font-size: 13px; color: var(--muted); }
+  .sig-progress-meta > span { font-size: 12px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; }
+  .sig-retry-card { padding: 10px 12px; margin-top: 10px; display: flex; align-items: center; gap: 12px; }
+  .sig-retry-card b { color: var(--sig-danger); display: block; font-size: 13px; }
+  .sig-retry-card span { color: var(--muted); font-size: 12px; }
+  .sig-retry-card .btn { margin-left: auto; }
+
+  /* preview card */
+  .sig-preview { display: grid; grid-template-columns: 120px 1fr; gap: 16px; }
+  .sig-thumb { width: 120px; height: 120px; display: grid; place-items: center; color: rgba(255,255,255,0.7); position: relative; overflow: hidden; }
+  .sig-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .sig-thumb small { position: absolute; right: 6px; bottom: 6px; background: rgba(0,0,0,0.55); padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+  .pv-name { font-weight: 600; margin: 4px 0 8px; }
+  .pv-proof { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .pv-proof .sig-tick { color: var(--sig-accent); }
+  .pv-actions { grid-column: 1 / -1; display: flex; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+
+  /* queue */
+  .q-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .q-head b { font-weight: 600; }
+  .q-count { font-size: 12px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); }
+  .sig-queue-item { display: grid; grid-template-columns: 32px 1fr 56px; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; }
+  .sig-queue-item .q-ico { width: 32px; height: 32px; border-radius: 8px; background: #1d2129; display: grid; place-items: center; color: var(--muted); }
+  .sig-queue-item .q-name { font-size: 13px; font-weight: 600; }
+  .sig-queue-item .q-name small { color: var(--muted); font-weight: 400; margin-left: 6px; }
+  .sig-queue-item .sig-bar { margin: 6px 0 0; height: 3px; }
+  .q-end { position: relative; text-align: right; font-size: 13px; }
+  .q-end .sig-tick-wrap { position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--sig-accent); }
+
+  /* tick svg sizing */
+  .sig-tick { width: 20px; height: 20px; display: block; }
+
+  /* toast look */
+  .sig-toast { background: #1d2129; border: 1px solid var(--line); color: var(--ink); padding: 10px 14px; border-radius: 10px; font-size: 14px; box-shadow: 0 10px 30px -12px rgba(0,0,0,0.8); }
+
+  /* chips */
+  .sig-chips { display: flex; gap: 8px; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; }
+  .sig-chips li { padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; }
+  .sig-chips li b { color: var(--sig-accent); font-weight: 600; margin-right: 6px; }
+
+  /* cards */
+  .card { display: block; color: inherit; text-decoration: none; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+  .card h4 { margin: 0 0 4px; font-size: 15px; }
+  .card p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  /* nav */
+  .sig-nav { display: flex; gap: 22px; font-size: 14px; }
+  .sig-nav a { color: var(--ink); padding: 4px 0; }
+
+  /* stats */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .stat { text-align: center; }
+  .stat b { display: block; font-size: 32px; letter-spacing: -0.02em; }
+  .stat span { color: var(--muted); font-size: 13px; }
+
+  /* skeleton */
+  .sk-line { height: 14px; margin: 8px 0; }
+  .sk-line.w60 { width: 60%; } .sk-line.w80 { width: 80%; } .sk-line.w40 { width: 40%; }
+
+  /* glow demo */
+  .step { padding: 14px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; }
+  .step b { display: block; font-size: 14px; }
+  .step span { color: var(--muted); font-size: 12px; }
+  .step.is-active { border-color: var(--sig-accent); }
+
+  /* submit stack */
+  .sig-submit { min-width: 120px; }
+
+  footer { margin-top: 96px; color: var(--muted); font-size: 12px; }
+</style>
+<link rel="stylesheet" href="signals.css">
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">ui-signals</p>
+  <h1 data-sig-headline>An interface has to <em>answer back.</em></h1>
+  <p class="lede">Twenty feedback and state signals. Each belongs on one kind of element. This page is the test bench: trigger every state and watch it.</p>
+  <nav class="sig-nav" aria-label="Demo">
+    <a href="#s01" aria-current="page">Upload</a>
+    <a href="#s06">Forms</a>
+    <a href="#s13">Page</a>
+    <a href="#s19">Loading</a>
+  </nav>
+
+  <!-- 01 drop-answer -->
+  <section id="s01">
+    <p class="eyebrow">Signal 01 · Drag feedback</p>
+    <h2>Nothing reacts. It has to <em>answer back.</em></h2>
+    <p>Three signals before the drop: border, glow, copy. Drag any file over the box.</p>
+    <p class="rule">Belongs on: a file dropzone. Never on: anything that is not one.</p>
+    <div class="sig-dropzone sig-glow dz" data-sig-dropzone id="dz">
+      <div class="sig-swap">
+        <div data-when="idle">
+          <svg class="sig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 9a3.5 3.5 0 0 1 .5 7"/><path d="M12 12v8m0-8-3 3m3-3 3 3"/></svg>
+          <h3>Drop your file</h3>
+          <p>PNG, JPG, PDF, up to 50 MB</p>
+        </div>
+        <div data-when="over">
+          <svg class="sig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0-5 5m5-5 5 5"/><path d="M5 21h14"/></svg>
+          <h3>Release to upload</h3>
+          <p data-sig-dropcopy>1 file</p>
+        </div>
+      </div>
+      <input type="file" multiple>
+    </div>
+    <div class="demo-actions">
+      <button class="btn sig-press" data-dz="over">Show "over" state</button>
+      <button class="btn sig-press" data-dz="idle">Back to idle</button>
+    </div>
+  </section>
+
+  <!-- 02 honest-progress + 03 inline-retry -->
+  <section id="s02">
+    <p class="eyebrow">Signal 02 · Honest progress</p>
+    <h2>A spinner <em>hides the truth.</em></h2>
+    <p>Percent, time left, rate. The user decides whether to wait or walk away.</p>
+    <p class="rule">Belongs on: an operation over one second with a measurable length. Unknown length: use the skeleton instead.</p>
+
+    <p class="eyebrow" style="margin-top:28px">Signal 03 · Inline retry</p>
+    <h2>It dies at <em>ninety percent.</em></h2>
+    <p>The bar turns red where it stopped, the error grows in with a Retry, the file stays. Retry resumes from 90%. Never make them start over.</p>
+    <p class="rule">Belongs on: any network action that can fail. Never on: actions that cannot fail.</p>
+
+    <div class="panel sig-progress" id="up1" data-state="idle">
+      <div class="up-head">
+        <div class="up-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 10h4M17 10h4M3 14h4M17 14h4"/></svg></div>
+        <div><div class="up-name">demo-recording.mp4</div><div class="up-sub">48 MB, video/mp4</div></div>
+        <div class="up-pct sig-progress-pct" data-pct>0%</div>
+      </div>
+      <div class="sig-bar"><i class="sig-bar-fill"></i></div>
+      <div class="up-status" data-status>Waiting</div>
+      <div class="sig-progress-meta" style="margin-top:10px">
+        <span data-eta></span>
+        <span data-rate></span>
+      </div>
+      <div class="sig-retry-row">
+        <div>
+          <div class="sig-retry-card">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sig-danger)" stroke-width="1.8" stroke-linecap="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+            <div><b>Upload failed</b><span data-error-msg>Connection lost</span></div>
+            <button type="button" class="btn sig-press" data-retry>Retry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-actions">
+      <button class="btn primary sig-press" id="up1-go">Simulate upload</button>
+      <button class="btn sig-press" id="up1-fail">Fail at 90%</button>
+      <button class="btn ghost sig-press" id="up1-reset">Reset</button>
+    </div>
+  </section>
+
+  <!-- 04 upload-preview -->
+  <section id="s04">
+    <p class="eyebrow">Signal 04 · Upload preview</p>
+    <h2>A filename is <em>not feedback.</em></h2>
+    <p>Thumbnail, type, size, proof, and the two actions that matter next.</p>
+    <p class="rule">Belongs on: the moment after a file upload succeeds. Never as: a text-only line.</p>
+    <div class="panel muted small mono" style="margin-bottom:12px">Text only: &#10003; IMG_4032.jpg uploaded</div>
+    <div class="panel sig-preview" id="pv1" hidden>
+      <div class="sig-thumb">
+        <img data-thumb alt="" hidden>
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg>
+        <small class="mono">4032 × 3024</small>
+      </div>
+      <div>
+        <div class="pv-name" data-name>IMG_4032.jpg</div>
+        <div class="row"><span class="sig-chip" data-type>JPG</span><span class="small mono" data-size>2.4 MB</span></div>
+        <div class="pv-proof">
+          <svg class="sig-tick" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg>
+          Uploaded just now
+        </div>
+      </div>
+      <div class="pv-actions">
+        <button class="btn sig-press">Replace</button>
+        <button class="btn ghost sig-press">Remove</button>
+      </div>
+    </div>
+    <div class="demo-actions">
+      <button class="btn primary sig-press" id="pv1-show">Show preview</button>
+      <button class="btn ghost sig-press" id="pv1-hide">Hide</button>
+    </div>
+  </section>
+
+  <!-- 05 own-lane-queue -->
+  <section id="s05">
+    <p class="eyebrow">Signal 05 · Independent queue</p>
+    <h2>Every file, <em>its own lane.</em></h2>
+    <p>One failure never blocks the others.</p>
+    <p class="rule">Belongs on: a batch of long operations. Never on: a single one.</p>
+    <div class="panel" id="q1">
+      <div class="q-head"><b>Uploading 5 files</b><span class="q-count mono" data-done>0 of 5 done</span></div>
+      <div class="sig-queue-item" data-sig-queue-item data-state="idle">
+        <div class="q-ico">&#9636;</div>
+        <div><div class="q-name">brief.pdf<small>1.2 MB</small></div><div class="sig-bar"><i class="sig-bar-fill"></i></div></div>
+        <div class="q-end"><span class="sig-queue-pct" data-pct>0%</span><span class="sig-tick-wrap"><svg class="sig-tick" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg></span></div>
+      </div>
+      <div class="sig-queue-item" data-sig-queue-item data-state="idle">
+        <div class="q-ico">&#9635;</div>
+        <div><div class="q-name">hero-banner.png<small>2.4 MB</small></div><div class="sig-bar"><i class="sig-bar-fill"></i></div></div>
+        <div class="q-end"><span class="sig-queue-pct" data-pct>0%</span><span class="sig-tick-wrap"><svg class="sig-tick" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg></span></div>
+      </div>
+      <div class="sig-queue-item" data-sig-queue-item data-state="idle">
+        <div class="q-ico">&#9654;</div>
+        <div><div class="q-name">demo-recording.mp4<small>48 MB</small></div><div class="sig-bar"><i class="sig-bar-fill"></i></div></div>
+        <div class="q-end"><span class="sig-queue-pct" data-pct>0%</span><span class="sig-tick-wrap"><svg class="sig-tick" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg></span></div>
+      </div>
+      <div class="sig-queue-item" data-sig-queue-item data-state="idle">
+        <div class="q-ico">&#9636;</div>
+        <div><div class="q-name">invoice-2026.pdf<small>340 KB</small></div><div class="sig-bar"><i class="sig-bar-fill"></i></div></div>
+        <div class="q-end"><span class="sig-queue-pct" data-pct>0%</span><span class="sig-tick-wrap"><svg class="sig-tick" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg></span></div>
+      </div>
+      <div class="sig-queue-item" data-sig-queue-item data-state="idle">
+        <div class="q-ico">&#9635;</div>
+        <div><div class="q-name">avatar-photo.jpg<small>860 KB</small></div><div class="sig-bar"><i class="sig-bar-fill"></i></div></div>
+        <div class="q-end"><span class="sig-queue-pct" data-pct>0%</span><span class="sig-tick-wrap"><svg class="sig-tick" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg></span></div>
+      </div>
+    </div>
+    <div class="demo-actions">
+      <button class="btn primary sig-press" id="q1-go">Simulate batch</button>
+      <button class="btn ghost sig-press" id="q1-reset">Reset</button>
+    </div>
+  </section>
+
+  <!-- 06 press, 07 focus, 08 submit, 09 field-error -->
+  <section id="s06">
+    <p class="eyebrow">Signals 06 to 09 · Forms</p>
+    <h2>Press, focus, submit, <em>error.</em></h2>
+    <p>Press is 120ms scale to 0.97. Focus is a ring, not an outline removal. Submit locks its width and moves through loading, done or error. A field error grows under that field only.</p>
+    <p class="rule">Press: buttons only. Focus: text inputs only. Submit states: the form's submit button only. Field error: the one invalid field, never the whole form.</p>
+    <form class="panel" id="f1" novalidate>
+      <div class="grid2">
+        <div class="sig-field" data-state="idle">
+          <label for="name">Name</label>
+          <input class="field sig-focus" id="name" name="name" placeholder="Your name">
+          <div class="sig-field-msg"><div><small>Enter your name</small></div></div>
+        </div>
+        <div class="sig-field" data-state="idle">
+          <label for="email">Email</label>
+          <input class="field sig-focus" id="email" name="email" placeholder="you@example.com">
+          <div class="sig-field-msg"><div><small>That email does not look right</small></div></div>
+        </div>
+      </div>
+      <div style="margin-top:14px" class="sig-field" data-state="idle">
+        <label for="msg">Message</label>
+        <textarea class="field sig-focus" id="msg" name="msg" rows="3" placeholder="What do you need built?"></textarea>
+        <div class="sig-field-msg"><div><small>Tell us a little about the job</small></div></div>
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button type="submit" class="btn primary sig-press sig-submit" data-state="idle">
+          <span class="sig-submit-stack">
+            <span class="sig-submit-label">Send enquiry</span>
+            <span class="sig-spinner" aria-hidden="true"></span>
+            <span class="sig-submit-done row" style="gap:6px"><svg class="sig-tick" viewBox="0 0 24 24" style="width:18px;height:18px"><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg> Sent</span>
+            <span class="sig-submit-error">Try again</span>
+          </span>
+        </button>
+        <label class="row small muted" style="margin:0;gap:6px"><input type="checkbox" id="f1-fail"> make the server fail</label>
+      </div>
+    </form>
+  </section>
+
+  <!-- 10 copy-swap, 11 state-glow, 12 tick-draw -->
+  <section id="s10">
+    <p class="eyebrow">Signals 10 to 12 · State</p>
+    <h2>Copy swap, one glow, <em>the tick.</em></h2>
+    <p>Copy crossfades when a label changes with state. The glow marks the single live element on the page, and moves rather than multiplies. The tick draws itself only on success.</p>
+    <p class="rule">Glow: exactly one element at a time. Tick: success states only, never neutral or error.</p>
+    <div class="grid2">
+      <div class="step sig-glow is-active" data-step><b>1. Brief</b><span>Tell us the job</span></div>
+      <div class="step sig-glow" data-step><b>2. Quote</b><span>Fixed price, no surprises</span></div>
+      <div class="step sig-glow" data-step><b>3. Build</b><span>Preview link within the week</span></div>
+      <div class="step sig-glow" data-step><b>4. Live</b><span>Pay on completion</span></div>
+    </div>
+    <div class="panel row" style="margin-top:14px">
+      <div class="sig-swap" id="sw1" data-state="a">
+        <span data-when="a" class="is-on">Saving your changes</span>
+        <span data-when="b">Saved</span>
+      </div>
+      <span class="sig-tick" id="tk1" style="color:var(--sig-accent)"><svg class="sig-tick" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg></span>
+      <button class="btn sig-press" id="sw1-go" style="margin-left:auto">Save</button>
+    </div>
+  </section>
+
+  <!-- 13 toast, 14 chips, 15 headline (top), 16 reveal, 17 card-lift, 18 nav (top) -->
+  <section id="s13" data-sig-reveal>
+    <p class="eyebrow">Signals 13 to 18 · Page</p>
+    <h2>Toast, chips, reveal, <em>lift.</em></h2>
+    <p>This section revealed on scroll because it is below the fold. The hero at the top did not, and would be refused. The headline emphasis ran once on load. The nav underline is at the top.</p>
+    <p class="rule">Reveal: below-fold sections only. Chips: tag lists entering view, once. Card lift: cards that link somewhere, hover-gated. Toast: transient messages only.</p>
+    <ul class="sig-chips">
+      <li><b>1</b>Border</li><li><b>2</b>Glow</li><li><b>3</b>Copy</li><li><b>4</b>Percent</li><li><b>5</b>Time left</li><li><b>6</b>Retry</li><li><b>7</b>Preview</li><li><b>8</b>Own lane</li>
+    </ul>
+    <div class="grid2" style="margin-top:18px">
+      <a class="card sig-card" href="#s01"><h4>Clickable card</h4><p>Lifts 2px on hover because it goes somewhere.</p></a>
+      <div class="card"><h4>Static card</h4><p>Does not lift. It is not a link.</p></div>
+    </div>
+    <div class="demo-actions">
+      <button class="btn sig-press" id="toast-ok">Toast</button>
+      <button class="btn sig-press" id="toast-err">Error toast</button>
+    </div>
+  </section>
+
+  <!-- 19 count-up, 20 skeleton -->
+  <section id="s19" data-sig-reveal>
+    <p class="eyebrow">Signals 19 and 20 · Numbers and loading</p>
+    <h2>Count up, and <em>skeleton.</em></h2>
+    <p>Stats count from zero once, when they enter view. Skeletons stand in for content that arrives after first paint, and never for content already in the HTML.</p>
+    <p class="rule">Count-up: a stats section. Never: prices in a checkout, table cells. Skeleton: async content only.</p>
+    <div class="panel stats">
+      <div class="stat"><b data-sig-count="398">0</b><span>leads found</span></div>
+      <div class="stat"><b data-sig-count="4.5" data-decimals="1" data-suffix="%">0</b><span>reply rate</span></div>
+      <div class="stat"><b data-sig-count="20" data-prefix="A$" data-suffix="/yr">0</b><span>site care</span></div>
+    </div>
+    <div class="panel" id="sk1" style="margin-top:14px">
+      <div class="sig-skeleton sk-line w40">&nbsp;</div>
+      <div class="sig-skeleton sk-line w80">&nbsp;</div>
+      <div class="sig-skeleton sk-line w60">&nbsp;</div>
+    </div>
+    <div class="demo-actions">
+      <button class="btn sig-press" id="sk1-load">Load the reviews</button>
+      <button class="btn ghost sig-press" id="sk1-reset">Reset</button>
+    </div>
+  </section>
+
+  <footer>
+    Source: @designmotionhq reel "FutureVille · realization", five upload signals. The rest follow the same rule: one signal, one kind of element. Values from the <span class="mono">animate</span> skill.
+  </footer>
+</main>
+
+<script src="signals.js"></script>
+<script>
+  Signals.init();
+
+  // 01 dropzone: demo buttons force the state so it can be screenshotted without a real drag.
+  var dz = document.getElementById('dz');
+  dz._sig = dz._sig || Signals.dropzone(dz, { onFiles: function (files) { Signals.toast(files.length + ' file' + (files.length === 1 ? '' : 's') + ' dropped'); } });
+  dz.addEventListener('click', function (e) { if (e.target.tagName !== 'INPUT') dz.querySelector('input').click(); });
+  document.querySelectorAll('[data-dz]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var s = b.getAttribute('data-dz');
+      if (s === 'over') { dz.querySelector('[data-sig-dropcopy]').textContent = 'hero-banner.png, 2.4 MB'; Signals.glow(dz); }
+      else dz.classList.remove('is-active');
+      Signals.setState(dz, s);
+    });
+  });
+
+  // 02 + 03 progress and retry
+  var up1 = document.getElementById('up1');
+  var sim1;
+  var ctrl1 = Signals.progress(up1, {
+    onResume: function (from) { sim1 = Signals.simulateUpload(ctrl1, { sizeMB: 48, rateMBps: 2.4, from: from, speed: 0.15 }); },
+    onDone: function () { Signals.toast('demo-recording.mp4 uploaded'); }
+  });
+  function resetUp1() { if (sim1) sim1.cancel(); up1.setAttribute('data-state', 'idle'); up1.style.setProperty('--p', '0'); up1.querySelector('[data-pct]').textContent = '0%'; up1.querySelector('[data-status]').textContent = 'Waiting'; up1.querySelectorAll('.sig-progress-meta > span').forEach(function (s) { s.classList.remove('is-on'); }); }
+  document.getElementById('up1-go').addEventListener('click', function () { resetUp1(); sim1 = Signals.simulateUpload(ctrl1, { sizeMB: 48, rateMBps: 2.4, speed: 0.15 }); });
+  document.getElementById('up1-fail').addEventListener('click', function () { resetUp1(); sim1 = Signals.simulateUpload(ctrl1, { sizeMB: 48, rateMBps: 2.4, speed: 0.15, failAt: 90 }); });
+  document.getElementById('up1-reset').addEventListener('click', resetUp1);
+
+  // 04 preview
+  var pv1 = document.getElementById('pv1'), pvApi;
+  document.getElementById('pv1-show').addEventListener('click', function () { pvApi = Signals.preview(pv1); });
+  document.getElementById('pv1-hide').addEventListener('click', function () { if (pvApi) pvApi.hide(); });
+
+  // 05 queue
+  var q1 = document.getElementById('q1');
+  var lanes = Signals.queue(q1);
+  var qSims = [];
+  function resetQ1() {
+    qSims.forEach(function (s) { s.cancel(); }); qSims = [];
+    q1.querySelectorAll('[data-sig-queue-item]').forEach(function (r) { r.setAttribute('data-state', 'idle'); r.style.setProperty('--p', '0'); r.querySelector('[data-pct]').textContent = '0%'; });
+    lanes = Signals.queue(q1);
+  }
+  document.getElementById('q1-go').addEventListener('click', function () {
+    resetQ1();
+    var sizes = [1.2, 2.4, 48, 0.34, 0.86];
+    lanes.forEach(function (lane, i) {
+      var ctrl = { set: function (p) { lane.set(p); }, fail: function () { lane.fail(); }, done: function () { lane.done(); } };
+      qSims.push(Signals.simulateUpload(ctrl, { sizeMB: sizes[i], rateMBps: 0.9 + Math.random() * 0.4, speed: sizes[i] > 10 ? 0.15 : 1.2 }));
+    });
+  });
+  document.getElementById('q1-reset').addEventListener('click', resetQ1);
+
+  // 06 to 09 form
+  var f1 = document.getElementById('f1');
+  var fields = Array.prototype.map.call(f1.querySelectorAll('.sig-field'), Signals.field);
+  Signals.submit(f1, function (data) {
+    var bad = false;
+    if (!data.get('name')) { fields[0].error(); bad = true; }
+    if (!/.+@.+\..+/.test(data.get('email') || '')) { fields[1].error(); bad = true; }
+    if (!data.get('msg')) { fields[2].error(); bad = true; }
+    if (bad) return Promise.reject();
+    var fail = document.getElementById('f1-fail').checked;
+    return new Promise(function (res, rej) { setTimeout(fail ? rej : res, 1400); }).then(function () { Signals.toast('Enquiry sent'); }, function () { Signals.toast('Server did not answer', { kind: 'error' }); throw new Error(); });
+  });
+
+  // 10 to 12 glow, swap, tick
+  document.querySelectorAll('[data-step]').forEach(function (s) { s.addEventListener('click', function () { Signals.glow(s); }); });
+  var sw1 = document.getElementById('sw1'), tk1 = document.getElementById('tk1');
+  document.getElementById('sw1-go').addEventListener('click', function () {
+    tk1.classList.remove('is-on'); Signals.setState(sw1, 'a');
+    setTimeout(function () { Signals.setState(sw1, 'b'); tk1.classList.add('is-on'); }, 900);
+  });
+
+  // 13 toast
+  document.getElementById('toast-ok').addEventListener('click', function () { Signals.toast('Changes saved'); });
+  document.getElementById('toast-err').addEventListener('click', function () { Signals.toast('Could not save, try again', { kind: 'error' }); });
+
+  // 20 skeleton
+  var sk1 = document.getElementById('sk1');
+  var skHtml = sk1.innerHTML;
+  document.getElementById('sk1-load').addEventListener('click', function () {
+    setTimeout(function () {
+      sk1.innerHTML = '<p style="margin:0 0 6px"><b>Review text arrives here once the request returns.</b></p><p class="muted small" style="margin:0">Reviewer name, business</p>';
+    }, 1200);
+  });
+  document.getElementById('sk1-reset').addEventListener('click', function () { sk1.innerHTML = skHtml; });
+</script>
+</body>
+</html>
