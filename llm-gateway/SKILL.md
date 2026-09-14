@@ -58,9 +58,17 @@ claude
 ```
 
 Claude Code then sends its normal requests and the gateway answers from
-whichever model it maps `claude-3-*` names to (see `/models`). To force a
-model, set it in the dashboard's Model Selection tab or pass `model` in the
-request body as an OpenRouter id, e.g. `deepseek/deepseek-chat`.
+`DEFAULT_MODEL` in `.env` (set to `deepseek/deepseek-chat` on install). To
+change the model for everything, edit that line and restart. A request that
+names a real OpenRouter id (e.g. `model: "deepseek/deepseek-chat"`) is
+honoured as-is.
+
+Local patches (14 Sep 2026, in `src/server.js`, not upstream): the built-in
+"intelligent" picker is skipped whenever `DEFAULT_MODEL` or an explicit id is
+usable, because it chose `openai/gpt-6-astra` which 502s and stale static
+names like `mixtral-8x7b-32768` that OpenRouter rejects. Providers with
+`model_source: static` are excluded from the candidate list for the same
+reason. If upstream is ever re-pulled, re-apply both.
 
 Warn him once, in one line, that a non-Claude model behind Claude Code will
 be worse at tool use and may break on long agentic runs. It is for cheap or
