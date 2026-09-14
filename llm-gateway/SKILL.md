@@ -68,7 +68,10 @@ Local patches (14 Sep 2026, in `src/server.js`, not upstream): the built-in
 usable, because it chose `openai/gpt-6-astra` which 502s and stale static
 names like `mixtral-8x7b-32768` that OpenRouter rejects. Providers with
 `model_source: static` are excluded from the candidate list for the same
-reason. If upstream is ever re-pulled, re-apply both.
+reason. `max_tokens` is clamped to `MAX_OUTPUT_TOKENS` (8192 in `.env`)
+because Claude Code asks for 32k and the upstream validator in
+`claude-compatibility.js` used to reject that with a 400. If upstream is ever
+re-pulled, re-apply all three.
 
 Warn him once, in one line, that a non-Claude model behind Claude Code will
 be worse at tool use and may break on long agentic runs. It is for cheap or
