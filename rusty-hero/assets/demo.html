@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rusty-hero demo</title>
+<link rel="stylesheet" href="rusty.css">
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; box-sizing: border-box; }
+  [data-rusty] { --rusty-display: "Georgia", serif; --rusty-body: system-ui, sans-serif; width: min(960px, 100%); }
+  .wrap { width: 100%; }
+  p.note { text-align: center; font-size: 0.8rem; opacity: 0.6; margin-top: 18px; }
+</style>
+</head>
+<body data-rusty="full" data-rusty-start="fanta">
+<div class="wrap">
+  <div class="rusty-hero" data-rusty-hero tabindex="0" aria-label="Product showcase">
+    <nav class="rusty-nav">
+      <a class="rusty-logo" href="#">Fresh</a>
+      <div class="rusty-pills"><a href="#" aria-current="page">Products</a><a href="#">Contact</a></div>
+      <div class="rusty-icons"><a href="#" aria-label="Account">&#9679;</a><a href="#" aria-label="Cart">&#9633;</a></div>
+    </nav>
+
+    <div class="rusty-copy">
+      <span class="rusty-kicker rusty-swap" data-field="kicker"></span>
+      <h1 class="rusty-title rusty-swap" data-field="title"></h1>
+      <p class="rusty-desc rusty-swap" data-field="desc"></p>
+      <div class="rusty-chips rusty-swap" data-field="chips"></div>
+    </div>
+
+    <div class="rusty-media">
+      <div class="rusty-ghost rusty-swap" data-field="ghost" aria-hidden="true"></div>
+      <div class="rusty-orbit" aria-hidden="true"></div>
+      <img class="rusty-product" data-field="image" alt="">
+    </div>
+
+    <div class="rusty-side">
+      <div class="rusty-variants" data-field="variants" role="group" aria-label="Size"></div>
+      <div class="rusty-thumbs" data-thumbs role="group" aria-label="Choose product"></div>
+    </div>
+
+    <div class="rusty-price">
+      <div class="rusty-amount rusty-swap"><span data-field="amount"></span><small data-field="amountNote"></small></div>
+      <div class="rusty-arrows">
+        <button type="button" data-prev aria-label="Previous">&#8592;</button>
+        <button type="button" data-next aria-label="Next">&#8594;</button>
+      </div>
+      <div class="rusty-dots" data-dots aria-hidden="true"></div>
+    </div>
+
+    <div class="rusty-buy">
+      <div class="rusty-stepper"><button type="button" aria-label="Fewer">&minus;</button><span>2</span><button type="button" aria-label="More">+</button></div>
+      <a class="rusty-cta" data-field="cta" href="#"></a>
+    </div>
+  </div>
+
+  <script type="application/json" data-rusty-subjects>
+  [
+    { "id": "fanta", "colour": "#f28c28", "kicker": "Orange flavour", "title": "Fanta taste",
+      "desc": "Experience the perfect blend of fresh, juicy oranges in every sip.",
+      "image": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 240'><rect x='20' y='10' width='80' height='220' rx='18' fill='%23ff9d3c'/><rect x='20' y='10' width='80' height='220' rx='18' fill='url(%23g)'/><circle cx='60' cy='120' r='38' fill='%232b4fb5'/><text x='60' y='128' font-size='22' font-family='Arial' font-weight='900' fill='white' text-anchor='middle'>FANTA</text><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='white' stop-opacity='.25'/><stop offset='.5' stop-color='white' stop-opacity='0'/><stop offset='1' stop-color='black' stop-opacity='.25'/></linearGradient></defs></svg>",
+      "chips": ["Sugar free", "Vegan"], "variants": ["500", "250", "100"], "variant": 1,
+      "amount": "$79.50", "amountNote": "per case", "ghost": "FANTA", "cta": { "label": "Add to cart", "href": "#" } },
+    { "id": "sprite", "colour": "#2fb84a", "kicker": "Lemon lime", "title": "Sprite taste",
+      "desc": "Crisp, clean and cold, with the lemon lime bite you know.",
+      "image": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 240'><rect x='20' y='10' width='80' height='220' rx='18' fill='%233fcf5c'/><rect x='20' y='10' width='80' height='220' rx='18' fill='url(%23g)'/><circle cx='60' cy='120' r='38' fill='%231f5fbf'/><text x='60' y='128' font-size='20' font-family='Arial' font-weight='900' fill='white' text-anchor='middle'>Sprite</text><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='white' stop-opacity='.25'/><stop offset='.5' stop-color='white' stop-opacity='0'/><stop offset='1' stop-color='black' stop-opacity='.25'/></linearGradient></defs></svg>",
+      "chips": ["Sugar free", "Vegan"], "variants": ["500", "250", "100"], "variant": 1,
+      "amount": "$79.50", "amountNote": "per case", "ghost": "SPRITE", "cta": { "label": "Add to cart", "href": "#" } },
+    { "id": "coke", "colour": "#d9282e", "kicker": "Original", "title": "Coca Cola taste",
+      "desc": "The one and only, served ice cold, share a Coke.",
+      "image": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 240'><rect x='20' y='10' width='80' height='220' rx='18' fill='%23e63946'/><rect x='20' y='10' width='80' height='220' rx='18' fill='url(%23g)'/><text x='60' y='128' font-size='18' font-family='Georgia' font-style='italic' font-weight='900' fill='white' text-anchor='middle'>Coca Cola</text><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='white' stop-opacity='.25'/><stop offset='.5' stop-color='white' stop-opacity='0'/><stop offset='1' stop-color='black' stop-opacity='.25'/></linearGradient></defs></svg>",
+      "chips": ["Classic", "Chilled"], "variants": ["500", "250", "100"], "variant": 1,
+      "amount": "$79.50", "amountNote": "per case", "ghost": "COKE", "cta": { "label": "Add to cart", "href": "#" } }
+  ]
+  </script>
+  <p class="note">Arrows, thumbnails or left/right keys switch product. The page recolours with it. Add <code>#rusty=coke</code> to the URL to land on one.</p>
+</div>
+<script src="rusty.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+/* rusty.css
+   Product-colour hero lifted from @ui_ux_rusty_freelancer.
+   Dependency free. Drop next to the project's own stylesheet, link it after it.
+   Everything hangs off one colour: rusty.js sets --rusty-base on the scope
+   and derives page, card, glow and ink from it. Nothing else to configure.
+
+   Two modes on the scope element:
+     data-rusty="full"  the page recolours with the product (marketing sites)
+     data-rusty="tint"  only the card recolours, the page gets a 6% tint (apps, dashboards)
+*/
+
+@property --rusty-page  { syntax: '<color>'; inherits: true; initial-value: #ece9e4; }
+@property --rusty-card  { syntax: '<color>'; inherits: true; initial-value: #6b6b6b; }
+@property --rusty-deep  { syntax: '<color>'; inherits: true; initial-value: #4a4a4a; }
+@property --rusty-glow  { syntax: '<color>'; inherits: true; initial-value: #8a8a8a; }
+@property --rusty-ink   { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --rusty-cta   { syntax: '<color>'; inherits: true; initial-value: #0b0b0b; }
+@property --rusty-cta-ink { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+
+[data-rusty] {
+  --rusty-radius: 28px;
+  --rusty-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --rusty-dur-colour: 600ms;
+  --rusty-dur-move: 520ms;
+  --rusty-display: inherit;   /* set to the project's display face */
+  --rusty-body: inherit;      /* set to the project's body face */
+  transition: --rusty-page var(--rusty-dur-colour) var(--rusty-ease),
+              background-color var(--rusty-dur-colour) var(--rusty-ease);
+}
+[data-rusty="full"] { background-color: var(--rusty-page); }
+[data-rusty="tint"] { background-color: color-mix(in oklab, var(--rusty-page) 12%, transparent); }
+
+/* The stage */
+.rusty-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 1.4fr) 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "nav nav nav"
+    "copy media side"
+    "price media buy";
+  gap: 16px 24px;
+  min-height: 520px;
+  padding: 24px 28px 28px;
+  border-radius: var(--rusty-radius);
+  color: var(--rusty-ink);
+  font-family: var(--rusty-body);
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 55% at 50% 48%, var(--rusty-glow) 0%, var(--rusty-card) 62%, var(--rusty-deep) 100%);
+  box-shadow: 0 30px 60px -30px color-mix(in oklab, var(--rusty-deep) 60%, transparent);
+  transition: --rusty-card var(--rusty-dur-colour) var(--rusty-ease),
+              --rusty-deep var(--rusty-dur-colour) var(--rusty-ease),
+              --rusty-glow var(--rusty-dur-colour) var(--rusty-ease),
+              --rusty-ink var(--rusty-dur-colour) var(--rusty-ease),
+              --rusty-cta var(--rusty-dur-colour) var(--rusty-ease),
+              --rusty-cta-ink var(--rusty-dur-colour) var(--rusty-ease);
+}
+
+/* Nav inside the card */
+.rusty-nav { grid-area: nav; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.rusty-nav .rusty-logo { font-family: var(--rusty-display); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em; text-decoration: none; color: inherit; }
+.rusty-pills { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: color-mix(in oklab, var(--rusty-deep) 55%, transparent); }
+.rusty-pills a {
+  padding: 6px 14px; border-radius: 999px; font-size: 0.75rem; text-decoration: none; color: inherit; opacity: 0.85;
+  transition: background-color 150ms var(--rusty-ease), color 150ms var(--rusty-ease), opacity 150ms;
+}
+.rusty-pills a[aria-current], .rusty-pills a.is-active { background: #fff; color: #111; opacity: 1; }
+.rusty-icons { display: flex; gap: 8px; }
+.rusty-icons a, .rusty-icons button {
+  width: 30px; height: 30px; border-radius: 999px; border: 0; display: grid; place-items: center;
+  background: color-mix(in oklab, var(--rusty-deep) 55%, transparent); color: inherit; cursor: pointer;
+}
+
+/* Copy block */
+.rusty-copy { grid-area: copy; align-self: start; display: flex; flex-direction: column; gap: 10px; max-width: 26ch; }
+.rusty-kicker { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8; }
+.rusty-title {
+  margin: 0; font-family: var(--rusty-display); font-weight: 800; line-height: 0.95; letter-spacing: -0.02em;
+  font-size: clamp(1.8rem, 3.4vw, 2.8rem);
+}
+.rusty-desc { margin: 0; font-size: 0.78rem; line-height: 1.45; opacity: 0.9; max-width: 30ch; }
+.rusty-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rusty-chip {
+  padding: 4px 10px; border-radius: 999px; font-size: 0.68rem; line-height: 1;
+  border: 1px solid color-mix(in oklab, var(--rusty-ink) 45%, transparent); color: inherit; background: transparent;
+}
+
+/* Media: product, ghost word, orbit */
+.rusty-media { grid-area: media; position: relative; display: grid; place-items: center; min-height: 260px; }
+.rusty-ghost {
+  position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 0;
+  font-family: var(--rusty-display); font-weight: 900; font-size: clamp(4rem, 14vw, 11rem); line-height: 1;
+  letter-spacing: -0.04em; color: var(--rusty-ink); opacity: 0.14; white-space: nowrap; user-select: none;
+}
+.rusty-orbit {
+  position: absolute; left: 6%; right: 6%; bottom: 12%; height: 22%; z-index: 1; pointer-events: none;
+  border-radius: 50%; border: 1px solid color-mix(in oklab, var(--rusty-ink) 45%, transparent);
+  border-top-color: transparent;
+}
+.rusty-product {
+  position: relative; z-index: 2; max-width: 100%; max-height: 380px; width: auto;
+  filter: drop-shadow(0 40px 40px color-mix(in oklab, var(--rusty-deep) 55%, transparent));
+  transition: transform var(--rusty-dur-move) var(--rusty-ease), opacity var(--rusty-dur-move) var(--rusty-ease);
+}
+.rusty-product.is-out-left  { transform: translateX(-38%) scale(0.55); opacity: 0; }
+.rusty-product.is-out-right { transform: translateX(38%) scale(0.55); opacity: 0; }
+.rusty-product.is-in-left   { transform: translateX(-38%) scale(0.85); opacity: 0; transition: none; }
+.rusty-product.is-in-right  { transform: translateX(38%) scale(0.85); opacity: 0; transition: none; }
+
+/* Right side: variant chips and thumbnails */
+.rusty-side { grid-area: side; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+.rusty-variants { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.rusty-variants button {
+  min-width: 36px; height: 30px; padding: 0 10px; border-radius: 999px; border: 0; cursor: pointer;
+  font-size: 0.72rem; font-weight: 600; color: inherit;
+  background: color-mix(in oklab, var(--rusty-deep) 45%, transparent); opacity: 0.7;
+  transition: background-color 150ms var(--rusty-ease), color 150ms var(--rusty-ease), opacity 150ms;
+}
+.rusty-variants button[aria-pressed="true"] { background: #fff; color: #111; opacity: 1; }
+.rusty-thumbs { display: flex; gap: 6px; }
+.rusty-thumbs button {
+  width: 44px; height: 44px; padding: 4px; border-radius: 12px; border: 2px solid transparent; cursor: pointer;
+  background: color-mix(in oklab, var(--rusty-deep) 45%, transparent);
+  transition: border-color 150ms var(--rusty-ease), transform 150ms var(--rusty-ease);
+}
+.rusty-thumbs button img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.rusty-thumbs button[aria-pressed="true"] { border-color: var(--rusty-ink); }
+@media (hover: hover) and (pointer: fine) { .rusty-thumbs button:hover { transform: translateY(-2px); } }
+
+/* Bottom left: price and arrows */
+.rusty-price { grid-area: price; align-self: end; display: flex; flex-direction: column; gap: 10px; }
+.rusty-amount { font-family: var(--rusty-display); font-weight: 700; font-size: 1.6rem; letter-spacing: -0.02em; }
+.rusty-amount small { font-size: 0.7rem; font-weight: 500; opacity: 0.8; margin-left: 4px; }
+.rusty-arrows { display: flex; gap: 8px; }
+.rusty-arrows button {
+  width: 34px; height: 34px; border-radius: 999px; cursor: pointer; display: grid; place-items: center;
+  border: 1px solid color-mix(in oklab, var(--rusty-ink) 45%, transparent); background: transparent; color: inherit;
+  transition: background-color 150ms var(--rusty-ease), color 150ms var(--rusty-ease), transform 120ms var(--rusty-ease);
+}
+.rusty-arrows button:active { transform: scale(0.94); }
+@media (hover: hover) and (pointer: fine) { .rusty-arrows button:hover { background: #fff; color: #111; } }
+.rusty-dots { display: flex; gap: 4px; }
+.rusty-dots i { width: 18px; height: 2px; background: var(--rusty-ink); opacity: 0.35; border-radius: 2px; transition: opacity 150ms; }
+.rusty-dots i.is-active { opacity: 1; }
+
+/* Bottom right: stepper and CTA */
+.rusty-buy { grid-area: buy; align-self: end; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.rusty-stepper { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; }
+.rusty-stepper button {
+  width: 22px; height: 22px; border-radius: 6px; border: 1px solid color-mix(in oklab, var(--rusty-ink) 45%, transparent);
+  background: transparent; color: inherit; cursor: pointer; display: grid; place-items: center; font-size: 0.8rem;
+}
+.rusty-cta {
+  padding: 10px 18px; border-radius: 999px; border: 0; cursor: pointer; text-decoration: none;
+  font-size: 0.78rem; font-weight: 700; background: var(--rusty-cta); color: var(--rusty-cta-ink);
+  transition: transform 120ms var(--rusty-ease), filter 150ms var(--rusty-ease);
+}
+.rusty-cta:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .rusty-cta:hover { filter: brightness(1.08); } }
+
+/* Text swap on switch */
+.rusty-swap { transition: opacity 260ms var(--rusty-ease), transform 260ms var(--rusty-ease); }
+.rusty-swap.is-leaving { opacity: 0; transform: translateY(6px); }
+
+/* Phone */
+@media (max-width: 720px) {
+  .rusty-hero {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "nav nav"
+      "media media"
+      "copy copy"
+      "side side"
+      "price buy";
+    padding: 18px 16px 20px; min-height: 0;
+  }
+  .rusty-pills { display: none; }
+  .rusty-side, .rusty-variants { flex-direction: row; align-items: center; justify-content: space-between; }
+  .rusty-product { max-height: 240px; }
+  .rusty-title { font-size: 1.8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-rusty], .rusty-hero, .rusty-product, .rusty-swap { transition: none !important; }
+  .rusty-product.is-out-left, .rusty-product.is-out-right { transform: none; }
+}
