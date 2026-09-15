@@ -119,7 +119,11 @@ can land on a specific subject.
 
 ### 6. Verify in the browser
 
-Open the page in the browser pane. Click through every subject and screenshot
+Fastest route: `node ~/.claude/skills/rusty-hero/scripts/shots.mjs <page.html or url> <outdir>`
+clicks every subject headless and writes desktop, phone and reduced-motion
+screenshots plus the scope background colour per subject (first run:
+`npm i --no-save playwright-core@1.47` inside the skill folder). Look at the
+images, do not just trust the log. Or by hand: open the page in the browser pane. Click through every subject and screenshot
 each one: the colour must change, the media must slide, the copy must swap,
 the CTA must point at the right place. Then the phone width, then reduced
 motion. A hero that only works on the first subject has not shipped.
