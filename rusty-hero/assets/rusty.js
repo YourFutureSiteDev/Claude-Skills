@@ -83,6 +83,7 @@
   function init(scope) {
     scope = scope || document.querySelector('[data-rusty]');
     if (!scope) return null;
+    if (scope._rusty) return scope._rusty;      /* one instance per scope: a second init hands back the first */
     var hero = scope.querySelector('[data-rusty-hero]') || scope;
     var dataEl = scope.querySelector('[data-rusty-subjects]');
     if (!dataEl) return null;
@@ -156,7 +157,7 @@
       scope.dispatchEvent(new CustomEvent('rusty:change', { detail: { subject: s, index: to } }));
 
       var swaps = hero.querySelectorAll('.rusty-swap');
-      var img = fields.image;
+      var img = fields.image || hero.querySelector('.rusty-product'); /* a typographic mark carrying the product class slides like a product */
       if (reduced() || !img) { swaps.forEach(function (el) { el.classList.remove('is-leaving'); }); render(s); return; }
 
       busy = true;
@@ -182,7 +183,7 @@
       subjects.forEach(function (s, i) {
         var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', s.title || s.id);
         if (s.thumb || s.image) { var im = document.createElement('img'); im.src = s.thumb || s.image; im.alt = ''; b.appendChild(im); }
-        else { b.textContent = (s.short || s.title || '').slice(0, 3); b.style.color = 'inherit'; b.style.fontSize = '0.7rem'; }
+        else { b.textContent = s.short || (s.title || '').slice(0, 3); b.style.color = 'inherit'; b.style.fontSize = '0.7rem'; }
         b.addEventListener('click', function () { go(i); });
         thumbs.appendChild(b);
       });
@@ -202,7 +203,9 @@
     paint(scope, hero, subjects[index].colour);
     render(subjects[index]);
     scope.classList.add('is-ready');
-    return { go: go, next: function () { next && next.click(); }, prev: function () { prev && prev.click(); }, get current() { return subjects[index]; }, subjects: subjects };
+    var api = { go: go, next: function () { next && next.click(); }, prev: function () { prev && prev.click(); }, get current() { return subjects[index]; }, subjects: subjects };
+    scope._rusty = api;
+    return api;
   }
 
   window.RustyHero = { init: init, derive: derive };

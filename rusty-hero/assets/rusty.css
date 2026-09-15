@@ -27,6 +27,8 @@
   transition: --rusty-page var(--rusty-dur-colour) var(--rusty-ease),
               background-color var(--rusty-dur-colour) var(--rusty-ease);
 }
+/* A site-wide img{display:block} would defeat the hidden attribute rusty.js uses */
+[data-rusty] [hidden] { display: none !important; }
 [data-rusty="full"] { background-color: var(--rusty-page); }
 [data-rusty="tint"] { background-color: color-mix(in oklab, var(--rusty-page) 12%, transparent); }
 

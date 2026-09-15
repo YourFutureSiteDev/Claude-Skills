@@ -81,7 +81,12 @@ sites are. Never add React, Tailwind or a motion library to use them.
 - Copy both files into the folder the project already keeps CSS and JS in.
   Link `rusty.css` after the project's own stylesheet.
 - Set `--rusty-display` and `--rusty-body` on the scope to the project's
-  own fonts. The demo uses Georgia; a client site must not.
+  own fonts. The demo uses Georgia; a client site must not. Set them on a
+  selector that beats `[data-rusty]` (for example `.hero[data-rusty]`): a
+  bare class rule ties on specificity and loses on order.
+- A typographic mark instead of an image: give the mark element the
+  `rusty-product` class and `data-field="mark"`; it then slides in and out
+  like a product would.
 - Mark the scope with `data-rusty="full"` or `data-rusty="tint"`. For `full`
   the scope is usually `<body>` or `<main>`; for `tint` it is the section
   around the card.
