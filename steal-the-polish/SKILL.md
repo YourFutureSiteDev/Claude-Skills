@@ -1,6 +1,6 @@
 ---
 name: steal-the-polish
-description: Five sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it when he names any of the five sites, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
+description: Six sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X, and the house dashboard-lift kit) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it for any dashboard, stat row, KPI tile, big number, target-vs-actual chart, "make the numbers look live", glow tile, dot-matrix number, or an Instagram showcase post of a finished build: the dashboard-lift kit in assets/ is the drop-in for those. Also use it when he names any of the sources, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
 ---
 
 # Steal the polish
@@ -13,8 +13,9 @@ From a @shai.hq Instagram carousel Byron sent on 17 Sep 2026 (breakdown in
 
 That is the split this skill keeps. **Three libraries** give you finished
 code to port. **Two feeds** give you a bar to build to before you touch code.
+**One house kit** (dashboard lift) is already ported and drops straight in.
 
-## The five
+## The six
 
 | # | Source | What it is | Where the code lives |
 |---|---|---|---|
@@ -23,6 +24,7 @@ code to port. **Two feeds** give you a bar to build to before you touch code.
 | 3 | **Amicro** amicro.vercel.app | Micro-transitions: 30 buttons with one interaction each, card spreads, 3D carousels, loaders, 29 mono charts, 23 dither charts, CSS-only "whimsical" pieces. MIT. | Local: `UI Libraries/amicro/src/components/` and `src/data/*.ts` for the catalogue. |
 | 4 | **Inspora** inspora.design | Design inspiration feed, mostly video so you see the motion: Web, Branding, Product, Motion, Illustration, 3D, Print. Updated hourly. | Feed. Read with `curl -s https://r.jina.ai/https://inspora.design/?category=Web`. Each post has an mp4 at `media.inspora.design`. |
 | 5 | **Best Designs on X** bestdesignsonx.com | Hand-picked design posts from X, plus tabs for Fonts, Dribbble, Behance, App Icons and OG Images. Updated hourly. | Feed. Client-rendered, so open it in the built-in browser and search, `references/feeds.md`. |
+| 6 | **Dashboard lift** (house kit) | Four dashboard looks lifted from the juicelab.uiux "Leadly AI" concept, 10 Sep 2026: dot-matrix numbers (Doto), glow stat tiles, white KPI card with dot clusters, target-vs-actual "ghost bars", plus the Instagram showcase frame and a count-up. Already ported, plain CSS and JS. | Local: `assets/dashboard-lift.css`, `assets/dashboard-lift.js`, demo `assets/dashboard-lift-demo.html`, breakdown `references/juicelab-dashboard.md`. |
 
 `UI Libraries` means `C:\Users\PC\OneDrive\Desktop\Claude\Skills\UI Libraries`.
 Its `COMPONENT-INDEX.md` lists every component in all seven libraries there.
@@ -47,6 +49,12 @@ looks coolest in the demo.
   but flat: ten minutes in **Inspora** (Web or Product category) or **Best
   Designs on X**, pick one reference that is close to the job, and name it as
   the bar. `gauntlet-loop` wants exactly that.
+- **A dashboard, stat row, KPI number or target-vs-actual chart**, or an
+  Instagram post showing off a finished build: the **dashboard lift** kit.
+  It is the only source here that is already plain CSS and JS, so it is
+  the first stop for anything with big numbers on it. Read
+  `references/juicelab-dashboard.md` for what each block is and the
+  "two or three glow tiles per screen" limit.
 - **Never** reach here for hero motion or text effects: that is React Bits.
   Never for feedback states (drag over, upload, retry): that is `ui-signals`.
 
@@ -77,6 +85,14 @@ the page. The CSS tab is the real payload.
 wholesale; pull one or two references per job and describe what they do in
 words (spacing, weight, motion, colour) so the description survives even if
 the link dies.
+
+**Dashboard lift, from this skill.** Copy `assets/dashboard-lift.css` into the
+project's css folder and `assets/dashboard-lift.js` into its js folder, keep
+only the blocks the page uses, and add the Google Fonts link from the top of
+the CSS file (Doto needs the `ROND` axis in the URL or the dots render
+square). Class names: `.dot-num`, `.glow-tile`, `.kpi-card`, `.ghost-bars`,
+`.showcase-post`. Open `assets/dashboard-lift-demo.html` to see all of them
+and copy the markup. `.showcase-post` is for Instagram, never a client site.
 
 ## Porting rule
 
@@ -124,6 +140,11 @@ again. Do not report the work as finished until all of them pass.
       saying yes to it.
 - [ ] The result was opened in the browser and the interaction actually runs
       (screenshot or a one-line description of what happened on click/hover).
+
+- [ ] If the dashboard lift kit was used: only the blocks the page needs
+      were kept, no more than three `.glow-tile`s share one screen, Doto is
+      on numbers only, the font URL carries the `ROND` axis, and
+      `.showcase-post` is not on a client site.
 
 If a line cannot be checked without the user, say which one and why, rather
 than assuming it passes.
