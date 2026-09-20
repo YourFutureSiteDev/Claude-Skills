@@ -13,6 +13,7 @@ My personal Claude Code skills. This folder is `~/.claude/skills` on each machin
 
 **Design and build**
 
+- `ux-patterns` — 112 designmotionhq UX patterns as exact HTML/CSS/JS replicas, routed by module (source: github.com/YourFutureSiteDev/ux-patterns)
 - `ui-ux-pro-max` — design system lookup: UI styles, palettes, font pairings, UX rules, motion presets
 - `hallmark` — anti-slop design: greenfield pages, audits, redesigns, extraction from a URL
 - `scroll-world` — scroll-scrubbed fly-through landing pages (MIT, cyw)
