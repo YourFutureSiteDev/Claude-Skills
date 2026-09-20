@@ -315,6 +315,80 @@
     return { cancel: function () { cancelled = true; } };
   }
 
+  // danger-confirm: hold to confirm. A timer owns the decision and a CSS
+  // transition on --hold owns the ring, so neither depends on rAF being
+  // delivered. Release early and the ring drains back with nothing fired.
+  // Space or Enter held works too.
+  function hold(el, onConfirm, opts) {
+    opts = opts || {};
+    var dur = opts.duration || parseFloat(getComputedStyle(el).getPropertyValue('--sig-dur-hold')) || 600;
+    var pct = $('.sig-hold-pct', el);
+    var timer = null, ticker = null, start = 0, done = false, keyHeld = false;
+    function paintPct(p) { if (pct) pct.textContent = Math.round(p * 100) + '%'; }
+    function begin(e) {
+      if (done || el.disabled || el.dataset.state === 'holding') return;
+      if (e && e.type === 'pointerdown' && e.button !== 0) return;
+      start = Date.now();
+      setState(el, 'holding');
+      el.style.setProperty('--hold-dur', dur + 'ms');
+      el.style.setProperty('--hold', '1');
+      clearInterval(ticker);
+      ticker = setInterval(function () { paintPct(Math.min(1, (Date.now() - start) / dur)); }, 40);
+      clearTimeout(timer);
+      timer = setTimeout(finish, dur);
+    }
+    function cancel() {
+      if (done || el.dataset.state !== 'holding') return;
+      clearTimeout(timer); clearInterval(ticker);
+      setState(el, 'cancelled');
+      el.style.setProperty('--hold-dur', '150ms');
+      el.style.setProperty('--hold', '0');
+      paintPct(0);
+      setTimeout(function () { if (el.dataset.state === 'cancelled') setState(el, 'idle'); }, 200);
+    }
+    function finish() {
+      done = true;
+      clearInterval(ticker);
+      el.style.setProperty('--hold', '1');
+      paintPct(1);
+      setState(el, 'done');
+      if (onConfirm) onConfirm(el);
+    }
+    el.addEventListener('pointerdown', begin);
+    el.addEventListener('pointerup', cancel);
+    el.addEventListener('pointerleave', cancel);
+    el.addEventListener('pointercancel', cancel);
+    el.addEventListener('keydown', function (e) {
+      if ((e.key === ' ' || e.key === 'Enter') && !keyHeld) { keyHeld = true; e.preventDefault(); begin(); }
+    });
+    el.addEventListener('keyup', function (e) {
+      if (e.key === ' ' || e.key === 'Enter') { keyHeld = false; cancel(); }
+    });
+    el.addEventListener('blur', function () { keyHeld = false; cancel(); });
+    el.addEventListener('click', function (e) { e.preventDefault(); }); // a tap never confirms
+    el.style.setProperty('--hold', '0');
+    paintPct(0);
+    setState(el, 'idle');
+    return { reset: function () { done = false; clearTimeout(timer); clearInterval(ticker); el.style.setProperty('--hold-dur', '0ms'); el.style.setProperty('--hold', '0'); paintPct(0); setState(el, 'idle'); } };
+  }
+
+  // empty-state: mark the container on so it rises once; tick the first-run
+  // checklist by calling steps(n).
+  function empty(el) {
+    nextFrame(function () { el.classList.add('is-on'); });
+    var steps = $('.sig-empty-steps', el);
+    function setSteps(n) {
+      if (!steps) return;
+      var items = $$('ol > li', steps);
+      items.forEach(function (li, i) { if (i < n) li.setAttribute('data-done', ''); else li.removeAttribute('data-done'); });
+      var fill = $('.sig-bar-fill', steps);
+      if (fill) fill.style.transform = 'scaleX(' + (items.length ? n / items.length : 0) + ')';
+      var label = $('[data-steps-label]', steps);
+      if (label) label.textContent = n + ' of ' + items.length + ' complete';
+    }
+    return { steps: setSteps };
+  }
+
   function init(root) {
     root = root || document;
     reveal(root);
@@ -322,6 +396,7 @@
     headline(root);
     countUp(root);
     $$('[data-sig-dropzone]', root).forEach(function (el) { if (!el._sig) el._sig = dropzone(el); });
+    $$('.sig-empty', root).forEach(function (el) { if (!el._sig) el._sig = empty(el); });
   }
 
   window.Signals = {
@@ -339,6 +414,8 @@
     chips: chips,
     headline: headline,
     countUp: countUp,
+    hold: hold,
+    empty: empty,
     simulateUpload: simulateUpload,
     fmtBytes: fmtBytes
   };

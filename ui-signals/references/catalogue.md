@@ -448,6 +448,107 @@ place; do not animate the swap.
 
 ---
 
+## 21 danger-confirm
+
+**Belongs on:** the one control that destroys something: delete project,
+remove member, cancel subscription, close account. **Never on:** anything
+reversible, log out, "cancel" on a dialog, or as a novelty on a normal
+button. Red (`--sig-danger`) is a budget: spend it on this and on
+`.sig-danger-zone`, nowhere else on the page, or delete starts to look
+routine.
+
+**What moves:** on pointerdown a conic ring fills over `--sig-dur-hold`
+(600ms; the reel used 300ms, which on a phone is a slow tap). Release early
+and the ring drains back and nothing fires. Held to the end, the button
+fills red and the callback runs once. A click never confirms. Space or
+Enter held does the same for keyboard users.
+
+**The six rules from the reel, all of which are placement, not motion:**
+
+1. Hold to confirm; the ring replaces the "Are you sure?" dialog.
+2. The label is the verb: "Delete project" and "Keep project", never
+   "Yes" and "No". Nobody reads the sentence above the buttons.
+3. Off the happy path: never where the primary button sits. Muscle memory
+   clicks primary spots blind.
+4. Red budget: red on destruction only.
+5. Danger zone: bordered, labelled, last on the page. Geography is friction.
+6. Cooldown for the big ones: "Account scheduled for deletion, 14 days to
+   cancel" with a Cancel deletion button. Time is the last line of defence.
+   That one is a copy and server pattern, not CSS.
+
+```html
+<section class="sig-danger-zone">
+  <h3>Danger zone</h3>
+  <p>Deleting the project removes its 84 assets for everyone on the team.</p>
+  <button class="sig-hold" type="button" id="del">
+    <span class="sig-hold-ring" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span>
+    <span class="sig-hold-label">Hold to delete project<small>hold 600 ms</small></span>
+    <span class="sig-hold-pct">0%</span>
+  </button>
+</section>
+```
+```js
+Signals.hold(document.getElementById('del'), function (btn) { /* fire the delete */ });
+```
+
+---
+
+## 22 empty-state
+
+**Belongs on:** any container that can have nothing in it: a dashboard on
+first run, a list with no items, a search with no results, an inbox at zero.
+**Never on:** containers that always have content, and never as a loading
+state (that is `skeleton`).
+
+**What moves:** almost nothing, on purpose. The block rises 6px with a fade
+once when it appears, so it reads as designed rather than broken. The
+first-run checklist bar moves with `scaleX`. Everything else is copy.
+
+**The four rules from the reel:**
+
+1. Say why it is empty ("You have no projects yet"), never just a blank.
+2. Give one next action as a real button ("Create your first project").
+3. For a first run, add the step-by-step checklist with progress; for every
+   other empty section, one line on what the section is for and how to
+   start it.
+4. Empty search suggests the fix: "No results for prple shoes. Search for
+   purple shoes?" with the link. When empty is the goal (inbox zero), make
+   it feel earned: `data-kind="achievement"`.
+
+```html
+<!-- first run -->
+<div class="sig-empty">
+  <svg class="sig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg>
+  <h3>You have no projects yet</h3>
+  <p>Projects hold your jobs, quotes and photos in one place.</p>
+  <a class="sig-empty-cta sig-press" href="/projects/new">Create your first project</a>
+  <div class="sig-empty-steps">
+    <div class="sig-bar"><div class="sig-bar-fill"></div></div>
+    <small data-steps-label>0 of 3 complete</small>
+    <ol><li>Add your business details</li><li>Create a project</li><li>Invite a teammate</li></ol>
+  </div>
+</div>
+
+<!-- empty search -->
+<div class="sig-empty" data-kind="search">
+  <h3>No results for "prple shoes"</h3>
+  <p>Did you mean <a href="?q=purple+shoes">purple shoes</a>?</p>
+</div>
+
+<!-- inbox zero -->
+<div class="sig-empty" data-kind="achievement">
+  <svg class="sig-tick sig-icon is-on" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg>
+  <h3>Inbox zero</h3>
+  <p>Nothing waiting on you.</p>
+</div>
+```
+```js
+var first = Signals.empty(document.querySelector('.sig-empty')); first.steps(1);
+```
+`Signals.init()` picks up every `.sig-empty` automatically.
+
+---
+
 ## Reduced motion, in one place
 
 `signals.css` ends with a `prefers-reduced-motion: reduce` block that keeps

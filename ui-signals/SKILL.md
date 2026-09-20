@@ -1,6 +1,6 @@
 ---
 name: ui-signals
-description: A catalogue of twenty feedback and state animations (drag feedback, honest progress, inline retry, upload preview, independent queue, button press, focus glow, submit states, section reveal, chip stagger, count-up and more) lifted from real motion-design reels, each with a strict rule for the one kind of element it belongs on. Use it every time Byron asks to animate a website, page, UI, form, upload, dashboard, button or component, or says "make it feel alive", "add motion", "make it react", "animate the site", "make the UI move", even when he does not name an element. It sits between `animate` (the physics and the should-it-move gate) and React Bits (hero and text showpieces): this is what each interactive element does when a user touches it, waits on it, or breaks it. Never sprays motion across a page; it inventories the page and places each signal only where it fits.
+description: A catalogue of twenty-two feedback and state animations (drag feedback, honest progress, inline retry, upload preview, independent queue, button press, focus glow, submit states, section reveal, chip stagger, count-up, hold-to-delete danger confirm, empty states and more) lifted from real motion-design reels, each with a strict rule for the one kind of element it belongs on. Use it every time Byron asks to animate a website, page, UI, form, upload, dashboard, button or component, ships a delete or cancel button, or builds a dashboard or app screen that can be empty on first run, or says "make it feel alive", "add motion", "make it react", "animate the site", "make the UI move", even when he does not name an element. It sits between `animate` (the physics and the should-it-move gate) and React Bits (hero and text showpieces): this is what each interactive element does when a user touches it, waits on it, or breaks it. Never sprays motion across a page; it inventories the page and places each signal only where it fits.
 ---
 
 # UI Signals
@@ -12,8 +12,10 @@ it, a spinner that hides how long is left, an upload that dies at 90% and makes
 you start over, a bare filename instead of a preview, a batch where one failure
 blocks the rest. Each scene fixes one of those with a small, specific motion.
 
-This skill is that idea generalised into twenty signals, and one rule that
-matters more than any of them.
+This skill is that idea generalised into twenty-two signals, and one rule that
+matters more than any of them. Signals 21 and 22 came from two more reels on
+20 Sep 2026 (destructive actions by @designmotionhq, empty states by
+Katherine Gilligan), both in `references/source-reel.md`.
 
 ## The placement rule
 
@@ -59,6 +61,8 @@ kind. Be literal: read the HTML, do not guess from the brief.
 | Transient message | Toast, snackbar, "saved" |
 | Modal / drawer | Overlays |
 | Data table / body text | Things people read |
+| Destructive control | Delete, remove, cancel subscription, close account |
+| Empty container | A list, dashboard, inbox or search result that can have nothing in it |
 
 Write the inventory down in the reply, briefly. It is the evidence for what
 was left out.
@@ -75,7 +79,7 @@ ship. Read `animate/SKILL.md` if the values below need justifying to Byron.
 
 Match inventory rows to signals. A normal page lands **four to eight**. A
 form-heavy or upload-heavy app lands more; a marketing page with no forms
-lands fewer. Never all twenty.
+lands fewer. Never all twenty-two.
 
 | Signal | Belongs on | Never on | Trigger |
 |---|---|---|---|
@@ -99,6 +103,8 @@ lands fewer. Never all twenty.
 | `nav-underline` | Primary nav links | Footer links, in-text links | hover, active |
 | `count-up` | Stats section, 2s or slower | Prices in a checkout, table cells | intersection, once |
 | `skeleton` | Async content | Content already in the HTML | until loaded |
+| `danger-confirm` | Destructive control | Anything reversible, log out, cancel-this-dialog | pointerdown held for `--sig-dur-hold` |
+| `empty-state` | Empty container, first run, zero results, inbox zero | Containers that always have content | container has no items |
 
 Recipes, values and the HTML they expect are in `references/catalogue.md`.
 Read the entry for every signal you ship; do not write the CSS from memory.
@@ -155,7 +161,8 @@ they are read, not reinvented:
 - **Hero motion, text effects, animated backgrounds:** `Desktop\Claude\Skills\React Bits`
   (`COMPONENT-INDEX.md` first). Port by hand into CSS and JS; name the
   component you took it from.
-- **Modals, drawers, dropdowns, accordions, hold-to-confirm:** `animate/RECIPES.md`.
+- **Modals, drawers, dropdowns, accordions:** `animate/RECIPES.md`. (Hold-to-confirm
+  now lives here as `danger-confirm`.)
 - **Whole components (docks, navs, pricing tables):** `Desktop\Claude\Skills\UI Libraries`.
 
 When a request is "animate the site" with no further detail, the split is:
@@ -190,6 +197,8 @@ again. Do not report the work as finished until all of them pass.
 - [ ] No signal is on an element kind listed in its "Never on" column
 - [ ] The hero and any above-the-fold content have no `section-reveal`
 - [ ] At most one element carries `state-glow` at any time
+- [ ] Every destructive control is a `danger-confirm` with a verb label ("Delete project", never "Yes" or "Confirm"), sits away from the primary action, and `--sig-danger` red appears on nothing else on the page (a red log-out button is a fail)
+- [ ] Every container that can be empty has a `sig-empty` that says why it is empty and gives one next action; no blank panels on first run
 - [ ] `signals.css` and `signals.js` live in the project's existing asset folder, not a new one, and the tokens are set to the project's palette (no demo teal on a client site)
 - [ ] No React or motion library was added to a static site
 - [ ] Every shipped signal was triggered in the browser pane and screenshotted in its animated state

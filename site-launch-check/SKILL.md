@@ -1,12 +1,12 @@
 ---
 name: site-launch-check
-description: Run the twenty-point pre-launch check on a website before it goes live or gets handed to a client, and fix what fails. Covers legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile and performance. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
+description: Run the twenty-one-point pre-launch check on a website before it goes live or gets handed to a client, and fix what fails. Covers legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile, performance and exposed API keys in the shipped code. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
 ---
 
 # Pre-launch check
 
 A site that looks finished and a site that is finished are different things.
-The gap is always the same twenty items, and it is always the same ones that
+The gap is always the same twenty-one items, and it is always the same ones that
 get missed: the legal pages nobody wants to write, the meta tags nobody sees,
 and the contact form nobody actually submitted.
 
@@ -26,7 +26,7 @@ a fail, and only the rendered page shows you that.
 At the end, report every item with a pass, a fix applied, or a blocked with a
 reason. Never report an item you did not actually check.
 
-## The twenty
+## The twenty-one
 
 **Legal and trust**
 
@@ -93,6 +93,21 @@ reason. Never report an item you did not actually check.
 20. **FAQ** — only where the business genuinely gets repeat questions. An
     invented FAQ answering questions nobody asks is padding, and reads like it.
 
+**Nothing secret in what shipped**
+
+21. **No API keys in the front end** — anyone can open DevTools, go to the
+    Network tab, refresh, press Ctrl+F and type `sk-`. If an Anthropic,
+    OpenAI, Google, Resend or SendGrid key is in any HTML or JS the browser
+    downloads, it is theirs now, and the bill is yours. (A 20 Sep 2026 reel
+    by @verycoolentrepreneur shows exactly this, and it is what people do to
+    vibe-coded sites.) Run `bash scripts/keyscan.sh <live url>` from this
+    skill folder: it pulls the page and every script it loads and greps for
+    key shapes, printing redacted hits. Also grep the source: `sk-ant`,
+    `sk-`, `api.anthropic.com`, `x-api-key`. A key that must be used has to
+    sit server side (a Cloudflare Pages Function, a Worker, the VPS) with the
+    browser calling your endpoint, never the provider. Static sites on
+    Cloudflare Pages that only use a form endpoint pass this by design.
+
 ## For a Scroll World build
 
 The scroll-scrubbed pages have three extra failure modes the list above will
@@ -109,11 +124,12 @@ not catch, so check these too:
 
 Before reporting the site as launch-ready:
 
-- [ ] All twenty items have an explicit result: pass, fixed, or blocked with a reason
+- [ ] All twenty-one items have an explicit result: pass, fixed, or blocked with a reason
 - [ ] Nothing is marked as passing that you did not load in a browser and look at
 - [ ] Every form on the site was actually submitted and the message confirmed as received
 - [ ] The share preview was checked by rendering the URL, not by reading the tags
 - [ ] The mobile check was done at 375px, not a resized desktop viewport
 - [ ] Broken-link checking covered the whole site, not only the home page
 - [ ] Any item you could not check without the client or their accounts is listed as blocked, naming what you need from them
+- [ ] `scripts/keyscan.sh` was run against the live URL and came back clean, and the output is in the reply
 - [ ] For a Scroll World build, the three scroll-specific checks are included

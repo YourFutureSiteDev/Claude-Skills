@@ -54,7 +54,15 @@ looks coolest in the demo.
   It is the only source here that is already plain CSS and JS, so it is
   the first stop for anything with big numbers on it. Read
   `references/juicelab-dashboard.md` for what each block is and the
-  "two or three glow tiles per screen" limit.
+  "two or three glow tiles per screen" limit. **The slop tell for a
+  dashboard** (a @code.xr reel, 20 Sep 2026): near-black navy, purple to
+  cyan gradient stat cards, a glowing donut, neon line chart, "Upgrade to
+  Pro" card in the sidebar. That is the default every AI tool spits out and
+  it reads as fake software. The "instead make these" side was a white or
+  cream surface, one accent colour, flat stat tiles with a tiny sparkline,
+  plain numbers, real table rows. Byron's business-tool dashboards go that
+  way: light surface, one brand accent, glow tiles only where the kit's
+  limit allows, never the neon set.
 - **Never** reach here for hero motion or text effects: that is React Bits.
   Never for feedback states (drag over, upload, retry): that is `ui-signals`.
 

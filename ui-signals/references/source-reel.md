@@ -51,3 +51,54 @@ for decoration.
 - The chip row that lights up as each point lands, as 14.
 - The values: 150ms for state colour and copy, 220ms for things entering,
   linear for the bar, glow behind exactly one live element.
+
+
+# The second and third reels (20 Sep 2026)
+
+Both sent by Byron on 20 Sep 2026 in a batch of seven videos with the ask
+"make sure the videos become useful". Neither mp4 is committed here.
+
+## Destructive actions, @designmotionhq
+
+`ca1106cfbd324a99813e8ef5fe1f337a.mp4`, 59 seconds, same FutureVille look
+as the first reel. Six patterns, spoken and captioned:
+
+1. Hold to delete: "release early, nothing dies. The ring is the
+   confirmation. 300 milliseconds of commitment replace a dialogue."
+2. Labels: "Are you sure? Yes. Nobody reads that. Name the action: Delete
+   project, Keep project. The verb is the warning." Shown with a "clicked
+   in 0.4s, read nothing" tag on the Yes button.
+3. Off the happy path: "Destructive buttons never sit where confirm lives.
+   Muscle memory clicks primary spots blind."
+4. The red budget: "Red is a budget, spend it on destruction only. A red
+   log out button cries wolf, then delete looks routine."
+5. Danger zone: "GitHub buries deletion in a danger zone. Bordered,
+   labelled, last position on the page. Geography is friction."
+6. Cooldown: "Deletion scheduled, 14 days to cancel. Time is the last line
+   of defence." Shown as an account card with 14 day boxes and a full-width
+   Cancel deletion button.
+
+Closing card: "Danger is a design language. Save this before you ship a
+delete button." Became signal 21, `danger-confirm`, and the two red-budget
+lines in Done means.
+
+## Empty states, Katherine Gilligan
+
+instagram.com/reel/DY5PkUjyhMv, 69 seconds, part 8 of her "Building With
+Good UX" series, talking head plus phone mockups. The argument: the empty
+state is often the first thing a user sees, so make it a good impression.
+
+- First-run dashboard: "You have no projects" leaves the user with no
+  action. Add "Create your first project" with a button, then a
+  step-by-step gamified checklist to get them started.
+- Every section with no content yet: say what the section is for and how
+  to start using it, never leave it blank.
+- Empty search: "No results" is okay, but "No results for purple shoes.
+  What about purple shoes?" with a link to that search keeps the user
+  moving.
+- When empty is the goal (inbox zero): make it feel like an achievement,
+  add a nice animation, a background they look forward to seeing.
+- Summary: "A good empty state tells a user why it's empty, shows them
+  what to do next, and doesn't feel broken."
+
+Became signal 22, `empty-state`. Her next video is on partial states.

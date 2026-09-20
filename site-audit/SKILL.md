@@ -53,6 +53,28 @@ and what kind of site it is. Add a row when a new site goes up.
 Each returns `pass`, `fail`, `warn`, `manual` (a judgement only a human can
 make) or `na` (genuinely does not apply).
 
+## The per-incident list
+
+A 20 Sep 2026 reel by @adilet.fndr makes one point worth keeping: the fines
+that hit small apps are **per visitor, per session, per email**, never a
+percent of revenue, which is how a site with zero sales owes six figures. The
+video's numbers are US and EU; this is the same list mapped onto what the
+audit already checks and what Byron's Australian sites actually face.
+
+| The video's item | Where it lands here | What to check |
+|---|---|---|
+| Google Fonts loading from Google (Munich court, per-visitor damages for leaking IPs to a US company) | Point 9, third-party embeds | `fonts.googleapis.com` or `fonts.gstatic.com` in the rendered page is a fail on any site that can get EU visitors, and a speed loss everywhere. Self-host the woff2 files. |
+| Session replay on by default (Hotjar, Clarity, FullStory recording keystrokes; wiretapping under California CIPA) | Point 8, tracking | Replay tools must load only after consent, mask inputs, and be named in the privacy policy. Under the Australian Privacy Act, recording what someone types is collecting personal information and needs notice. Default: do not install replay on a small business site at all. |
+| Marketing email with no unsubscribe and no postal address (CAN-SPAM) | Point 5, form consent, and point 19, business details | Australia's Spam Act 2003 is stricter: consent before sending, the sender identified, and a working unsubscribe honoured within five business days. The ACMA fines for this. Every waitlist or newsletter form the site collects into needs the unsubscribe path to exist before launch. |
+| Subscription with renewal terms not shown next to the button (California ARL, every renewal refundable) | Point 16, Australian law | Australian Consumer Law: the price, the renewal interval and how to cancel must be visible where the customer commits, not only in the terms. Applies to Byron's own A$20/year site care. Send a reminder before each renewal. |
+| No age question on sign-up (COPPA, per child) | Manual | Only bites if the site can take US users and could attract under-13s. If it can, ask for a birth year before creating an account. Australian sites aimed at adults: `na`. |
+| User uploads with no DMCA agent (US$6 registration, per image otherwise) | Manual | Only if the site lets the public upload images and has US traffic. Otherwise `na`. Byron's brochure sites have no uploads. |
+
+The audit tool already catches Hotjar and Clarity by name, warns on every
+third-party origin, and flags a marketing signup with no stated opt-out. The
+two `manual` rows are judgement calls; record them as `manual` or `na`, never
+skip them silently.
+
 ## The helper scripts
 
 | Script | What it does |

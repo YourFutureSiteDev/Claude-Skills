@@ -16,6 +16,7 @@
   --sig-dur-enter: 220ms;
   --sig-dur-reveal: 400ms;
   --sig-dur-count: 2000ms;  /* Byron: numbers must load much slower than the rest, never under 2s */
+  --sig-dur-hold: 600ms;    /* danger-confirm hold. The source reel used 300ms; on a phone that is a slow tap, so 600 */
 
   --sig-accent-soft: color-mix(in srgb, var(--sig-accent) 22%, transparent);
   --sig-accent-faint: color-mix(in srgb, var(--sig-accent) 10%, transparent);
@@ -427,6 +428,113 @@
 @keyframes sig-shimmer { to { transform: translateX(100%); } }
 
 /* ------------------------------------------------------------------ */
+/* danger-confirm: hold to delete. The ring is the confirmation; release
+   early and nothing fires. JS drives --hold from 0 to 1 over
+   --sig-dur-hold. Red lives here and in .sig-danger-zone and nowhere else. */
+
+@property --hold { syntax: "<number>"; inherits: true; initial-value: 0; }
+.sig-hold {
+  --hold: 0;
+  --hold-dur: 0ms;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 12px;
+  border: 1px solid var(--sig-danger-soft);
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  transition: --hold var(--hold-dur) linear,
+              border-color var(--sig-dur-state) var(--sig-ease-out),
+              background-color var(--sig-dur-state) var(--sig-ease-out);
+}
+.sig-hold-ring {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: conic-gradient(var(--sig-danger) calc(var(--hold) * 360deg), var(--sig-danger-soft) 0);
+  display: grid;
+  place-items: center;
+}
+.sig-hold-ring::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--sig-surface);
+}
+.sig-hold-ring > svg {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  color: var(--sig-danger);
+}
+.sig-hold-label { display: grid; line-height: 1.2; }
+.sig-hold-label small { opacity: 0.6; font-size: 0.8em; }
+.sig-hold-pct { margin-left: auto; opacity: 0.5; font-variant-numeric: tabular-nums; font-size: 0.85em; }
+.sig-hold[data-state="holding"] { border-color: var(--sig-danger); background: var(--sig-danger-soft); }
+.sig-hold[data-state="done"] { border-color: var(--sig-danger); background: var(--sig-danger); color: #fff; }
+.sig-hold[data-state="done"] .sig-hold-ring::after { background: var(--sig-danger); }
+.sig-hold[data-state="done"] .sig-hold-ring > svg { color: #fff; }
+.sig-hold:focus-visible { outline: 2px solid var(--sig-danger); outline-offset: 2px; }
+
+/* danger zone: bordered, labelled, last on the page. Geography is friction. */
+.sig-danger-zone {
+  border: 1px solid var(--sig-danger-soft);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 48px;
+}
+.sig-danger-zone > h2,
+.sig-danger-zone > h3 {
+  margin: 0 0 4px;
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sig-danger);
+}
+.sig-danger-zone .sig-hold { margin-top: 12px; }
+
+/* ------------------------------------------------------------------ */
+/* empty-state: why it is empty, what to do next, never looks broken.
+   One rise on entry. Copy does the work; the motion just says "on purpose". */
+
+.sig-empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 40px 24px;
+  border: 1px dashed var(--sig-line);
+  border-radius: 14px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--sig-dur-enter) var(--sig-ease-out),
+              transform var(--sig-dur-enter) var(--sig-ease-out);
+}
+.sig-empty.is-on { opacity: 1; transform: none; }
+.sig-empty > .sig-icon { width: 36px; height: 36px; opacity: 0.55; }
+.sig-empty > h3 { margin: 4px 0 0; font-size: 1.05em; }
+.sig-empty > p { margin: 0; opacity: 0.7; max-width: 36ch; }
+.sig-empty > .sig-empty-cta { margin-top: 8px; }
+.sig-empty[data-kind="achievement"] { border-style: solid; border-color: var(--sig-accent-soft); background: var(--sig-accent-faint); }
+.sig-empty[data-kind="achievement"] > .sig-icon { opacity: 1; color: var(--sig-accent); }
+.sig-empty[data-kind="search"] > p > a { color: var(--sig-accent); text-decoration: underline; text-underline-offset: 2px; }
+
+/* first-run checklist: the gamified steps. Fill moves with scaleX. */
+.sig-empty-steps { --p: 0; width: 100%; max-width: 360px; margin-top: 12px; text-align: left; }
+.sig-empty-steps > .sig-bar { margin-bottom: 10px; }
+.sig-empty-steps > ol { margin: 0; padding: 0 0 0 20px; display: grid; gap: 4px; }
+.sig-empty-steps > ol > li[data-done] { opacity: 0.5; text-decoration: line-through; }
+
+/* ------------------------------------------------------------------ */
 /* reduced motion: keep colour and opacity, drop movement. Not zero. */
 
 @media (prefers-reduced-motion: reduce) {
@@ -439,6 +547,7 @@
   [data-sig-headline],
   [data-sig-reveal],
   .sig-toast,
+  .sig-empty,
   .sig-submit .sig-submit-stack > * { transform: none !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
   .sig-press:active,
   .sig-card:hover,
@@ -448,4 +557,5 @@
   .sig-bar-fill { transition-duration: 1ms; }
   .sig-tick .sig-tick-path { transition-duration: 1ms; stroke-dashoffset: 0; }
   .sig-tick .sig-tick-ring { transform: none; }
+  .sig-hold { transition-duration: 1ms; } /* ring jumps to full at confirm; the timer still takes the full hold */
 }

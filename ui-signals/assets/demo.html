@@ -395,14 +395,78 @@
     </div>
   </section>
 
+  <section id="s21" data-sig-reveal>
+    <p class="eyebrow">Signal 21 · Destructive actions</p>
+    <h2>Hold to delete. <em>Release early, nothing dies.</em></h2>
+    <p>The ring is the confirmation. The label is the verb. Red is spent here and nowhere else on the page, the control sits away from the primary spot, and it lives last, in a bordered danger zone.</p>
+    <p class="rule">Belongs on: the one control that destroys something. Never: log out, cancel on a dialog, anything reversible.</p>
+    <div class="panel">
+      <section class="sig-danger-zone" style="margin-top:0">
+        <h3>Danger zone</h3>
+        <p style="margin:0">Deleting the project removes its 84 assets for everyone on the team.</p>
+        <button class="sig-hold" type="button" id="hold1">
+          <span class="sig-hold-ring" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span>
+          <span class="sig-hold-label">Hold to delete project<small>hold 600 ms</small></span>
+          <span class="sig-hold-pct">0%</span>
+        </button>
+      </section>
+    </div>
+    <div class="demo-actions">
+      <span class="mono" id="hold1-out">nothing deleted</span>
+      <button class="btn ghost sig-press" id="hold1-reset">Reset</button>
+    </div>
+  </section>
+
+  <section id="s22" data-sig-reveal>
+    <p class="eyebrow">Signal 22 · Empty states</p>
+    <h2>Why it is empty, <em>what to do next.</em></h2>
+    <p>The empty state is often the first thing a user sees. Say why it is empty, give one action, and for a first run add the checklist. Empty search suggests the fix. Inbox zero feels earned.</p>
+    <p class="rule">Belongs on: any container that can have nothing in it. Never: as a loading state (that is skeleton).</p>
+    <div class="panel">
+      <div class="sig-empty" id="empty1">
+        <svg class="sig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg>
+        <h3>You have no projects yet</h3>
+        <p>Projects hold your jobs, quotes and photos in one place.</p>
+        <button class="btn sig-press sig-empty-cta" type="button" id="empty1-step">Create your first project</button>
+        <div class="sig-empty-steps">
+          <div class="sig-bar"><div class="sig-bar-fill"></div></div>
+          <small data-steps-label>0 of 3 complete</small>
+          <ol><li>Add your business details</li><li>Create a project</li><li>Invite a teammate</li></ol>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="sig-empty" data-kind="search">
+        <h3>No results for "prple shoes"</h3>
+        <p>Did you mean <a href="#s22">purple shoes</a>?</p>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <div class="sig-empty" data-kind="achievement">
+        <svg class="sig-tick sig-icon is-on" viewBox="0 0 24 24"><circle class="sig-tick-ring" cx="12" cy="12" r="10"/><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg>
+        <h3>Inbox zero</h3>
+        <p>Nothing waiting on you.</p>
+      </div>
+    </div>
+  </section>
+
   <footer>
-    Source: @designmotionhq reel "FutureVille · realization", five upload signals. The rest follow the same rule: one signal, one kind of element. Values from the <span class="mono">animate</span> skill.
+    Sources: @designmotionhq reels "FutureVille · realization" (five upload signals) and "Destructive actions" (signal 21); Katherine Gilligan, Building With Good UX part 8 (signal 22). The rest follow the same rule: one signal, one kind of element. Values from the <span class="mono">animate</span> skill.
   </footer>
 </main>
 
 <script src="signals.js"></script>
 <script>
   Signals.init();
+  // 21 danger-confirm
+  var holdOut = document.getElementById('hold1-out');
+  var hold1 = Signals.hold(document.getElementById('hold1'), function () { holdOut.textContent = 'project deleted (callback fired once)'; });
+  document.getElementById('hold1-reset').addEventListener('click', function () { hold1.reset(); holdOut.textContent = 'nothing deleted'; });
+
+  // 22 empty-state
+  var e1 = document.getElementById('empty1'), e1n = 0;
+  document.getElementById('empty1-step').addEventListener('click', function () { e1n = Math.min(3, e1n + 1); e1._sig.steps(e1n); });
+
 
   // 01 dropzone: demo buttons force the state so it can be screenshotted without a real drag.
   var dz = document.getElementById('dz');
