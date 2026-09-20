@@ -20,6 +20,23 @@ description: A library of 112 UX patterns rebuilt as exact HTML/CSS/JS replicas 
 5. **Check every state the pattern names** before calling it done: loading, empty, error, disabled, focus, hover on touch, destructive confirm, rollback. Missing a named state is the most common miss.
 6. Tell Byron which patterns were used, by name, so he can open the reels.
 
+## Every app must have (before a stranger uses it)
+
+Patterns are per module. These are per app, and they are not optional: a user can never be left on a blank or dead screen waiting for Byron. The drop-in and the full 15-point checklist with proofs live in `kit/` (source of truth: `C:\Users\PC\OneDrive\Desktop\Claude\Skills\UX Patterns\kit\`: `app-guard.js`, `README.md`, `test/run.mjs`).
+
+1. **Boot guard**: a script that fails to load reloads once with the cache bypassed, then shows a Reload panel. (`kit/app-guard.js`)
+2. **Error screen**: any uncaught error, rejected promise, failed screen load, network failure or expired session shows a panel in the app's own look with what happened, Reload, and a way home. Never only a console error. (`AppGuard.fail(kind)`)
+3. **Offline banner** and primary buttons held while offline.
+4. **Cache-safe publish**: html no-cache, assets versioned by content hash, CDN invalidated. Copy `Fineline/Inventory System/tools/publish.mjs`.
+5. **Loading, empty and error states** on every screen, each with a next action.
+6. **Submit guard** on every button that sends; pending, done, failed.
+7. **Destructive actions** named, off the primary spot, undo where the API allows.
+8. **Success and failure in the user's words** (toast or inline).
+9. **A 404 page** in the app's look with a way home.
+10. **390-wide check**: 44px targets, 16px inputs, no sideways scroll, primary action reachable.
+
+Copy the checklist into the build's RESUME_HERE and tick each with its proof before publishing. Load `app-guard.js` first in `<head>`, call `AppGuard.ready()` once the first screen is on, retheme the `--ag-*` variables.
+
 ## Routing table
 
 | Module being built | Primary (use these) | Secondary (only if that element exists) |
@@ -45,7 +62,7 @@ description: A library of 112 UX patterns rebuilt as exact HTML/CSS/JS replicas 
 | Calendar / scheduling | calendar-week-view, date-pickers, drag-and-drop | empty-states, tooltip-design |
 | Cards / grids of items | perfect-card, card-hover-anatomy, card-spacing-fixes, border-radius-system | depth-layers, shadow-elevation, hover-trap, proximity-rule |
 | Loading / waiting states | loading-states-system, skeleton-loading, perceived-performance, doherty-threshold | optimistic-ui, behind-the-button |
-| Empty / error states | empty-states, error-states | microcopy, undo-ux |
+| Empty / error states | empty-states, error-states, kit/app-guard.js (whole-app error screen) | microcopy, undo-ux |
 | Mobile screen | bottom-sheets, swipe-actions, hover-trap, pull-to-refresh, fitts-law | responsive-table, navigation-patterns |
 | Dark mode / theming | dark-mode-surfaces, color-accessibility, depth-layers | design-tokens, gradient-design, glassmorphism |
 | Typography / hierarchy pass | typography-system, visual-hierarchy, pop-out-effect, serial-position | golden-ratio, proximity-rule, whitespace-types, gestalt-laws |
