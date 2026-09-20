@@ -17,6 +17,10 @@ matters more than any of them. Signals 21 and 22 came from two more reels on
 20 Sep 2026 (destructive actions by @designmotionhq, empty states by
 Katherine Gilligan), both in `references/source-reel.md`.
 
+## Sits after ux-patterns
+
+The `ux-patterns` skill (112 @designmotionhq reels as exact replicas, routed by module) decides how a module behaves and which states it needs. Run it first on any website, dashboard or app screen; this skill then places the feedback motion on the elements it produced. Where both cover the same element (upload, button, toast, undo, empty state), the pattern's README is the spec and this catalogue supplies the motion values. Gallery: https://ux-patterns.yourfuturesitedev.workers.dev
+
 ## The placement rule
 
 **Every signal belongs to exactly one kind of element.** Drag feedback belongs

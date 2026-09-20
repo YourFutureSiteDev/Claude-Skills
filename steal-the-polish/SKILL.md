@@ -15,6 +15,10 @@ That is the split this skill keeps. **Three libraries** give you finished
 code to port. **Two feeds** give you a bar to build to before you touch code.
 **One house kit** (dashboard lift) is already ported and drops straight in.
 
+## Behaviour first: ux-patterns
+
+Before lifting a look from any source below, run `ux-patterns` for the module (settings, table, form, pricing, modal, nav, dashboard). It fixes the behaviour, states and copy from the matching @designmotionhq reel; this skill then supplies the finish. For dashboards the pattern row is de-ai-dashboard, number-formatting, charts-that-lie, loading-states-system and empty-states, and the house dashboard-lift kit here dresses what those specify. Gallery: https://ux-patterns.yourfuturesitedev.workers.dev
+
 ## The six
 
 | # | Source | What it is | Where the code lives |
