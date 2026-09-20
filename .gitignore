@@ -6,3 +6,6 @@ node_modules/
 # skill-creator eval workspaces and local screenshot dumps
 *-workspace/
 scripts/shots/
+
+# the desktop app's cache of bundled Anthropic skills, not ours
+synced/
