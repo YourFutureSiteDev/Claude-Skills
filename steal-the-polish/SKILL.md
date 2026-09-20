@@ -1,6 +1,6 @@
 ---
 name: steal-the-polish
-description: Six sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X, and the house dashboard-lift kit) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it for any dashboard, stat row, KPI tile, big number, target-vs-actual chart, "make the numbers look live", glow tile, dot-matrix number, or an Instagram showcase post of a finished build: the dashboard-lift kit in assets/ is the drop-in for those. Also use it when he names any of the sources, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
+description: Seven sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X, the house dashboard-lift kit and the house login-card kit) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it for any dashboard, stat row, KPI tile, big number, target-vs-actual chart, "make the numbers look live", glow tile, dot-matrix number, or an Instagram showcase post of a finished build: the dashboard-lift kit in assets/ is the drop-in for those. Also use it for any login, sign-up or client-portal page: the login-card kit is the drop-in. Also use it when he names any of the sources, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
 ---
 
 # Steal the polish
@@ -25,6 +25,7 @@ code to port. **Two feeds** give you a bar to build to before you touch code.
 | 4 | **Inspora** inspora.design | Design inspiration feed, mostly video so you see the motion: Web, Branding, Product, Motion, Illustration, 3D, Print. Updated hourly. | Feed. Read with `curl -s https://r.jina.ai/https://inspora.design/?category=Web`. Each post has an mp4 at `media.inspora.design`. |
 | 5 | **Best Designs on X** bestdesignsonx.com | Hand-picked design posts from X, plus tabs for Fonts, Dribbble, Behance, App Icons and OG Images. Updated hourly. | Feed. Client-rendered, so open it in the built-in browser and search, `references/feeds.md`. |
 | 6 | **Dashboard lift** (house kit) | Four dashboard looks lifted from the juicelab.uiux "Leadly AI" concept, 10 Sep 2026: dot-matrix numbers (Doto), glow stat tiles, white KPI card with dot clusters, target-vs-actual "ghost bars", plus the Instagram showcase frame and a count-up. Already ported, plain CSS and JS. | Local: `assets/dashboard-lift.css`, `assets/dashboard-lift.js`, demo `assets/dashboard-lift-demo.html`, breakdown `references/juicelab-dashboard.md`. |
+| 7 | **Login card** (house kit) | The @code.xr "Login form V5" look, 20 Sep 2026: black ground with glowing circuit lines, a glass card split by a slanted divider, icon inputs that take the accent on focus, a gradient pill button. Plain CSS, one accent token. | Local: `assets/login-card.css`, demo `assets/login-card-demo.html`, breakdown `references/code-xr-login.md`. |
 
 `UI Libraries` means `C:\Users\PC\OneDrive\Desktop\Claude\Skills\UI Libraries`.
 Its `COMPONENT-INDEX.md` lists every component in all seven libraries there.
@@ -63,6 +64,9 @@ looks coolest in the demo.
   plain numbers, real table rows. Byron's business-tool dashboards go that
   way: light surface, one brand accent, glow tiles only where the kit's
   limit allows, never the neon set.
+- **A login, sign-up or client-portal page on a dark site:** the **login
+  card** kit. Set `--lc-accent` to the brand colour and drop the circuit
+  lines if the page already has a hero. Not for light brochure sites.
 - **Never** reach here for hero motion or text effects: that is React Bits.
   Never for feedback states (drag over, upload, retry): that is `ui-signals`.
 

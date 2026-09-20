@@ -1,0 +1,193 @@
+/* login-card: the @code.xr "Login form V5" look, ported by hand for
+   hand-written HTML sites. Dependency free. One accent colour drives the
+   circuit lines, the focus ring, the button and the link: set --lc-accent
+   from the project palette (Byron's YFS orange is #f26b1d). The reel used
+   #e5232b red. Font: Poppins on Google Fonts, or the project's own sans.
+   Demo: login-card-demo.html. Source breakdown: references/code-xr-login.md */
+
+:root {
+  --lc-accent: #e5232b;
+  --lc-ground: #050505;
+  --lc-text: #ffffff;
+  --lc-muted: rgba(255, 255, 255, 0.62);
+  --lc-font: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --lc-accent-glow: color-mix(in srgb, var(--lc-accent) 55%, transparent);
+  --lc-accent-soft: color-mix(in srgb, var(--lc-accent) 22%, transparent);
+  --lc-accent-faint: color-mix(in srgb, var(--lc-accent) 9%, transparent);
+  --lc-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ---- stage: the black ground with the circuit lines and a low glow ---- */
+.lc-stage {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background: var(--lc-ground);
+  color: var(--lc-text);
+  font-family: var(--lc-font);
+  overflow: hidden;
+  isolation: isolate;
+}
+.lc-stage::before {
+  /* the warm pool bottom right, and a cooler one top left */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(60% 55% at 85% 90%, var(--lc-accent-soft), transparent 70%),
+    radial-gradient(40% 40% at 10% 15%, var(--lc-accent-faint), transparent 70%);
+}
+.lc-lines {
+  /* the circuit lines: an SVG stretched behind the card, drawn in the accent */
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  color: var(--lc-accent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.lc-lines path { fill: none; stroke: currentColor; stroke-width: 1.5; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 4px var(--lc-accent-glow)); }
+.lc-lines circle { fill: currentColor; filter: drop-shadow(0 0 6px var(--lc-accent-glow)); }
+
+/* ---- the card ---- */
+.lc-card {
+  --lc-split: 46%;         /* where the slanted divider sits on desktop */
+  position: relative;
+  width: min(100%, 740px);
+  display: grid;
+  grid-template-columns: var(--lc-split) 1fr;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(0, 0, 0, 0.4) inset,
+    0 0 60px -20px var(--lc-accent-glow);
+  overflow: hidden;
+}
+.lc-card::before {
+  /* the darker left panel, cut on a slant. Skewed box, unskewed text. */
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -12%;
+  width: calc(var(--lc-split) + 12%);
+  background: linear-gradient(160deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.35));
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
+  transform: skewX(-8deg);
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.lc-welcome {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 48px 36px 48px 40px;
+  text-align: center;
+}
+.lc-welcome h2 {
+  margin: 0;
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.lc-welcome p { margin: 0; color: var(--lc-muted); font-size: 15px; line-height: 1.5; max-width: 30ch; justify-self: center; }
+
+.lc-form {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  padding: 36px 32px 28px;
+}
+.lc-form h1 {
+  margin: 0 0 6px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* ---- fields: icon left, dark fill, accent on focus ---- */
+.lc-field {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.42);
+  transition: border-color 150ms var(--lc-ease), box-shadow 150ms var(--lc-ease);
+}
+.lc-field > svg { width: 18px; height: 18px; color: var(--lc-muted); transition: color 150ms var(--lc-ease); }
+.lc-field > input {
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--lc-text);
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+.lc-field > input::placeholder { color: var(--lc-muted); }
+.lc-field:focus-within {
+  border-color: var(--lc-accent);
+  box-shadow: 0 0 0 1px var(--lc-accent), 0 0 18px -4px var(--lc-accent-glow);
+}
+.lc-field:focus-within > svg { color: var(--lc-accent); }
+.lc-field > input:-webkit-autofill { -webkit-text-fill-color: var(--lc-text); box-shadow: 0 0 0 100px rgba(0, 0, 0, 0.9) inset; }
+
+/* ---- the button: accent gradient pill with a glow underneath ---- */
+.lc-button {
+  margin-top: 6px;
+  height: 50px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--lc-accent) 85%, #000), var(--lc-accent), color-mix(in srgb, var(--lc-accent) 85%, #000));
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 10px 30px -8px var(--lc-accent-glow);
+  transition: transform 120ms var(--lc-ease), box-shadow 150ms var(--lc-ease), filter 150ms var(--lc-ease);
+}
+.lc-button:hover { filter: brightness(1.08); box-shadow: 0 14px 36px -8px var(--lc-accent-glow); }
+.lc-button:active { transform: scale(0.98); }
+.lc-button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+.lc-alt { margin: 4px 0 0; text-align: center; font-size: 13px; color: var(--lc-muted); }
+.lc-alt a { color: var(--lc-accent); text-decoration: none; font-weight: 500; }
+.lc-alt a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---- phone: stack, drop the slant, keep the glow ---- */
+@media (max-width: 640px) {
+  .lc-card { grid-template-columns: 1fr; }
+  .lc-card::before { display: none; }
+  .lc-welcome { padding: 32px 24px 24px; background: linear-gradient(160deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.35)); border-bottom: 1px solid rgba(255, 255, 255, 0.10); }
+  .lc-form { padding: 24px 20px 24px; }
+  .lc-form h1 { font-size: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-field, .lc-button, .lc-field > svg { transition-duration: 1ms; }
+  .lc-button:active { transform: none; }
+}
