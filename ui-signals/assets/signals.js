@@ -389,6 +389,46 @@
     return { steps: setSteps };
   }
 
+  // auth-sweep: one raked band sweeps across the card. At half its travel
+  // it covers the whole card, and that is when the two forms trade places,
+  // so the swap is never in view. The hidden form is inert.
+  function auth(el, opts) {
+    opts = opts || {};
+    function sweepMs() {
+      if (opts.duration) return opts.duration;
+      var v = (getComputedStyle(el).getPropertyValue('--sig-dur-sweep') || '').trim();
+      var n = parseFloat(v);
+      if (!n) return 640;
+      return /ms$/.test(v) ? n : n * 1000;
+    }
+    var panes = {};
+    $$('.sig-auth-pane', el).forEach(function (p) { panes[p.getAttribute('data-mode')] = p; });
+    var mode = el.getAttribute('data-mode') || 'signin';
+    var timer = null;
+    function show(next, focus) {
+      Object.keys(panes).forEach(function (k) {
+        var on = k === next;
+        panes[k].classList.toggle('is-on', on);
+        panes[k].inert = !on;
+        if (on) panes[k].removeAttribute('aria-hidden'); else panes[k].setAttribute('aria-hidden', 'true');
+      });
+      if (focus) { var first = $('input, select, textarea, button', panes[next]); if (first) first.focus({ preventScroll: true }); }
+    }
+    function go(next) {
+      if (!panes[next] || next === mode) return;
+      mode = next;
+      el.setAttribute('data-mode', next);
+      clearTimeout(timer);
+      timer = setTimeout(function () { show(next, true); if (opts.onChange) opts.onChange(next); }, reduce ? 0 : sweepMs() / 2);
+    }
+    $$('[data-sig-auth-to]', el).forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); go(a.getAttribute('data-sig-auth-to')); });
+    });
+    el.setAttribute('data-mode', mode);
+    show(mode, false);
+    return { go: go, mode: function () { return mode; } };
+  }
+
   function init(root) {
     root = root || document;
     reveal(root);
@@ -397,6 +437,7 @@
     countUp(root);
     $$('[data-sig-dropzone]', root).forEach(function (el) { if (!el._sig) el._sig = dropzone(el); });
     $$('.sig-empty', root).forEach(function (el) { if (!el._sig) el._sig = empty(el); });
+    $$('[data-sig-auth]', root).forEach(function (el) { if (!el._sig) el._sig = auth(el); });
   }
 
   window.Signals = {
@@ -416,6 +457,7 @@
     countUp: countUp,
     hold: hold,
     empty: empty,
+    auth: auth,
     simulateUpload: simulateUpload,
     fmtBytes: fmtBytes
   };

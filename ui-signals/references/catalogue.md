@@ -549,6 +549,75 @@ var first = Signals.empty(document.querySelector('.sig-empty')); first.steps(1);
 
 ---
 
+## 23 auth-sweep
+
+**Belongs on:** the one card that holds both login and sign-up, where the
+user switches between them. **Never on:** a lone login form, a modal that
+only signs in, tabs on a settings page, anything that is not two states of
+one card.
+
+**What moves:** one raked rectangle (the band) and nothing else. It sits
+over the right half of the card in sign-in and slides left to cover the
+left half in sign-up, one `translateX`, one curve. Sign-up is sign-in
+mirrored, so the band never rotates. It is wider than the card
+(`--sig-auth-band: 1.5`), so for the middle fifth of the travel it covers the whole card,
+and that is where JS swaps the two forms. No fade between states: the
+hidden form is `opacity: 0` with no transition, plus `inert`, so the swap
+happens in the dark and is never on screen.
+
+**How the copy stays straight:** the band is a window (`overflow: hidden`)
+over a fixed brand layer. `.sig-auth-band-inner` carries the reverse
+transform (`translateX(-sweep) skewX(-rake)`), so `.sig-auth-band-page` is
+back in card co-ordinates: the "Welcome back" block sits on the right,
+"Start the first page" on the left, and the moving window simply reveals
+whichever is under it. Two gold seams live on the band's edges and travel
+with it.
+
+**Timing:** `--sig-dur-sweep` 640ms on `--sig-ease-in-out`; the forms swap
+at half. Reduced motion: the band jumps, the forms swap immediately, focus
+still moves to the first field of the new form.
+
+**Phones:** under 640px the card is one column. The band parks off the
+right edge (`left: 120%`, the rake eased to 8deg so the lean never pokes
+into the card), wipes the whole card right to left (band width 2, sweep `-170%`) and
+leaves off the left. The brand copy is hidden and the hidden form takes no
+space, so the card is only as tall as the form that is showing.
+
+```html
+<div class="sig-auth" data-sig-auth data-mode="signin">
+  <div class="sig-auth-band" aria-hidden="true">
+    <span class="sig-auth-seam" data-edge="lead"></span>
+    <span class="sig-auth-seam" data-edge="trail"></span>
+    <div class="sig-auth-band-inner"><div class="sig-auth-band-page">
+      <div class="sig-auth-brand" data-side="right"><small>Brand</small><h3>Welcome <em>back.</em></h3><p>Your jobs and quotes are where you left them.</p></div>
+      <div class="sig-auth-brand" data-side="left"><small>Brand</small><h3>Start the <em>first page.</em></h3><p>One account for every job.</p></div>
+    </div></div>
+  </div>
+  <form class="sig-auth-pane" data-mode="signin">
+    <!-- real fields, sig-field + sig-focus as usual, sig-submit on the button -->
+    <p>New here? <a href="/signup" data-sig-auth-to="signup">Create an account</a></p>
+  </form>
+  <form class="sig-auth-pane" data-mode="signup">
+    <p>Already have an account? <a href="/login" data-sig-auth-to="signin">Sign in</a></p>
+  </form>
+</div>
+```
+```js
+var card = Signals.auth(document.querySelector('.sig-auth'), { onChange: function (mode) { history.replaceState(null, '', mode === 'signup' ? '/signup' : '/login'); } });
+card.go('signup');   // or let the data-sig-auth-to links do it
+```
+`Signals.init()` picks up every `[data-sig-auth]` automatically. Set
+`--sig-auth-card`, `--sig-auth-ink`, `--sig-auth-band-bg`,
+`--sig-auth-band-ink` and `--sig-auth-seam` from the site's palette; the
+defaults use `--sig-surface` for the band and `--sig-accent` for the seam.
+The links keep real hrefs, so with JS off each state is still a page. The
+inputs take `focus-glow` and the buttons `submit-states` as on any form.
+
+Source: Code & Chill, "Login and Signup Animation", Verso component 91
+(references/source-reel.md). Our own implementation of the idea.
+
+---
+
 ## Reduced motion, in one place
 
 `signals.css` ends with a `prefers-reduced-motion: reduce` block that keeps

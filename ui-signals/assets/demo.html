@@ -138,6 +138,23 @@
   .sig-submit { min-width: 120px; }
 
   footer { margin-top: 96px; color: var(--muted); font-size: 12px; }
+
+  /* auth card (signal 23): the reel's cream, deep green and gold. Demo only. */
+  .auth { --sig-auth-card: #f4efe6; --sig-auth-ink: #16201b; --sig-auth-band-bg: #0f3d2e; --sig-auth-band-ink: #f4efe6; --sig-auth-seam: #d4a53a; box-shadow: 0 30px 60px rgba(0,0,0,0.35); }
+  .auth .auth-title { margin: 0 0 22px; font-size: 22px; letter-spacing: -0.01em; }
+  .auth .auth-title::after { content: ""; display: block; width: 44px; height: 2px; margin-top: 8px; background: #d4a53a; }
+  .auth label { color: rgba(22,32,27,0.62); }
+  .auth .field { background: transparent; border: 0; border-bottom: 1px solid rgba(22,32,27,0.28); border-radius: 0; padding: 10px 0; color: #16201b; }
+  .auth .sig-focus:focus-visible { border-bottom-color: #d4a53a; box-shadow: 0 1px 0 0 #d4a53a; }
+  .auth .sig-field { margin-bottom: 6px; }
+  .auth .auth-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 18px; font-size: 12.5px; color: rgba(22,32,27,0.75); }
+  .auth .auth-row a { white-space: nowrap; }
+  .auth .auth-row label { display: flex; align-items: center; gap: 6px; margin: 0; color: inherit; white-space: nowrap; }
+  .auth .auth-row input { accent-color: #0f3d2e; }
+  .auth a { color: #16201b; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #d4a53a; }
+  .auth .btn.auth-cta { width: 100%; padding: 13px 16px; border-radius: 999px; border-color: transparent; background: #0f3d2e; color: #f4efe6; font-weight: 600; }
+  .auth .auth-alt { margin: 16px 0 0; font-size: 13px; color: rgba(22,32,27,0.75); }
+  .auth .auth-hint { margin: 6px 0 0; font-size: 12px; color: rgba(22,32,27,0.55); }
 </style>
 <link rel="stylesheet" href="signals.css">
 </head>
@@ -146,12 +163,13 @@
 
   <p class="eyebrow">ui-signals</p>
   <h1 data-sig-headline>An interface has to <em>answer back.</em></h1>
-  <p class="lede">Twenty feedback and state signals. Each belongs on one kind of element. This page is the test bench: trigger every state and watch it.</p>
+  <p class="lede">Twenty-three feedback and state signals. Each belongs on one kind of element. This page is the test bench: trigger every state and watch it.</p>
   <nav class="sig-nav" aria-label="Demo">
     <a href="#s01" aria-current="page">Upload</a>
     <a href="#s06">Forms</a>
     <a href="#s13">Page</a>
     <a href="#s19">Loading</a>
+    <a href="#s23">Sign in</a>
   </nav>
 
   <!-- 01 drop-answer -->
@@ -450,8 +468,94 @@
     </div>
   </section>
 
+  <section id="s23" data-sig-reveal>
+    <p class="eyebrow">Signal 23 · Login and sign-up</p>
+    <h2>One blade. <em>The forms trade places under the dark.</em></h2>
+    <p>Login to sign-up without a single fade. One raked rectangle, one translateX. Sign-up is sign-in mirrored, so the band never rotates: it travels one way, covers the whole card halfway across, and that is where the two forms swap. Real forms underneath, transform and opacity only.</p>
+    <p class="rule">Belongs on: the one card that holds both login and sign-up. Never: a lone login form, a settings page with tabs, anything that is not two states of one card.</p>
+    <div class="sig-auth auth" data-sig-auth data-mode="signin" id="auth1">
+      <div class="sig-auth-band" aria-hidden="true">
+        <span class="sig-auth-seam" data-edge="lead"></span>
+        <span class="sig-auth-seam" data-edge="trail"></span>
+        <div class="sig-auth-band-inner">
+          <div class="sig-auth-band-page">
+            <div class="sig-auth-brand" data-side="right">
+              <small>Verso</small>
+              <h3>Welcome <em>back.</em></h3>
+              <p>Your boards, your drafts and your people are exactly where you left them.</p>
+            </div>
+            <div class="sig-auth-brand" data-side="left">
+              <small>Verso</small>
+              <h3>Start the <em>first page.</em></h3>
+              <p>One account for every board, every draft and every device you own.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form class="sig-auth-pane" data-mode="signin" id="auth1-in" novalidate>
+        <h3 class="auth-title">Sign in</h3>
+        <div class="sig-field" data-state="idle">
+          <label for="a1-user">Username or email</label>
+          <input class="field sig-focus" id="a1-user" name="user" type="text" autocomplete="username">
+          <div class="sig-field-msg"><div><small>Enter your username or email</small></div></div>
+        </div>
+        <div class="sig-field" data-state="idle">
+          <label for="a1-pass">Password</label>
+          <input class="field sig-focus" id="a1-pass" name="pass" type="password" autocomplete="current-password">
+          <div class="sig-field-msg"><div><small>Enter your password</small></div></div>
+        </div>
+        <div class="auth-row">
+          <label><input type="checkbox" name="keep" checked> Keep me signed in</label>
+          <a href="#s23">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn auth-cta sig-press sig-submit" data-state="idle">
+          <span class="sig-submit-stack">
+            <span class="sig-submit-label">Sign in</span>
+            <span class="sig-spinner" aria-hidden="true"></span>
+            <span class="sig-submit-done row" style="gap:6px"><svg class="sig-tick" viewBox="0 0 24 24" style="width:18px;height:18px"><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg> Signed in</span>
+            <span class="sig-submit-error">Try again</span>
+          </span>
+        </button>
+        <p class="auth-alt">New to Verso? <a href="#s23" data-sig-auth-to="signup">Create an account</a></p>
+      </form>
+      <form class="sig-auth-pane" data-mode="signup" id="auth1-up" novalidate>
+        <h3 class="auth-title">Create account</h3>
+        <div class="sig-field" data-state="idle">
+          <label for="a1-name">Full name</label>
+          <input class="field sig-focus" id="a1-name" name="name" type="text" autocomplete="name">
+          <div class="sig-field-msg"><div><small>Enter your name</small></div></div>
+        </div>
+        <div class="sig-field" data-state="idle">
+          <label for="a1-email">Email address</label>
+          <input class="field sig-focus" id="a1-email" name="email" type="email" autocomplete="email">
+          <div class="sig-field-msg"><div><small>That email does not look right</small></div></div>
+        </div>
+        <div class="sig-field" data-state="idle">
+          <label for="a1-newpass">Password</label>
+          <input class="field sig-focus" id="a1-newpass" name="newpass" type="password" autocomplete="new-password">
+          <p class="auth-hint">Use 8 characters or more.</p>
+          <div class="sig-field-msg"><div><small>Use 8 characters or more</small></div></div>
+        </div>
+        <button type="submit" class="btn auth-cta sig-press sig-submit" data-state="idle" style="margin-top:14px">
+          <span class="sig-submit-stack">
+            <span class="sig-submit-label">Create account</span>
+            <span class="sig-spinner" aria-hidden="true"></span>
+            <span class="sig-submit-done row" style="gap:6px"><svg class="sig-tick" viewBox="0 0 24 24" style="width:18px;height:18px"><path class="sig-tick-path" d="M7 12.5l3.2 3.2L17 9"/></svg> Account created</span>
+            <span class="sig-submit-error">Try again</span>
+          </span>
+        </button>
+        <p class="auth-alt">Already have an account? <a href="#s23" data-sig-auth-to="signin">Sign in</a></p>
+      </form>
+    </div>
+    <div class="demo-actions">
+      <button class="btn ghost sig-press" id="auth1-in-btn">Show sign in</button>
+      <button class="btn ghost sig-press" id="auth1-up-btn">Show sign up</button>
+      <span class="mono" id="auth1-out">mode: signin</span>
+    </div>
+  </section>
+
   <footer>
-    Sources: @designmotionhq reels "FutureVille · realization" (five upload signals) and "Destructive actions" (signal 21); Katherine Gilligan, Building With Good UX part 8 (signal 22). The rest follow the same rule: one signal, one kind of element. Values from the <span class="mono">animate</span> skill.
+    Sources: @designmotionhq reels "FutureVille · realization" (five upload signals) and "Destructive actions" (signal 21); Katherine Gilligan, Building With Good UX part 8 (signal 22); Code &amp; Chill, Verso component 91, login and sign-up (signal 23). The rest follow the same rule: one signal, one kind of element. Values from the <span class="mono">animate</span> skill.
   </footer>
 </main>
 
@@ -467,6 +571,26 @@
   var e1 = document.getElementById('empty1'), e1n = 0;
   document.getElementById('empty1-step').addEventListener('click', function () { e1n = Math.min(3, e1n + 1); e1._sig.steps(e1n); });
 
+
+  // 23 auth-sweep: both forms validate for real; the links inside the card drive the swap
+  var auth1 = document.getElementById('auth1');
+  var authOut = document.getElementById('auth1-out');
+  auth1._sig = Signals.auth(auth1, { onChange: function (m) { authOut.textContent = 'mode: ' + m; } });
+  document.getElementById('auth1-in-btn').addEventListener('click', function () { auth1._sig.go('signin'); });
+  document.getElementById('auth1-up-btn').addEventListener('click', function () { auth1._sig.go('signup'); });
+  [['auth1-in', ['user', 'pass'], 'Signed in'], ['auth1-up', ['name', 'email', 'newpass'], 'Account created']].forEach(function (spec) {
+    var form = document.getElementById(spec[0]);
+    var fs = Array.prototype.map.call(form.querySelectorAll('.sig-field'), Signals.field);
+    Signals.submit(form, function (data) {
+      var bad = false;
+      spec[1].forEach(function (key, i) {
+        var v = data.get(key) || '';
+        if (!v || (key === 'email' && !/.+@.+\..+/.test(v)) || (key === 'newpass' && v.length < 8)) { fs[i].error(); bad = true; }
+      });
+      if (bad) return Promise.reject();
+      return new Promise(function (res) { setTimeout(res, 900); }).then(function () { Signals.toast(spec[2]); });
+    });
+  });
 
   // 01 dropzone: demo buttons force the state so it can be screenshotted without a real drag.
   var dz = document.getElementById('dz');

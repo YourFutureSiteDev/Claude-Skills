@@ -159,6 +159,26 @@ const sk = await page.evaluate(() => ({ anim: getComputedStyle(document.querySel
 check('20 skeleton: shimmer running', sk.anim === 'sig-shimmer', JSON.stringify(sk));
 await shot(page, '19-20-stats', '#s19');
 
+// 23 auth-sweep
+await page.locator('#s23').scrollIntoViewIfNeeded();
+await page.waitForTimeout(700);
+const a0 = await page.evaluate(() => { const c = document.getElementById('auth1'); const pg = c.querySelector('.sig-auth-band-page'); const cr = c.getBoundingClientRect(), pr = pg.getBoundingClientRect(); return { mode: c.dataset.mode, inOn: document.getElementById('auth1-in').classList.contains('is-on'), upOn: document.getElementById('auth1-up').classList.contains('is-on'), upInert: document.getElementById('auth1-up').inert, pageLeft: Math.round(pr.left - cr.left), pageW: Math.round(pr.width), cardW: Math.round(cr.width) }; });
+check('23 auth-sweep: sign-in on, sign-up hidden and inert, brand layer sits exactly on the card', a0.mode === 'signin' && a0.inOn && !a0.upOn && a0.upInert && Math.abs(a0.pageLeft) <= 1 && Math.abs(a0.pageW - a0.cardW) <= 1, JSON.stringify(a0));
+await shot(page, '23-auth-signin', '#auth1');
+await page.click('#auth1 [data-sig-auth-to="signup"]');
+await page.waitForTimeout(160);
+const a1 = await page.evaluate(() => { const c = document.getElementById('auth1'); return { mode: c.dataset.mode, inOn: document.getElementById('auth1-in').classList.contains('is-on'), tf: getComputedStyle(c.querySelector('.sig-auth-band')).transform }; });
+check('23 auth-sweep: band moving, forms not yet swapped early in the travel', a1.mode === 'signup' && a1.inOn && /^matrix\(/.test(a1.tf), JSON.stringify(a1));
+await shot(page, '23-auth-mid', '#auth1');
+await page.waitForTimeout(700);
+const a2 = await page.evaluate(() => { const c = document.getElementById('auth1'); const b = c.querySelector('.sig-auth-band'); const pg = c.querySelector('.sig-auth-band-page'); const m = new DOMMatrix(getComputedStyle(b).transform); return { inOn: document.getElementById('auth1-in').classList.contains('is-on'), upOn: document.getElementById('auth1-up').classList.contains('is-on'), inInert: document.getElementById('auth1-in').inert, tx: Math.round(m.e), bandW: Math.round(b.offsetWidth), pageLeft: Math.round(pg.getBoundingClientRect().left - c.getBoundingClientRect().left), focused: document.activeElement && document.activeElement.id }; });
+check('23 auth-sweep: forms swapped under the band, band travelled its own width, brand layer still on the card, focus in the first field', a2.upOn && !a2.inOn && a2.inInert && Math.abs(a2.tx + a2.bandW) <= 2 && Math.abs(a2.pageLeft) <= 1 && a2.focused === 'a1-name', JSON.stringify(a2));
+await shot(page, '23-auth-signup', '#auth1');
+await page.click('#auth1-up button[type="submit"]');
+await page.waitForTimeout(300);
+const a3 = await page.evaluate(() => ({ fields: [...document.querySelectorAll('#auth1-up .sig-field')].map(f => f.dataset.state), btn: document.querySelector('#auth1-up .sig-submit').dataset.state }));
+check('23 auth-sweep: the sign-up form validates for real (three field errors, button error)', a3.fields.every(s => s === 'error') && a3.btn === 'error', JSON.stringify(a3));
+
 // reduced motion
 await page.emulateMedia({ reducedMotion: 'reduce' });
 await page.reload({ waitUntil: 'networkidle' });
@@ -168,6 +188,12 @@ await page.locator('#s19').scrollIntoViewIfNeeded();
 await page.waitForTimeout(400);
 const rm = await page.evaluate(() => ({ h1op: getComputedStyle(document.querySelector('[data-sig-headline]')).opacity, h1tf: getComputedStyle(document.querySelector('[data-sig-headline]')).transform, icon: getComputedStyle(document.querySelector('#dz [data-when="over"] .sig-icon')).transform, count: document.querySelector('[data-sig-count]').textContent, shimmer: getComputedStyle(document.querySelector('.sig-skeleton'), '::after').animationName, s19: getComputedStyle(document.getElementById('s19')).opacity, border: getComputedStyle(document.getElementById('dz')).borderColor }));
 check('reduced motion: content visible, transforms gone, colour kept, count jumps', rm.h1op === '1' && rm.h1tf === 'none' && rm.icon === 'none' && rm.count === '398' && rm.shimmer === 'none' && rm.s19 === '1' && rm.border === 'rgb(45, 212, 191)', JSON.stringify(rm));
+
+await page.locator('#s23').scrollIntoViewIfNeeded();
+await page.click('#auth1 [data-sig-auth-to="signup"]');
+await page.waitForTimeout(80);
+const rmA = await page.evaluate(() => ({ upOn: document.getElementById('auth1-up').classList.contains('is-on'), inOn: document.getElementById('auth1-in').classList.contains('is-on'), dur: getComputedStyle(document.querySelector('#auth1 .sig-auth-band')).transitionDuration }));
+check('23 auth-sweep, reduced motion: forms swap at once, band jumps', rmA.upOn && !rmA.inOn && rmA.dur === '0.001s', JSON.stringify(rmA));
 
 check('no console or page errors', errors.length === 0, errors.join(' | ') || 'clean');
 await browser.close();

@@ -17,6 +17,16 @@
   --sig-dur-reveal: 400ms;
   --sig-dur-count: 2000ms;  /* Byron: numbers must load much slower than the rest, never under 2s */
   --sig-dur-hold: 600ms;    /* danger-confirm hold. The source reel used 300ms; on a phone that is a slow tap, so 600 */
+  --sig-dur-sweep: 640ms;   /* auth-sweep travel. The two forms trade places at half, under the band */
+
+  /* auth-sweep card. Set the five colours from the site's palette; the demo shows the reel's green and gold */
+  --sig-auth-rake: 12deg;
+  --sig-auth-band: 1.5;     /* band width as a multiple of the card. Wider than 1 so it covers the whole card for the middle fifth of the travel */
+  --sig-auth-card: #f4efe6;
+  --sig-auth-ink: #16201b;
+  --sig-auth-band-bg: var(--sig-surface);
+  --sig-auth-band-ink: #f4efe6;
+  --sig-auth-seam: var(--sig-accent);
 
   --sig-accent-soft: color-mix(in srgb, var(--sig-accent) 22%, transparent);
   --sig-accent-faint: color-mix(in srgb, var(--sig-accent) 10%, transparent);
@@ -535,6 +545,110 @@
 .sig-empty-steps > ol > li[data-done] { opacity: 0.5; text-decoration: line-through; }
 
 /* ------------------------------------------------------------------ */
+/* auth-sweep: login and sign-up on one card, swapped by one raked band.
+   The band is a window (overflow hidden) over a fixed brand layer: its
+   inner counter-transform puts that layer back in card co-ordinates, so
+   the copy under it never skews. The band is wider than the card, so at
+   mid-travel it covers all of it, and that is where the two forms trade
+   places. Transform and opacity only, no fade between states.
+   From Code & Chill, Verso component 91 (references/source-reel.md). */
+
+.sig-auth {
+  --sweep: 0%;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 440px;
+  border-radius: 18px;
+  background: var(--sig-auth-card);
+  color: var(--sig-auth-ink);
+}
+.sig-auth[data-mode="signup"] { --sweep: -100%; }
+
+.sig-auth-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: calc(var(--sig-auth-band) * 100%);
+  overflow: hidden;
+  z-index: 2;
+  background: var(--sig-auth-band-bg);
+  color: var(--sig-auth-band-ink);
+  transform: skewX(var(--sig-auth-rake)) translateX(var(--sweep));
+  transition: transform var(--sig-dur-sweep) var(--sig-ease-in-out);
+  will-change: transform;
+}
+.sig-auth-band-inner {
+  position: absolute;
+  inset: 0;
+  transform: translateX(calc(-1 * var(--sweep))) skewX(calc(-1 * var(--sig-auth-rake)));
+  transition: transform var(--sig-dur-sweep) var(--sig-ease-in-out);
+}
+.sig-auth-band-page {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(100% / var(--sig-auth-band));
+  left: calc(-50% / var(--sig-auth-band));
+}
+.sig-auth-seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent 0%, var(--sig-auth-seam) 18%, var(--sig-auth-seam) 82%, transparent 100%);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--sig-auth-seam) 55%, transparent);
+}
+.sig-auth-seam[data-edge="lead"] { left: 0; }
+.sig-auth-seam[data-edge="trail"] { right: 0; }
+
+.sig-auth-brand {
+  position: absolute;
+  top: 50%;
+  width: 38%;
+  padding: 0 6%;
+  transform: translateY(-50%);
+}
+.sig-auth-brand[data-side="right"] { right: 0; }
+.sig-auth-brand[data-side="left"] { left: 0; }
+.sig-auth-brand > small { display: block; margin: 0 0 14px; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--sig-auth-seam); }
+.sig-auth-brand > h3 { margin: 0 0 12px; font: 400 34px/1.1 Georgia, "Times New Roman", serif; letter-spacing: -0.01em; }
+.sig-auth-brand > h3 em { font-style: italic; color: var(--sig-auth-seam); }
+.sig-auth-brand > p { margin: 0; font-size: 14px; line-height: 1.5; opacity: 0.8; }
+
+.sig-auth-pane {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  padding: 36px 8%;
+  margin: 0;
+  opacity: 0;              /* no transition on purpose: the swap happens under the band */
+  visibility: hidden;
+}
+.sig-auth-pane.is-on { opacity: 1; visibility: visible; }
+.sig-auth-pane[data-mode="signin"] { left: 0; }
+.sig-auth-pane[data-mode="signup"] { right: 0; }
+
+/* one column: the band starts fully off the right edge (the rake leans in by
+   half the card height times tan(rake), so it parks at 120%), wipes the whole
+   card and leaves off the left. The brand copy steps aside. */
+@media (max-width: 640px) {
+  .sig-auth { --sig-auth-band: 2; --sig-auth-rake: 8deg; min-height: 0; }
+  .sig-auth-band { left: 120%; }
+  .sig-auth[data-mode="signup"] { --sweep: -170%; } /* band width 2, so the covered window is again the middle fifth */
+  .sig-auth-band-page { width: calc(100% / var(--sig-auth-band)); left: calc(-120% / var(--sig-auth-band)); }
+  .sig-auth-brand { display: none; }
+  .sig-auth-pane { position: relative; width: 100%; padding: 28px 22px; }
+  .sig-auth-pane:not(.is-on) { display: none; }
+}
+
+/* ------------------------------------------------------------------ */
 /* reduced motion: keep colour and opacity, drop movement. Not zero. */
 
 @media (prefers-reduced-motion: reduce) {
@@ -558,4 +672,5 @@
   .sig-tick .sig-tick-path { transition-duration: 1ms; stroke-dashoffset: 0; }
   .sig-tick .sig-tick-ring { transform: none; }
   .sig-hold { transition-duration: 1ms; } /* ring jumps to full at confirm; the timer still takes the full hold */
+  .sig-auth-band, .sig-auth-band-inner { transition-duration: 1ms; } /* the band jumps; the transform itself must stay, it is the layout */
 }

@@ -102,3 +102,32 @@ state is often the first thing a user sees, so make it a good impression.
   what to do next, and doesn't feel broken."
 
 Became signal 22, `empty-state`. Her next video is on partial states.
+
+## Login and sign-up blade, Code & Chill
+
+instagram.com/reel/Db7fSM1v8Yg (@_code_and_chill_, 5 seconds, 5K likes,
+sent by Byron 21 Sep 2026). A cream auth card with a deep green raked band
+on its right, "VERSO, Welcome back." in serif with a gold italic. Click
+"Create an account": the band slides left, covers the card, and the
+sign-up form is on the left-hand side when it clears, with "Start the
+first page." now showing on the band. Three code panes under the card:
+
+- `index.html`: `.auth__band` ("one blade, two lit seams") holding
+  `.band__edge--lead`, then `.band__inner` ("its transform, backwards")
+  and `.band__page` ("back in card co-ordinates") with the welcome title.
+- `app.css`: `.auth__band { overflow: hidden; transform: skewX(var(--rake))
+  translateX(var(--sweep)); }` and `.band__inner { transform:
+  translateX(calc(-1 * var(--sweep))) skewX(calc(-1 * var(--rake))); }`.
+- `app.js`: set `auth.dataset.mode`, add `is-on` to the next pane, then
+  after `T.cover` flip `inert` on the two panes: "the blade covers the card
+  for a fifth of its travel, and the two states trade places under that
+  dark".
+
+Caption: "Login to Sign up, without a single fade. One rectangle. One
+translateX. Sign up is just sign in mirrored, so the blade never has to
+rotate: it travels one way and covers the card completely halfway across.
+That dark is where the two states trade places. Real forms underneath.
+Zero dependencies. Transform and opacity only."
+
+Became signal 23, `auth-sweep`. The Verso name, copy and palette stay in
+the demo only; a client site sets its own tokens.
