@@ -1,0 +1,51 @@
+{
+  "_comment": "Every field the renderer reads. Copy this into the project folder as brief.json, fill it from roles 1-5, then run scripts/render-brief.mjs against it. Fields prefixed _ are the creative record: the renderer ignores them, but they are why a re-run does not repeat rejected work.",
+
+  "slug": "2026-09-24-six-agents-one-idea",
+
+  "_angle": "Six specialist agents beat one general one, because the jobs are different jobs.",
+  "_angleWhy": "A number that shouldn't work. Repeatable after one hearing.",
+
+  "_hooks": [
+    { "text": "One idea in. Finished video out. I never touched it.", "winner": true, "why": "Works muted as a first frame, and the interesting word lands inside the first second." },
+    { "text": "The best AI video tool is six worse ones.", "why": "Good contradiction, but needs a beat of explanation to land." },
+    { "text": "I deleted my editor and replaced it with six prompts.", "why": "Stakes are clear, but 'deleted my editor' overpromises what this pays off." },
+    { "text": "The fifth agent is the one nobody builds.", "why": "Open loop is strong; rejected because the video does not make agent five the point." },
+    { "text": "If your AI videos look like everyone else's, you are using one model for six jobs.", "why": "Direct address works, too long for a first frame." }
+  ],
+
+  "_beats": [
+    { "beat": "One model doing six jobs does all six at about 60 percent.", "words": 22 },
+    { "beat": "Split it: each role gets one job and a gate it has to pass.", "words": 26 },
+    { "beat": "The gate is the part that matters. A bad hook dies before it costs a render.", "words": 28 },
+    { "beat": "Payoff: the chain is boring, and boring is why it finishes.", "words": 20 }
+  ],
+  "_wordBudget": 96,
+
+  "script": "One idea in. Finished video out. I never touched it. One model doing six jobs does all six at about sixty percent. So split it up. Each role gets one job, and a gate it has to pass before the next one starts. The gate is the part that matters. A weak hook dies for free, instead of dying after you paid to render it. The chain is boring. Boring is exactly why it finishes.",
+
+  "_shots": [
+    { "at": "0.0-3.0", "shows": "terminal, six agent names printing in sequence", "source": "screen recording, already have" },
+    { "at": "3.0-12.0", "shows": "one overloaded model vs six lanes", "source": "same recording, later section" },
+    { "at": "12.0-end", "shows": "the render finishing, file appearing", "source": "same recording" }
+  ],
+
+  "background": {
+    "kind": "file",
+    "path": "C:/Users/PC/OneDrive/Desktop/Claude/Content Engine/media/screen/agents-run.mp4",
+    "reel": true,
+    "shotSecs": 2.4,
+    "trimBottom": 0
+  },
+
+  "voice": "en-US-AndrewNeural",
+  "rate": "+8%",
+  "hashtags": "#claudecode #aiagents #buildinpublic",
+
+  "_endCardNote": "Exactly two fields, title and year, because that is what buildAss renders: title large at y=880, year smaller under it at y=1010. Not a free lines array. For a non-film video, title is the handle or the call to action and year is the supporting line, or omit year.",
+  "endCard": {
+    "title": "@yourfuturesite",
+    "year": "built with Claude Code"
+  },
+  "holdSecs": 2.0
+}

@@ -19,6 +19,7 @@ My personal Claude Code skills. This folder is `~/.claude/skills` on each machin
 - `scroll-world` — scroll-scrubbed fly-through landing pages (MIT, cyw)
 - `framer` — design, edit and publish Framer sites
 - `framer-code-components` — Framer code component authoring rules
+- `video-team` — one idea to a finished vertical short via six roles (angle, hook, story, script, shots, edit), rendered free on edge-tts and ffmpeg
 
 **Writing and comms**
 
