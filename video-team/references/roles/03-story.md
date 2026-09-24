@@ -160,15 +160,21 @@ Set it here, before a word of script exists, from the target length. This is the
 gate the whole skill turns on: the renderer derives duration from the last spoken
 word, so the script is the timeline.
 
-| Target | Words at `+8%` | Shape |
+| Target | Words at 2.8 w/s | Shape |
 |---|---|---|
-| 15s | 45-50 | hook + one beat + payoff |
-| 30s | 90-100 | hook + context + three beats + payoff |
-| 45s | 135-150 | as above with a turn before the payoff |
-| 60s | 180-200 | ceiling; retention falls off past here |
+| 15s | 40-44 | hook + one beat + payoff |
+| 30s | 80-86 | hook + context + three beats + payoff |
+| 45s | 122-128 | as above with a turn before the payoff |
+| 60s | 164-170 | ceiling; retention falls off past here |
 
-edge-tts at `+8%` speaks about 3.1 words a second. Count words, do not estimate
-seconds.
+**Check the voice before using this table.** The rate is per voice and was
+measured on 24 Sep 2026: Andrew 2.94, William 2.82, Ava 2.79, Brian 2.77, but
+Natasha only 2.29 words a second. The table assumes the 2.8 cluster. In
+Natasha's voice a 30-second video is about 69 words, not 84, and writing to 84
+gives a 37-second video. The full table is in SKILL.md, and `render-brief.mjs`
+warns when the finished speech lands more than 2.5s off the plan.
+
+Count words, do not estimate seconds.
 
 Divide the budget across the beats and write the number beside each one. Role 4
 writes to those numbers.

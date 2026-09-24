@@ -42,6 +42,37 @@ it costs one overlay.
 
 If `visibleClock` came through empty, say so rather than skipping it silently.
 
+## Cut to the narration, not to a clock
+
+The mistake worth not repeating. On the first real run of this skill the slides
+were built on an even 3.8-second cadence, which looked correct on paper: 83
+words, 30.2 seconds of speech, 8 slides, 3.775 seconds each. It rendered a video
+where the screen said 621 while the voice said 398, because narration does not
+keep an even pace. One long sentence and everything after it is a beat behind.
+
+**Take the boundaries from the word timings.** `work/<slug>/words.json` holds
+every word with its start and end, so each slide's duration is the gap between
+the first word of its own sentence and the first word of the next slide's:
+
+```bash
+node -e 'require("./work/<slug>/words.json").forEach((x,n)=>
+  console.log(String(n).padStart(3),x.start.toFixed(2),x.word))'
+```
+
+Read off the start time of each sentence that gets its own slide, and the
+differences are the durations. This needs the voiceover to exist first, so the
+order is: script, then narrate, then read the timings, then build the visual.
+A re-render after a hook change reuses the same audio, so it only costs once.
+
+Then check the result rather than trusting the arithmetic: grab a frame and ask
+what word was being spoken at that timestamp. Grade check 9.
+
+**Watch what the split does to cut rate.** Timing to sentences produces uneven
+durations, and two of them on this run came out at 6.1 and 8.3 seconds, well past
+the ~4s screensaver ceiling. Both got split into two slides, taking the sequence
+from 8 slides to 10. A sentence that earns more than about four seconds on screen
+needs a second image, not a longer hold.
+
 ## Shot length against cut rate
 
 `buildShotReel` defaults to 2.4-second cuts. Faster than roughly 1.5s reads as

@@ -34,15 +34,31 @@ hook lands at 0:09 instead of 0:01, or the payoff gets cut.
 
 So role 3 sets a word budget and role 4 writes to it. The numbers:
 
-| Target | Words at `+8%` rate | Use for |
+| Target | Words at 2.8 w/s | Use for |
 |---|---|---|
-| 15s | 45-50 | one idea, one punchline |
-| 30s | 90-100 | the default. A hook, three beats, a payoff |
-| 45s | 135-150 | a story with a turn |
-| 60s | 180-200 | ceiling. Past this, retention falls off a cliff |
+| 15s | 40-44 | one idea, one punchline |
+| 30s | 80-86 | the default. A hook, three beats, a payoff |
+| 45s | 122-128 | a story with a turn |
+| 60s | 164-170 | ceiling. Past this, retention falls off a cliff |
 
-edge-tts at `+8%` speaks about 3.1 words a second. Count the words; do not
-estimate the seconds.
+**The rate is per voice, and it was measured, not assumed.** Same 92-word script
+through five edge-tts voices at `+8%` on 24 Sep 2026:
+
+| Voice | Words per second |
+|---|---|
+| `en-US-AndrewNeural` | 2.94 |
+| `en-AU-WilliamNeural` | 2.82 |
+| `en-US-AvaNeural` | 2.79 |
+| `en-US-BrianNeural` | 2.77 |
+| `en-AU-NatashaNeural` | **2.29** |
+
+Four cluster around 2.8, which is what the table above uses. Natasha is the
+outlier and needs roughly 18% fewer words for the same length, so a 30-second
+video in her voice is about 69 words, not 84. `render-brief.mjs` holds the table,
+predicts against the chosen voice, and prints a WORD BUDGET DRIFT warning when
+the real speech comes back more than 2.5s off the plan.
+
+Count the words; do not estimate the seconds.
 
 ---
 
@@ -200,7 +216,8 @@ Before handing the video back, check every line. If any fails, fix it and check
 again. Do not report it as finished until all of them pass.
 
 - [ ] The file plays: `ffprobe` shows 1080x1920, a video stream and an audio
-      stream, and a duration within 1.5s of word count divided by 3.1
+      stream, and a duration within 2.5s of word count divided by the chosen
+      voice's measured rate (render-rail.md has the table)
 - [ ] The burned caption count matches the word count the renderer reported, so
       the captions cannot drift against the speech
 - [ ] The hook's interesting word arrives inside the first second, checked by
@@ -211,6 +228,8 @@ again. Do not report it as finished until all of them pass.
 - [ ] The script contains no em dash, en dash, spaced hyphen, emoji or
       parenthesis, because TTS reads them as pauses and Byron rejects them in
       any written output
+- [ ] Any text on screen agrees with the word being spoken at that moment,
+      checked against `work/<slug>/words.json` rather than assumed from the plan
 - [ ] Nothing is claimed in the video that cannot be screenshotted
 - [ ] The MP4 and its brief are in the project's folder, not a temp directory
 - [ ] Any footage that came from someone else is licensed to be circulated

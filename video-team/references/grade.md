@@ -18,7 +18,7 @@ ffprobe -v error -show_entries format=duration:stream=width,height,codec_type \
 ```
 
 Expect `width=1080`, `height=1920`, both a video and an audio stream, and a
-duration within about 1.5s of the script's word count divided by 3.1.
+duration within about 2.5s of word count divided by the voice's measured rate (see the table in render-rail.md; 2.8 w/s for most, 2.29 for Natasha).
 
 ```bash
 # The captions that were actually burned in. Should be one line per spoken word.
@@ -54,6 +54,20 @@ These need reading, not measuring.
 | 6 | Visuals change at least every 3 seconds | Producer | One static shot for 30 seconds |
 | 7 | Captions never collide with the footage's own text | Producer | Two layers of white text overlapping |
 | 8 | Nothing claimed that cannot be screenshotted | Angle | "This made me $10k" with no dashboard |
+| 9 | On-screen text agrees with the word being spoken | Producer | The slide says 621 while the voice says 398 |
+
+Check 9 needs the word timings, not a guess. Grab a frame and ask what was being
+said at that timestamp:
+
+```bash
+node -e 'const w=require("./work/<slug>/words.json");const t=Number(process.argv[1]);
+console.log(t+"s -> "+(w.filter(x=>x.start<=t).pop()||{}).word)' 17.0
+```
+
+It caught a real failure on the first run of this skill: slides built on a fixed
+3.8-second cadence drifted a whole beat behind narration that does not keep an
+even pace, so the number on screen contradicted the number being spoken. See
+`roles/05-producer.md` for the fix.
 
 ## Fixing by role
 

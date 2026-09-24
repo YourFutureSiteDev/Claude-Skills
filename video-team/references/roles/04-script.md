@@ -30,7 +30,7 @@ Role 3 handed over a word count per beat. Write each beat to its number, not to
 feel. Then count:
 
 ```bash
-node -e "const s=require('fs').readFileSync(process.argv[1],'utf8').trim().split(/\s+/).length;console.log(s+' words, ~'+(s/3.1).toFixed(1)+'s')" script.txt
+node -e "const s=require('fs').readFileSync(process.argv[1],'utf8').trim().split(/\s+/).length;console.log(s+' words, ~'+(s/2.8).toFixed(1)+'s')" script.txt
 ```
 
 Within 5% of budget or it goes back. Over budget is not a rendering problem that
@@ -67,5 +67,5 @@ is weak, and a weak payoff on a short means nobody reaches the end card.
 
 - `script` — the full text, nothing else in the field
 - `wordCount` — actual
-- `predicted` — word count divided by 3.1, in seconds
+- `predicted` — word count divided by the voice's measured rate, in seconds
 - `blocks` — the audit result, and what was cut

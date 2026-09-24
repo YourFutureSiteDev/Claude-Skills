@@ -24,9 +24,21 @@ import path from 'node:path';
 
 const DEFAULT_ENGINE = 'C:/Users/PC/OneDrive/Desktop/Claude/Content Engine';
 
-// Roughly what edge-tts delivers at rate "+8%". Only used to warn, never to
-// time anything — the real timings come back from the WordBoundary events.
-const WORDS_PER_SEC = 3.1;
+// Measured across five edge-tts voices at rate "+8%" on the same 92-word script
+// (24 Sep 2026): Andrew 2.94, William 2.82, Ava 2.79, Brian 2.77, Natasha 2.29
+// words per second. 2.8 is the cluster four of the five sit in. Natasha is the
+// outlier and needs roughly 18% fewer words for the same length.
+//
+// Only used to predict and to warn. Real timings always come back from the
+// WordBoundary events, which is what the captions and the duration use.
+const WORDS_PER_SEC = 2.8;
+const VOICE_RATES = {
+  'en-US-AndrewNeural': 2.94,
+  'en-AU-WilliamNeural': 2.82,
+  'en-US-AvaNeural': 2.79,
+  'en-US-BrianNeural': 2.77,
+  'en-AU-NatashaNeural': 2.29,
+};
 
 function args(argv) {
   const out = {};
@@ -98,11 +110,13 @@ async function main() {
   const { renderVideo } = await mod('render.js');
 
   // --- 1. narration -------------------------------------------------------
+  const voice = brief.voice || 'en-US-AvaNeural';
+  const rate = VOICE_RATES[voice] ?? WORDS_PER_SEC;
   const words = brief.script.trim().split(/\s+/).filter(Boolean).length;
-  const predicted = words / WORDS_PER_SEC;
-  console.error(`script: ${words} words, expect about ${predicted.toFixed(1)}s`);
+  const predicted = words / rate;
+  console.error(`script: ${words} words at ${rate} w/s, expect about ${predicted.toFixed(1)}s`);
   if (predicted > 62) {
-    console.error(`  warning: over 60s. Retention falls off past this; consider cutting to ~190 words.`);
+    console.error(`  warning: over 60s. Retention falls off past this; cut to about ${Math.floor(60 * rate)} words.`);
   }
 
   const py = await python();
@@ -121,7 +135,17 @@ async function main() {
   const timings = JSON.parse(await readFile(wordsPath, 'utf8'));
   if (!timings.length) throw new Error('edge-tts returned no word timings; captions would be empty');
   const speech = timings[timings.length - 1].end;
-  console.error(`voice: ${ttsInfo.voice}, ${timings.length} words, ${speech.toFixed(1)}s of speech`);
+  const actualRate = timings.length / speech;
+  console.error(`voice: ${ttsInfo.voice}, ${timings.length} words, ${speech.toFixed(1)}s of speech (${actualRate.toFixed(2)} w/s)`);
+
+  // Close the loop on the planning constant. If this voice reads meaningfully
+  // slower or faster than the table says, the word budget role 3 set was wrong,
+  // and the video is a different length than was designed. Say so rather than
+  // letting it be discovered in the grade.
+  if (Math.abs(speech - predicted) > 2.5) {
+    console.error(`  WORD BUDGET DRIFT: planned ${predicted.toFixed(1)}s, got ${speech.toFixed(1)}s.`);
+    console.error(`  ${voice} really reads ${actualRate.toFixed(2)} w/s here. For ${Math.round(predicted)}s use about ${Math.round(predicted * actualRate)} words.`);
+  }
 
   // --- 2. background ------------------------------------------------------
   // Cut to cover the narration with a little slack, so the reel never runs
