@@ -50,23 +50,30 @@ estimate the seconds.
 
 Run them in order. Each one produces a **named artifact** that the next role
 reads, which is what lets a failed run resume at the role that failed instead of
-starting over. Full briefs, including what each role is looking for and the
-questions it asks, are in `references/roles.md` — read that file before running
-the chain, not just this table.
+starting over.
 
-| # | Role | Produces | Gate it must pass |
+**Read the file for the role you are running.** Roles 1 to 3 each encode a
+specific documented method in detail, and the table below is only the index.
+
+| # | Role | Method encoded | File |
 |---|---|---|---|
-| 1 | **Angle** | `angle` — one sentence | A stranger can repeat it after hearing it once |
-| 2 | **Packaging** | `hooks[]` — five, ranked | The top one works with the sound off |
-| 3 | **Story** | `beats[]` + `words` budget | Every beat changes the situation |
-| 4 | **Script** | `script` — word for word | Word count within 5% of budget |
-| 5 | **Producer** | `shots[]` + `background` | Every shot has a real, free source |
-| 6 | **Editor** | `brief.json` → MP4 | Renders, and survives the grade |
+| 1 | **Ideas** | MrBeast's leaked internal production doc: title and thumbnail first, the wow factor, stair stepping, creativity instead of budget | [roles/01-ideas.md](references/roles/01-ideas.md) |
+| 2 | **Packaging** | Paddy Galloway: click-and-watch, specific over vague, familiar but unexpected, formats stolen across niches, 80/20 | [roles/02-packaging.md](references/roles/02-packaging.md) |
+| 3 | **Story** | Ryan Trahan, via two teardowns: the five building blocks, the constraint that opens the loop, the visible clock | [roles/03-story.md](references/roles/03-story.md) |
+| 4 | **Script** | The rail's own constraints: spoken by TTS and read as burned captions at once | [roles/04-script.md](references/roles/04-script.md) |
+| 5 | **Producer** | The background ladder, measured text-collision behaviour | [roles/05-producer.md](references/roles/05-producer.md) |
+| 6 | **Editor** | Assemble, render, grade, send | [roles/06-editor.md](references/roles/06-editor.md) |
 
-The roles are technique, not impersonation. Where a framework is publicly
-associated with a creator it is credited in `references/roles.md` as an idea
-worth borrowing, and applied as a rule rather than a voice. Never write a prompt
-that asks a model to be a named person.
+Each file cites its sources so the method can be checked and updated when those
+people publish something new. `references/roles.md` also records where two of the
+sources flatly contradict each other on format lifespan, and which side wins at
+Byron's audience size.
+
+**Replicate the method, not the person.** No role prompts a model to be a named
+individual or to write in their register. That is not squeamishness: asking for a
+personality gets you an impression of a personality, which is a worse output than
+the discipline that made the personality work. The stair-stepping structure
+transfers. Someone's voice does not.
 
 ### Where the critic sits
 
