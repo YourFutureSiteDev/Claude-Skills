@@ -51,7 +51,7 @@ Do not recreate groups he has deleted (School, Personal, Scroll World, Websites 
 
 ## Weekly clean up
 
-A scheduled task named `chat-archive-weekly` runs this every Sunday.
+The app always asks before archiving inside a scheduled routine, even in bypass mode, so this does not run on a schedule (the `chat-archive-weekly` task is switched off). Instead the SessionStart hook (`~/.claude/hooks/chat-organiser-start.sh`) checks `~/.claude/chat-organiser-last-cleanup`. When a week has passed, it asks the first new chat to do the clean up in its first reply and then write the stamp with `date +%s > ~/.claude/chat-organiser-last-cleanup`. Byron's own sessions run in bypass mode, so the archives go through without prompts. Byron can also just ask for it.
 
 1. `mcp__ccd_session_mgmt__list_sessions` with a high limit (200).
 2. Archive, with `mcp__ccd_session_mgmt__archive_session`, every session whose `lastActivityAt` is more than 30 days ago, except ones that are pinned, running, or the current session. Give the reason "Unused for 30 days (weekly clean up)".
