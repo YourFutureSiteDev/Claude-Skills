@@ -1,6 +1,6 @@
 ---
 name: steal-the-polish
-description: Seven sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X, the house dashboard-lift kit and the house login-card kit) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it for any dashboard, stat row, KPI tile, big number, target-vs-actual chart, "make the numbers look live", glow tile, dot-matrix number, or an Instagram showcase post of a finished build: the dashboard-lift kit in assets/ is the drop-in for those. Also use it for any login, sign-up or client-portal page: the login-card kit is the drop-in. Also use it when he names any of the sources, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
+description: Nine sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X, Godly, transitions.dev, the house dashboard-lift kit and the house login-card kit) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it for any dashboard, stat row, KPI tile, big number, target-vs-actual chart, "make the numbers look live", glow tile, dot-matrix number, or an Instagram showcase post of a finished build: the dashboard-lift kit in assets/ is the drop-in for those. Also use it for any login, sign-up or client-portal page: the login-card kit is the drop-in. Also use it when he names any of the sources, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
 ---
 
 # Steal the polish
@@ -19,7 +19,7 @@ code to port. **Two feeds** give you a bar to build to before you touch code.
 
 Before lifting a look from any source below, run `ux-patterns` for the module (settings, table, form, pricing, modal, nav, dashboard). It fixes the behaviour, states and copy from the matching @designmotionhq reel; this skill then supplies the finish. For dashboards the pattern row is de-ai-dashboard, number-formatting, charts-that-lie, loading-states-system and empty-states, and the house dashboard-lift kit here dresses what those specify. Gallery: https://ux-patterns.yourfuturesitedev.workers.dev
 
-## The six
+## The sources
 
 | # | Source | What it is | Where the code lives |
 |---|---|---|---|
@@ -30,6 +30,8 @@ Before lifting a look from any source below, run `ux-patterns` for the module (s
 | 5 | **Best Designs on X** bestdesignsonx.com | Hand-picked design posts from X, plus tabs for Fonts, Dribbble, Behance, App Icons and OG Images. Updated hourly. | Feed. Client-rendered, so open it in the built-in browser and search, `references/feeds.md`. |
 | 6 | **Dashboard lift** (house kit) | Four dashboard looks lifted from the juicelab.uiux "Leadly AI" concept, 10 Sep 2026: dot-matrix numbers (Doto), glow stat tiles, white KPI card with dot clusters, target-vs-actual "ghost bars", plus the Instagram showcase frame and a count-up. Already ported, plain CSS and JS. | Local: `assets/dashboard-lift.css`, `assets/dashboard-lift.js`, demo `assets/dashboard-lift-demo.html`, breakdown `references/juicelab-dashboard.md`. |
 | 7 | **Login card** (house kit) | The @code.xr "Login form V5" look, 20 Sep 2026: black ground with glowing circuit lines, a glass card split by a slanted divider, icon inputs that take the accent on focus, a gradient pill button. Plain CSS, one accent token. | Local: `assets/login-card.css`, demo `assets/login-card-demo.html`, breakdown `references/code-xr-login.md`. |
+| 8 | **Godly** godly.design | Curated gallery of the best designed live websites, with section tabs for Hero, CTA, Footer, OG Images, Logos and App Icons. Added 1 Oct 2026. | Feed. Readable with `curl -s https://r.jina.ai/https://godly.design/hero` (or /cta, /footer, /websites). Screenshot one site and copy its decisions (spacing, type size, one accent), never its brand. |
+| 9 | **transitions.dev** | 30 production UI transitions (card resize, number pop in, modal, menu dropdown, toast, success check, tabs sliding, skeleton reveal) on one motion token scale. Added 1 Oct 2026. | Local skills: `transitions-dev` (the library) and `transitions-polish` (aligns existing motion to its tokens). Plain CSS, so it ports straight in. |
 
 `UI Libraries` means `C:\Users\PC\OneDrive\Desktop\Claude\Skills\UI Libraries`.
 Its `COMPONENT-INDEX.md` lists every component in all seven libraries there.
@@ -47,12 +49,15 @@ looks coolest in the demo.
 - **A standard component with better motion** (tabs, dropdown, modal, toast,
   input, OTP, progress, avatar group, accordion): **SmoothUI**. Ask the API
   in plain words and it ranks matches.
+- **A plain CSS transition** (modal, dropdown, toast, number pop in, success
+  check, tab slide): the **transitions-dev** skill, since it is already plain
+  CSS on one token scale.
 - **A button or a chart with personality**, a loader, a number that counts:
   **Amicro**. `src/data/buttons.tsx` names all 30 button interactions
   (morph, sparkle, shake, pulse, ring, rotate).
 - **Before designing anything visual**, or when a page is technically done
-  but flat: ten minutes in **Inspora** (Web or Product category) or **Best
-  Designs on X**, pick one reference that is close to the job, and name it as
+  but flat: ten minutes in **Inspora** (Web or Product category), **Best
+  Designs on X** or **Godly** (best for a whole hero, CTA or footer section), pick one reference that is close to the job, and name it as
   the bar. `gauntlet-loop` wants exactly that.
 - **A dashboard, stat row, KPI number or target-vs-actual chart**, or an
   Instagram post showing off a finished build: the **dashboard lift** kit.
