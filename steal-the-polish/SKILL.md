@@ -1,6 +1,6 @@
 ---
 name: steal-the-polish
-description: Nine sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X, Godly, transitions.dev, the house dashboard-lift kit and the house login-card kit) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it for any dashboard, stat row, KPI tile, big number, target-vs-actual chart, "make the numbers look live", glow tile, dot-matrix number, or an Instagram showcase post of a finished build: the dashboard-lift kit in assets/ is the drop-in for those. Also use it for any login, sign-up or client-portal page: the login-card kit is the drop-in. Also use it when he names any of the sources, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
+description: Twelve sources of finished UI polish (SmoothUI, Bencho, Amicro, Inspora, Best Designs on X, Godly, transitions.dev, and the house kits dashboard-lift, login-card, pay-ring, scroll-sequence and liquid-nav) and how to lift from each one into Byron's hand-written HTML, CSS and JS sites. Use it whenever a build needs a component, block, micro-interaction or chart that already exists somewhere polished, and whenever a page "looks fine but feels flat", "looks like AI slop", "needs some taste", or Byron asks for inspiration, references, "what do the good ones do", a swipe file, or something to copy the feel of. Also use it for any dashboard, stat row, KPI tile, big number, target-vs-actual chart, "make the numbers look live", glow tile, dot-matrix number, or an Instagram showcase post of a finished build: the dashboard-lift kit in assets/ is the drop-in for those. Also use it for any login, sign-up or client-portal page: the login-card kit is the drop-in. Also use it for any pay, checkout, deposit or Square button (pay-ring kit), any "builds itself as you scroll", scroll scrubbed product or frame sequence section (scroll-sequence kit), and any floating or pill nav, sliding active indicator, liquid glass bar or dark mode toggle (liquid-nav kit). Also use it when he names any of the sources, or says "steal the polish". Sits with `ui-signals` (feedback motion) and the React Bits and UI Libraries folders (hero motion, components): this is the newest batch and the two live inspiration feeds.
 ---
 
 # Steal the polish
@@ -13,7 +13,7 @@ From a @shai.hq Instagram carousel Byron sent on 17 Sep 2026 (breakdown in
 
 That is the split this skill keeps. **Three libraries** give you finished
 code to port. **Two feeds** give you a bar to build to before you touch code.
-**One house kit** (dashboard lift) is already ported and drops straight in.
+**Five house kits** (dashboard lift, login card, pay ring, scroll sequence, liquid nav) are already ported and drop straight in.
 
 ## Behaviour first: ux-patterns
 
@@ -32,6 +32,9 @@ Before lifting a look from any source below, run `ux-patterns` for the module (s
 | 7 | **Login card** (house kit) | The @code.xr "Login form V5" look, 20 Sep 2026: black ground with glowing circuit lines, a glass card split by a slanted divider, icon inputs that take the accent on focus, a gradient pill button. Plain CSS, one accent token. | Local: `assets/login-card.css`, demo `assets/login-card-demo.html`, breakdown `references/code-xr-login.md`. |
 | 8 | **Godly** godly.design | Curated gallery of the best designed live websites, with section tabs for Hero, CTA, Footer, OG Images, Logos and App Icons. Added 1 Oct 2026. | Feed. Readable with `curl -s https://r.jina.ai/https://godly.design/hero` (or /cta, /footer, /websites). Screenshot one site and copy its decisions (spacing, type size, one accent), never its brand. |
 | 9 | **transitions.dev** | 30 production UI transitions (card resize, number pop in, modal, menu dropdown, toast, success check, tabs sliding, skeleton reveal) on one motion token scale. Added 1 Oct 2026. | Local skills: `transitions-dev` (the library) and `transitions-polish` (aligns existing motion to its tokens). Plain CSS, so it ports straight in. |
+| 10 | **Pay ring** (house kit) | A pay button that collapses into a progress ring while the payment runs, then turns into a green tick with a short burst, or reopens as Try again with the reason underneath. Indeterminate spin unless the code reports a real fraction. From a saved Instagram post, 2 Oct 2026. | Local: `assets/pay-ring.css`, `assets/pay-ring.js`, demo `assets/pay-ring-demo.html`. |
+| 11 | **Scroll sequence** (house kit) | The "latte builds itself as you scroll" section: a sticky canvas scrubbing a JPG or WebP frame sequence through a tall section, with side steps (name, option chips, price, CTA) that swap at set points. Plain IntersectionObserver and rAF. 2 Oct 2026. | Local: `assets/scroll-sequence.css`, `assets/scroll-sequence.js`, demo `assets/scroll-sequence-demo.html` with 60 placeholder frames in `assets/scroll-sequence-frames/`. |
+| 12 | **Liquid nav** (house kit) | Floating pill nav whose active indicator glides on a real spring, optional true glass refraction on Chromium (SVG displacement map in `backdrop-filter`) with a frosted fallback, scroll spy, and a theme toggle that reveals the new theme as a growing circle. 2 Oct 2026. | Local: `assets/liquid-nav.css`, `assets/liquid-nav.js`, demo `assets/liquid-nav-demo.html`. |
 
 `UI Libraries` means `C:\Users\PC\OneDrive\Desktop\Claude\Skills\UI Libraries`.
 Its `COMPONENT-INDEX.md` lists every component in all seven libraries there.
@@ -76,6 +79,28 @@ looks coolest in the demo.
 - **A login, sign-up or client-portal page on a dark site:** the **login
   card** kit. Set `--lc-accent` to the brand colour and drop the circuit
   lines if the page already has a hero. Not for light brochure sites.
+- **A pay, deposit or checkout button:** the **pay ring** kit. It owns
+  the wait and the ending, never the payment. On a Square hosted checkout
+  link (every YFS client portal button) use link mode, which only spins
+  until the browser leaves; see the client-portal skill. **Not for** plain
+  form submits that are not money (a contact form wants a normal loading
+  button from `ui-signals`), and never call `progress()` with a timer: a
+  card payment has no real fraction, so it spins.
+- **A product or process that is better shown building up** (a coffee being
+  made, a burger stacking, a deck being built, before and after on a job):
+  the **scroll sequence** kit. Needs real frames: a 3 to 6 second clip
+  filmed or generated, cut with the ffmpeg line in the JS header. **Not
+  for** a section with no real footage (placeholder frames read as cheap),
+  for more than one sequence per page, or for a tradie home page whose
+  visitors want the phone number, not a show. Keep total frames under 5 MB
+  and put every word of copy in the steps, never in the frames.
+- **A site nav for a one page or few page business site:** the **liquid
+  nav** kit, with `data-spy` on one page sites. Refraction only shows on
+  Chromium and only reads over busy imagery; over a flat colour leave
+  `data-glass` off. Add the theme toggle only when the site really has a
+  dark theme designed. **Not for** sites with more than five or six top
+  level links (use a normal header and menu), and not as well as an
+  existing header.
 - **Never** reach here for hero motion or text effects: that is React Bits.
   Never for feedback states (drag over, upload, retry): that is `ui-signals`.
 
@@ -114,6 +139,40 @@ the CSS file (Doto needs the `ROND` axis in the URL or the dots render
 square). Class names: `.dot-num`, `.glow-tile`, `.kpi-card`, `.ghost-bars`,
 `.showcase-post`. Open `assets/dashboard-lift-demo.html` to see all of them
 and copy the markup. `.showcase-post` is for Instagram, never a client site.
+
+**Pay ring, from this skill.** Copy `assets/pay-ring.css` and
+`assets/pay-ring.js` into the project's css and js folders. Add
+`data-pay-ring` to the pay button (add class `pay-ring--block` for full
+width), set `--pr-bg` to the brand button colour, and call
+`PayRing.start(btn)` when the payment begins, then `PayRing.success(btn)` or
+`PayRing.fail(btn, "what went wrong and what to do")`. `PayRing.progress(btn,
+0.6)` only when the code knows a true fraction. For a link out to Square or
+any hosted checkout, use `data-pay-ring="link"` and no JS calls at all.
+Labels: `data-label-busy`, `data-label-done`, `data-label-retry`.
+
+**Scroll sequence, from this skill.** Cut the frames (`ffmpeg -i clip.mp4 -vf
+"fps=24,scale=1280:-2" -q:v 4 frames/name-%03d.jpg`, WebP line in the JS
+header, ffmpeg is at `~/.local/bin/ffmpeg`), copy the CSS and JS in, and copy
+the section markup from `assets/scroll-sequence-demo.html`. Set
+`data-frames` (with `{n}`), `data-count`, `data-pad`, and point the
+`.scroll-seq__still` `<img>` at frame 1 with its real width and height. Each
+`.scroll-seq__step` gets a `data-at` from 0 to 1. Set `--seq-bg` to the
+frames' background colour and `--seq-track` for how long it plays (400vh
+default). Optional `data-frames-small` for a 720px phone set. Reduced
+motion and no JS get the still plus every step stacked, automatically.
+GSAP ScrollTrigger can drive it instead (`data-driver="external"` plus
+`ScrollSequence.seek(section, progress)`), see the JS header.
+
+**Liquid nav, from this skill.** Copy the CSS and JS in, copy the `<nav>`
+from `assets/liquid-nav-demo.html`, and set `--ln-pill`, `--ln-tint` and
+`--ln-ink` (plus their `[data-theme="dark"]` versions) from the site
+palette. `data-glass="refract"` for Chromium refraction, `data-spy` for one
+page sites, `.liquid-nav--bottom` for a thumb reach bar. For the theme
+toggle, put a `<button data-theme-toggle>` in the nav, put the one line
+`<script>` from the JS header in `<head>` so there is no flash of the wrong
+theme, and give the site's own tokens a `[data-theme="dark"]` block (and a
+`prefers-color-scheme` block, as the demo does). Give section targets
+`scroll-margin-top` so the floating bar does not cover headings.
 
 ## Porting rule
 
@@ -166,6 +225,19 @@ again. Do not report the work as finished until all of them pass.
       were kept, no more than three `.glow-tile`s share one screen, Doto is
       on numbers only, the font URL carries the `ROND` axis, and
       `.showcase-post` is not on a client site.
+
+- [ ] If the pay ring kit was used: no fake percentage anywhere (no
+      `progress()` fed by a timer), the error copy says what to do next,
+      link mode is used on hosted checkout links, and the button was
+      clicked through all three endings in the browser.
+- [ ] If the scroll sequence kit was used: frame 1 shows before JS (the
+      still `<img>` has width and height), total frames are under 5 MB,
+      all copy is real DOM text in the steps, and reduced motion was
+      checked and shows the still with stacked steps.
+- [ ] If the liquid nav kit was used: no more than six links, the bar was
+      checked in Safari or iPhone (frosted fallback) as well as Chrome, the
+      active link carries `aria-current`, every link is at least 44px tall,
+      and if the theme toggle is on, the dark theme was actually designed.
 
 If a line cannot be checked without the user, say which one and why, rather
 than assuming it passes.

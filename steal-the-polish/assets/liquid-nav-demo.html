@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Liquid Nav Demo</title>
+<meta name="theme-color" content="#f8fafc">
+<script>try{var t=localStorage.getItem('theme');if(t){document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t;}}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="liquid-nav.css">
+<style>
+  /* page chrome only; the nav lives in liquid-nav.css and .js.
+     Design system query: Glassmorphism, #2563EB primary with #F97316
+     accent on #F8FAFC, Inter throughout, blur 10 to 20px, 1px light edge. */
+  :root { --bg: #f8fafc; --fg: #1e293b; --muted: #475569; --card: #ffffff; --line: #e2e8f0; --primary: #2563eb; --accent: #f97316; --ln-font: "Inter", system-ui, sans-serif; color-scheme: light; }
+  [data-theme="dark"] { --bg: #0b1220; --fg: #e2e8f0; --muted: #94a3b8; --card: #111a2e; --line: #1e293b; --primary: #60a5fa; --accent: #fb923c; color-scheme: dark; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #0b1220; --fg: #e2e8f0; --muted: #94a3b8; --card: #111a2e; --line: #1e293b; --primary: #60a5fa; --accent: #fb923c; color-scheme: dark;
+      --ln-tint: rgba(15,23,42,.5); --ln-edge: rgba(255,255,255,.14); --ln-ink: #e2e8f0; --ln-ink-active: #0f172a; --ln-pill: #93c5fd; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 400 17px/1.6 "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  section { scroll-margin-top: 90px; padding: 120px 16px 80px; }
+  .inner { max-width: 1040px; margin: 0 auto; }
+  .banner { padding: 14px 18px; border: 1px solid #f0c36d; background: #fff7e6; color: #1e293b; border-radius: 14px; font-size: 14px; margin-bottom: 40px; }
+  h1 { font-size: clamp(44px, 9vw, 104px); line-height: .95; letter-spacing: -.035em; font-weight: 800; margin: 0 0 20px; }
+  h1 em { font-style: normal; color: var(--accent); }
+  h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -.02em; margin: 0 0 16px; }
+  p.lead { max-width: 54ch; color: var(--muted); font-size: 19px; margin: 0; }
+  /* stripes behind the bar, so the refraction has edges to bend */
+  .stripes { height: 140px; margin-top: 48px; border-radius: 24px; background: repeating-linear-gradient(90deg, var(--primary) 0 22px, transparent 22px 44px), linear-gradient(90deg, var(--accent), var(--primary)); background-blend-mode: normal; opacity: .9; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .quote { font-size: 22px; line-height: 1.45; max-width: 40ch; margin: 0 0 8px; }
+  .who { color: var(--muted); font-size: 15px; }
+  .cta { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 999px; background: var(--primary); color: #fff; font-weight: 600; text-decoration: none; margin-top: 12px; }
+  [data-theme="dark"] .cta { color: #0b1220; }
+  .cta:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } section { padding-top: 100px; } }
+</style>
+</head>
+<body>
+<nav class="liquid-nav" data-liquid-nav data-glass="refract" data-spy aria-label="Main">
+  <div class="liquid-nav__track">
+    <a href="#home" aria-current="location">Home</a>
+    <a href="#services">Services</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <button class="liquid-nav__theme" type="button" data-theme-toggle aria-label="Switch to dark theme"></button>
+</nav>
+
+<main>
+  <section id="home">
+    <div class="inner">
+      <div class="banner"><strong>Demo, not live.</strong> A placeholder plumber. On Chrome and Edge the bar bends the stripes behind it; Safari and Firefox get a frosted blur. Tap the moon to see the theme reveal.</div>
+      <h1>Hot water back <em>today</em>.</h1>
+      <p class="lead">Placeholder Plumbing Co. Licensed, local, on time. The nav above follows you down the page.</p>
+      <div class="stripes" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="inner">
+      <h2>Services</h2>
+      <div class="grid">
+        <div class="card"><h3>Hot water</h3><p>Repairs and same day replacements, gas and electric.</p></div>
+        <div class="card"><h3>Blocked drains</h3><p>Camera inspection, jetting and relining.</p></div>
+        <div class="card"><h3>Leaks</h3><p>Found without ripping up the floor first.</p></div>
+      </div>
+      <div class="stripes" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section id="reviews">
+    <div class="inner">
+      <h2>Reviews</h2>
+      <p class="quote">Placeholder review. On a client site this is a real Google review with the name and date it carries.</p>
+      <p class="who">Customer name, suburb</p>
+      <div class="stripes" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section id="contact" style="min-height: 90vh">
+    <div class="inner">
+      <h2>Contact</h2>
+      <p class="lead">Call between 7am and 6pm, seven days.</p>
+      <a class="cta" href="tel:0400000000">Call 0400 000 000</a>
+    </div>
+  </section>
+</main>
+<script src="liquid-nav.js"></script>
+</body>
+</html>

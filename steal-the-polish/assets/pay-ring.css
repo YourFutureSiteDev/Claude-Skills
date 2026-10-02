@@ -1,0 +1,205 @@
+/* pay-ring.css
+   A pay button that collapses into a progress ring while the payment is
+   handled, then turns into a green tick (with a short burst) or reopens with
+   an inline error and a retry label. Pairs with pay-ring.js. Dependency free.
+
+   Markup (pay-ring.js adds the ring, the tick and the status lines):
+     <button class="pay-ring" type="submit" data-pay-ring>Pay $175 deposit</button>
+   Full width variant: add class "pay-ring--block".
+   Link out variant (Square hosted checkout): put data-pay-ring="link" on the <a>.
+
+   Theme it with the tokens below. Set --pr-bg to the brand button colour and
+   leave --pr-success green: green means paid everywhere, do not rebrand it.
+   Demo: pay-ring-demo.html */
+
+:root {
+  --pr-bg: #0f172a;           /* idle and busy button colour */
+  --pr-fg: #ffffff;           /* label, ring and tick colour */
+  --pr-success: #16a34a;      /* paid */
+  --pr-error: #dc2626;        /* error text and the error outline */
+  --pr-muted: #475569;        /* status line under the button */
+  --pr-h: 52px;               /* button height, also the ring diameter */
+  --pr-radius: 999px;
+  --pr-font: inherit;
+  --pr-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --pr-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pay-ring-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+.pay-ring-wrap--block { align-items: stretch; }
+.pay-ring-wrap--block > .pay-ring { align-self: center; }
+
+.pay-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--pr-h);
+  min-width: var(--pr-h);
+  padding: 0 28px;
+  border: 0;
+  border-radius: var(--pr-radius);
+  background: var(--pr-bg);
+  color: var(--pr-fg);
+  font: 600 16px/1 var(--pr-font);   /* 16px stops iOS Safari zooming */
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    width 380ms var(--pr-ease),
+    padding 380ms var(--pr-ease),
+    background-color 260ms ease,
+    transform 160ms var(--pr-ease),
+    box-shadow 200ms ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12), 0 6px 16px -6px rgba(15, 23, 42, 0.35);
+}
+.pay-ring--block { width: 100%; }
+
+@media (hover: hover) {
+  .pay-ring[data-state="idle"]:hover,
+  .pay-ring[data-state="error"]:hover {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.14), 0 10px 22px -8px rgba(15, 23, 42, 0.45);
+  }
+}
+.pay-ring[data-state="idle"]:active,
+.pay-ring[data-state="error"]:active { transform: scale(0.97); }
+
+.pay-ring:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--pr-bg) 45%, white);
+  outline-offset: 3px;
+}
+
+/* the label fades out while the ring is up, and stays in the DOM so the
+   button keeps its accessible name */
+.pay-ring__label {
+  display: inline-block;
+  transition: opacity 180ms ease, transform 260ms var(--pr-ease);
+}
+.pay-ring[data-state="busy"] .pay-ring__label,
+.pay-ring[data-state="success"] .pay-ring__label {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.pay-ring[data-state="busy"],
+.pay-ring[data-state="success"] {
+  padding: 0;
+  cursor: progress;
+}
+.pay-ring[data-state="success"] {
+  background: var(--pr-success);
+  cursor: default;
+}
+.pay-ring[data-state="error"] {
+  box-shadow: 0 0 0 2px var(--pr-error), 0 6px 16px -6px rgba(15, 23, 42, 0.35);
+}
+
+/* ---- the ring ---- */
+.pay-ring__ring,
+.pay-ring__tick {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: calc(var(--pr-h) - 12px);
+  height: calc(var(--pr-h) - 12px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.pay-ring__ring { transform: rotate(-90deg); }  /* start at twelve o'clock */
+.pay-ring__track,
+.pay-ring__arc {
+  fill: none;
+  stroke-width: 3;
+}
+.pay-ring__track { stroke: color-mix(in srgb, var(--pr-fg) 22%, transparent); }
+.pay-ring__arc {
+  stroke: var(--pr-fg);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 300ms var(--pr-ease);
+}
+
+.pay-ring[data-state="busy"] .pay-ring__ring { opacity: 1; transition-delay: 160ms; }
+
+/* indeterminate: a quarter arc spinning, because nothing is known yet */
+.pay-ring[data-state="busy"]:not([data-progress]) .pay-ring__ring {
+  animation: pr-spin 900ms linear infinite;
+}
+@keyframes pr-spin { to { transform: rotate(270deg); } }
+
+/* ---- the tick ---- */
+.pay-ring__tick path {
+  fill: none;
+  stroke: var(--pr-fg);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+}
+.pay-ring[data-state="success"] .pay-ring__tick { opacity: 1; }
+.pay-ring[data-state="success"] .pay-ring__tick path {
+  transition: stroke-dashoffset 420ms var(--pr-ease) 120ms;
+  stroke-dashoffset: 0;
+}
+.pay-ring[data-state="success"] { animation: pr-pop 420ms var(--pr-spring); }
+@keyframes pr-pop { 0% { transform: scale(0.92); } 100% { transform: scale(1); } }
+
+/* ---- status and error lines ---- */
+.pay-ring__status,
+.pay-ring__error {
+  margin: 0;
+  min-height: 1.4em;
+  font: 500 14px/1.4 var(--pr-font);
+  text-align: center;
+}
+.pay-ring__status { color: var(--pr-muted); }
+.pay-ring__status[data-tone="success"] { color: var(--pr-success); font-weight: 600; }
+.pay-ring__error { color: var(--pr-error); }
+.pay-ring__error:empty { display: none; }
+/* while an error shows, the empty status line gives up its space */
+.pay-ring-wrap:has(.pay-ring__error:not(:empty)) .pay-ring__status:empty { display: none; }
+
+.pay-ring.is-shaking { animation: pr-shake 380ms var(--pr-ease); }
+@keyframes pr-shake {
+  20% { transform: translateX(-6px); }
+  45% { transform: translateX(5px); }
+  70% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+/* ---- burst particles (made by pay-ring.js on success) ---- */
+.pay-ring__spark {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ---- reduced motion: no collapse slide, no spin, no shake, no burst.
+   The ring pulses instead of spinning so a wait still reads as a wait. ---- */
+@media (prefers-reduced-motion: reduce) {
+  .pay-ring,
+  .pay-ring__label,
+  .pay-ring__arc,
+  .pay-ring[data-state="success"] .pay-ring__tick path { transition-duration: 0ms !important; transition-delay: 0ms !important; }
+  .pay-ring[data-state="busy"]:not([data-progress]) .pay-ring__ring {
+    animation: pr-pulse 1600ms ease-in-out infinite;
+  }
+  .pay-ring[data-state="success"],
+  .pay-ring.is-shaking { animation: none; }
+  @keyframes pr-pulse { 50% { opacity: 0.45; } }
+}

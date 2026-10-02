@@ -1,0 +1,142 @@
+/* scroll-sequence.css
+   The "latte builds itself as you scroll" section: a tall section whose
+   sticky canvas plays an image sequence scrubbed by scroll, with optional
+   side content (name, option chips, price, CTA) that changes at set points.
+   Pairs with scroll-sequence.js. Dependency free.
+
+   Progressive by default: without JS, or with prefers-reduced-motion, the
+   section is a normal block with the still image and every step stacked as
+   plain content. The JS adds .scroll-seq--live, which turns on the tall
+   scroll track and the sticky stage.
+
+   Tokens: --seq-track sets how much scrolling one play takes (300vh to 500vh
+   reads well; under 250vh it feels like a jump). --seq-bg fills behind the
+   canvas and should match the frames' own background.
+   Demo: scroll-sequence-demo.html */
+
+.scroll-seq {
+  --seq-track: 400vh;
+  --seq-bg: #f3e7cf;
+  --seq-side-bg: rgba(255, 255, 255, 0.86);
+  --seq-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  background: var(--seq-bg);
+}
+
+/* ---- fallback layout (no JS, reduced motion) ---- */
+.scroll-seq__stage {
+  display: grid;
+  gap: 24px;
+  padding: 32px 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.scroll-seq__media { position: relative; }
+.scroll-seq__still {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  margin: 0 auto;
+}
+.scroll-seq__canvas { display: none; }
+.scroll-seq__side { display: grid; gap: 28px; }
+.scroll-seq__step { margin: 0; }
+
+/* ---- live layout ---- */
+.scroll-seq--live { height: var(--seq-track); }
+.scroll-seq--live .scroll-seq__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;            /* iPhone: ignore the toolbar so the stage never jumps */
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  align-items: center;
+  overflow: hidden;
+}
+.scroll-seq--live .scroll-seq__media {
+  height: 100%;
+  min-height: 0;
+}
+.scroll-seq--live .scroll-seq__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* the still stays on top as frame 0 until the canvas has drawn */
+.scroll-seq--live .scroll-seq__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transition: opacity 240ms ease;
+}
+.scroll-seq--live[data-fit="contain"] .scroll-seq__still { object-fit: contain; }
+.scroll-seq--live.is-drawn .scroll-seq__still { opacity: 0; pointer-events: none; }
+
+.scroll-seq--live .scroll-seq__side {
+  display: grid;
+  gap: 0;
+  padding: 0 clamp(16px, 4vw, 56px) 0 0;
+}
+.scroll-seq--live .scroll-seq__step {
+  grid-area: 1 / 1;          /* every step in one cell, only the active one shows */
+  opacity: 0;
+  transform: translateY(14px);
+  visibility: hidden;
+  transition:
+    opacity 320ms var(--seq-ease),
+    transform 420ms var(--seq-ease),
+    visibility 0s linear 420ms;
+}
+.scroll-seq--live .scroll-seq__step.is-active {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition:
+    opacity 320ms var(--seq-ease) 60ms,
+    transform 420ms var(--seq-ease) 60ms,
+    visibility 0s;
+}
+
+/* progress hairline, optional: <div class="scroll-seq__bar"></div> in the stage */
+.scroll-seq__bar { display: none; }
+.scroll-seq--live .scroll-seq__bar {
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: currentColor;
+  opacity: 0.35;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--seq-p, 0));
+}
+
+/* phones: the canvas takes the top of the screen and the steps sit in a
+   card underneath it, so the card never covers the product */
+@media (max-width: 760px) {
+  .scroll-seq--live .scroll-seq__stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+  }
+  .scroll-seq--live .scroll-seq__side {
+    margin: 0 12px calc(12px + env(safe-area-inset-bottom));
+    padding: 18px;
+    border-radius: 20px;
+    background: var(--seq-side-bg);
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-seq--live .scroll-seq__step { transition: none; }
+}

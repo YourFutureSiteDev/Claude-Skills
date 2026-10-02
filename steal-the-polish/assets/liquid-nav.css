@@ -1,0 +1,163 @@
+/* liquid-nav.css
+   A floating pill nav whose active indicator glides between items on a
+   spring, with optional real glass refraction on Chromium and a theme toggle
+   that reveals the new theme as a circle growing from the button.
+   Pairs with liquid-nav.js. Dependency free.
+
+   Markup:
+     <nav class="liquid-nav" data-liquid-nav data-glass="refract" data-spy aria-label="Main">
+       <div class="liquid-nav__track">
+         <a href="#home" aria-current="page">Home</a>
+         <a href="#services">Services</a>
+         <a href="#contact">Contact</a>
+       </div>
+       <button class="liquid-nav__theme" type="button" data-theme-toggle aria-label="Switch to dark theme"></button>
+     </nav>
+
+   data-glass="refract"  bends what is behind the bar on Chromium; Safari and
+                         Firefox get the frosted blur below, automatically
+   data-spy              moves the indicator as the page scrolls past each
+                         #section the links point at (one page sites)
+   .liquid-nav--bottom   sits at the foot of the screen instead (thumb reach)
+
+   Tokens: --ln-tint is the glass colour, --ln-pill the indicator, --ln-ink
+   the text. Dark values sit under [data-theme="dark"], which the toggle sets
+   on <html>. Demo: liquid-nav-demo.html */
+
+:root {
+  --ln-tint: rgba(255, 255, 255, 0.55);
+  --ln-edge: rgba(255, 255, 255, 0.7);
+  --ln-shadow: 0 1px 1px rgba(15, 23, 42, 0.06), 0 12px 32px -12px rgba(15, 23, 42, 0.28);
+  --ln-ink: #1e293b;
+  --ln-ink-active: #ffffff;
+  --ln-pill: #2563eb;
+  --ln-font: inherit;
+  --ln-h: 52px;
+}
+[data-theme="dark"] {
+  --ln-tint: rgba(15, 23, 42, 0.5);
+  --ln-edge: rgba(255, 255, 255, 0.14);
+  --ln-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  --ln-ink: #e2e8f0;
+  --ln-ink-active: #0f172a;
+  --ln-pill: #93c5fd;
+}
+
+.liquid-nav {
+  position: fixed;
+  z-index: 50;
+  top: calc(14px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100vw - 24px);
+  height: var(--ln-h);
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--ln-tint);
+  box-shadow: inset 0 0 0 1px var(--ln-edge), var(--ln-shadow);
+  font: 600 15px/1 var(--ln-font);
+  /* frosted fallback for every browser */
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  backdrop-filter: blur(16px) saturate(170%);
+}
+.liquid-nav--bottom {
+  top: auto;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+}
+/* no backdrop-filter at all: make the bar solid enough to read */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-nav { background: color-mix(in srgb, var(--ln-tint) 30%, Canvas); }
+}
+/* Chromium refraction, switched on by liquid-nav.js only after it has
+   checked the browser and built the displacement map */
+.liquid-nav.is-refracting {
+  backdrop-filter: var(--ln-refract) blur(3px) saturate(170%);
+}
+
+.liquid-nav__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-radius: 999px;
+}
+.liquid-nav__track::-webkit-scrollbar { display: none; }
+
+.liquid-nav__track a {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  min-width: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  color: var(--ln-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 220ms ease;
+}
+.liquid-nav__track a[aria-current] { color: var(--ln-ink-active); }
+.liquid-nav__track a:focus-visible,
+.liquid-nav__theme:focus-visible {
+  outline: 2px solid var(--ln-pill);
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .liquid-nav__track a:not([aria-current]):hover { background: color-mix(in srgb, var(--ln-ink) 8%, transparent); }
+}
+
+/* the gliding indicator, created by liquid-nav.js */
+.liquid-nav__pill {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ln-pill);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 12px -4px color-mix(in srgb, var(--ln-pill) 70%, transparent);
+  pointer-events: none;
+  will-change: transform, width;
+}
+
+/* ---- theme toggle ---- */
+.liquid-nav__theme {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ln-ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .liquid-nav__theme:hover { background: color-mix(in srgb, var(--ln-ink) 8%, transparent); }
+}
+.liquid-nav__theme svg { width: 20px; height: 20px; }
+
+/* the circle reveal: the script animates clip-path on the new snapshot,
+   so the browser's default cross fade is switched off here */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) { z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-nav__pill { transition: none !important; }
+}

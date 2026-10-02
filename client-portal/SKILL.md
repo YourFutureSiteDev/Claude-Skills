@@ -142,6 +142,48 @@ one, and "nearly" is how a price ends up different on one client's page.
 Then **open the page and look at it**. The prices cannot be wrong; the branding
 can.
 
+## The pay button finish: the pay ring kit
+
+The preset buttons get the house **pay ring** kit from `steal-the-polish`
+(`~/.claude/skills/steal-the-polish/assets/pay-ring.css` and `pay-ring.js`,
+demo `pay-ring-demo.html`). On tap the button collapses into a spinning ring
+with "Opening secure Square checkout…" under it, so a client on a slow phone
+can see the tap landed and does not tap twice. It is a wrapper only. **It
+changes nothing about the money:** `bot/src/portal.js`, the presets, the
+Square links and the hrefs all stay exactly as they are.
+
+How to wrap the buttons:
+
+- **Put it in the generator's page template, never in a generated page.**
+  The rule in Step 4 still holds: no hand edits to `website/pay/*.html`.
+  Change the template once, rebuild, and every page gets it the same way.
+- **Copy the two files in as local files** next to the other page assets
+  (for example `website/pay/assets/pay-ring.css` and `pay-ring.js`) and link
+  them with relative paths. Nothing loads from a CDN, so the page CSP is not
+  touched, and no inline script is needed: the kit starts itself from the
+  data attribute.
+- **Each live preset button is an `<a>` to Square, so use link mode:**
+  `<a class="pay-ring pay-ring--block" data-pay-ring="link"
+  data-label-busy="Opening secure Square checkout…" href="https://square.link/u/...">Pay $175 deposit</a>`.
+  Set `--pr-bg` to the page's accent from the theming question. Leave
+  `--pr-success` green.
+- **Link mode only ever spins.** The payment happens on Square's page, so
+  this page never knows the result and must never show a tick or "Payment
+  received". Do not call `PayRing.success()` on it, and do not add a timer
+  that fakes one. The Back button and coming back from a new tab put the
+  button back to idle on their own.
+- **Dead buttons stay dead.** A preset with no Square link ("Payment link
+  not created yet") gets no `data-pay-ring` attribute, so it cannot spin as
+  if something were happening.
+- **Check it:** open the built page, tap a live button, confirm the ring
+  shows and the browser still lands on the right Square link, then press
+  Back and confirm the button is idle again.
+
+`success()` and `fail()` only become useful if the portal ever takes card
+payments on its own page (Square Web Payments SDK), which rule 1 above
+forbids today. Until Byron changes that rule, link mode is the only mode
+used here.
+
 ## Step 5: hand it over, and stop
 
 Tell Byron it is ready and tell him the two things that are still his:

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scroll Sequence Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="scroll-sequence-frames/latte-001.jpg">
+<link rel="stylesheet" href="scroll-sequence.css">
+<style>
+  /* page chrome only; the effect lives in scroll-sequence.css and .js.
+     Design system query: Motion-Driven storytelling, warm brown #92400E on
+     cream #FEF3C7, Rubik headings over Nunito Sans. */
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fef3c7; color: #78350f; font: 400 17px/1.6 "Nunito Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: "Rubik", system-ui, sans-serif; color: #451a03; line-height: 1.15; }
+  .intro, .after { max-width: 760px; margin: 0 auto; padding: 56px 16px; }
+  .banner { padding: 14px 18px; border: 1px solid #f0c36d; background: #fff7e6; border-radius: 14px; font-size: 14px; margin-bottom: 32px; }
+  .intro h1 { font-size: clamp(34px, 6vw, 56px); margin: 0 0 12px; }
+  .intro p { max-width: 56ch; margin: 0; }
+  .hint { margin-top: 20px !important; font-weight: 700; color: #92400e; }
+
+  .scroll-seq { --seq-bg: #f3e7cf; color: #92400e; }
+  .eyebrow { font: 600 13px/1 "Rubik", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #92400e; margin: 0 0 10px; }
+  .scroll-seq__step h2 { font-size: clamp(26px, 3.4vw, 40px); margin: 0 0 10px; }
+  .scroll-seq__step p { margin: 0 0 14px; max-width: 40ch; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; padding: 0; }
+  .chip { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid #d6b48a; background: #fffaf0; color: #78350f; font: 600 15px "Nunito Sans", sans-serif; cursor: pointer; touch-action: manipulation; transition: background-color .2s, border-color .2s, color .2s; }
+  .chip[aria-pressed="true"] { background: #92400e; border-color: #92400e; color: #fff; }
+  .chip:focus-visible, .cta:focus-visible { outline: 3px solid #b45309; outline-offset: 2px; }
+  .price { font: 700 30px/1 "Rubik", sans-serif; color: #451a03; margin: 6px 0 16px; font-variant-numeric: tabular-nums; }
+  .cta { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 999px; background: #92400e; color: #fff; font: 600 16px "Rubik", sans-serif; text-decoration: none; }
+  @media (hover: hover) { .cta:hover { background: #7c2d12; } }
+  @media (max-width: 760px) {
+    .scroll-seq__step h2 { font-size: 24px; }
+    .scroll-seq__step p { font-size: 15px; margin-bottom: 10px; }
+    .price { font-size: 24px; margin-bottom: 12px; }
+  }
+</style>
+</head>
+<body>
+<header class="intro">
+  <div class="banner"><strong>Demo, not live.</strong> The glass is a placeholder sequence of 60 frames drawn with ffmpeg. On a client site this is a real pour filmed or generated, cut into frames with the one liner in <code>scroll-sequence.js</code>.</div>
+  <h1>Built the way you order it</h1>
+  <p>A placeholder cafe page. Scroll down and the latte builds itself, one layer per step, with the options and the price changing beside it.</p>
+  <p class="hint">Scroll to pour.</p>
+</header>
+
+<section class="scroll-seq" data-scroll-seq
+         data-frames="scroll-sequence-frames/latte-{n}.jpg" data-count="60" data-pad="3"
+         data-fit="contain" aria-label="How your iced latte is made">
+  <div class="scroll-seq__stage">
+    <div class="scroll-seq__media">
+      <canvas class="scroll-seq__canvas" aria-hidden="true"></canvas>
+      <img class="scroll-seq__still" src="scroll-sequence-frames/latte-001.jpg" width="720" height="960"
+           alt="A tall glass ready for an iced latte">
+    </div>
+    <div class="scroll-seq__side">
+      <div class="scroll-seq__step" data-at="0">
+        <p class="eyebrow">Step 1 of 4</p>
+        <h2>A cold glass</h2>
+        <p>Straight from the fridge, so the ice lasts and the layers hold.</p>
+      </div>
+      <div class="scroll-seq__step" data-at="0.22">
+        <p class="eyebrow">Step 2 of 4</p>
+        <h2>Espresso, pulled to order</h2>
+        <div class="chips" role="group" aria-label="Shots">
+          <button class="chip" type="button" aria-pressed="false" data-group="shot" data-add="0">Single</button>
+          <button class="chip" type="button" aria-pressed="true" data-group="shot" data-add="0.5">Double</button>
+        </div>
+      </div>
+      <div class="scroll-seq__step" data-at="0.5">
+        <p class="eyebrow">Step 3 of 4</p>
+        <h2>Your milk, poured slow</h2>
+        <div class="chips" role="group" aria-label="Milk">
+          <button class="chip" type="button" aria-pressed="true" data-group="milk" data-add="0.6">Oat</button>
+          <button class="chip" type="button" aria-pressed="false" data-group="milk" data-add="0">Full cream</button>
+          <button class="chip" type="button" aria-pressed="false" data-group="milk" data-add="0.6">Almond</button>
+        </div>
+      </div>
+      <div class="scroll-seq__step" data-at="0.8">
+        <p class="eyebrow">Step 4 of 4</p>
+        <h2>Iced oat latte</h2>
+        <div class="chips" role="group" aria-label="Size">
+          <button class="chip" type="button" aria-pressed="true" data-group="size" data-add="0">Regular</button>
+          <button class="chip" type="button" aria-pressed="false" data-group="size" data-add="1">Large</button>
+        </div>
+        <p class="price" aria-live="polite">$<span data-price>6.60</span></p>
+        <a class="cta" href="#order">Order for pickup</a>
+      </div>
+    </div>
+    <div class="scroll-seq__bar" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section class="after" id="order">
+  <h2>Ready in about four minutes</h2>
+  <p>Content after the sequence scrolls in as normal. The sequence section is only as tall as its scroll track.</p>
+</section>
+
+<script src="scroll-sequence.js"></script>
+<script>
+  // demo only: the chips pick one per group and add up the price
+  var base = 5.5;
+  function total() {
+    var t = base;
+    document.querySelectorAll('.chip[aria-pressed="true"]').forEach(function (c) { t += +c.dataset.add; });
+    document.querySelector('[data-price]').textContent = t.toFixed(2);
+  }
+  document.querySelectorAll('.chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      document.querySelectorAll('.chip[data-group="' + c.dataset.group + '"]').forEach(function (o) { o.setAttribute('aria-pressed', o === c ? 'true' : 'false'); });
+      total();
+    });
+  });
+  total();
+</script>
+</body>
+</html>
