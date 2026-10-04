@@ -67,3 +67,8 @@ from it.
 - **Google Ads keyword planner**: monthly volume ranges. Byron must create the
   account himself (Claude never creates accounts). Expert mode lets you skip
   making a campaign.
+- **Notra** (notra.ai style tool from a saved reel, 4 Oct 2026): tracks how a brand shows up in ChatGPT, Claude and other AI answers, compares competitors and finds content gaps. Use it once Byron makes an account, to check whether yourfuturesite.com.au and client sites are named when someone asks an AI "who builds websites for plumbers near me". Until then, ask the question yourself in a fresh chat and note which businesses get named.
+
+## 6. The nightly page gap run (planned, from a saved reel)
+
+The idea Byron saved on 3 Oct 2026: overnight, read competitors' sites, Google reviews and Maps listings, find searches they show up for where Byron's site has no page, pick the biggest, write that page from real business facts, have a second pass check it against these rules, send it back once if it fails, then publish and refresh one older page. Build it as a scheduled job only after this skill's manual run has produced a page plan Byron approved, and keep the doorway page rule above: one page a night at most, real content only, Byron sees the list of new pages each morning.
