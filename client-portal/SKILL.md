@@ -213,3 +213,7 @@ anything in there by hand.
 Change `bot/src/portal.js` and its tests, never the HTML. The page is a view. A
 price edited into the HTML changes what the page says and not what Square charges,
 which is the worst of both.
+
+## Ask for nothing before payment
+
+From the "$300 million button" case (Jared Spool, 2009, saved 4 Oct 2026): a store lost sales by forcing sign up before checkout. On every pay page, never ask for an account, a login or any field Square does not need before the pay button, and put the line "No account needed" directly under it.

@@ -27,6 +27,10 @@ python3 ~/.claude/skills/keyword-map/scripts/kwmap.py \
 - It runs about 30 autocomplete calls per seed. Do not loop it all session;
   Google will start refusing.
 
+### Real words from real people (free)
+
+Before judging, ask Reddit Answers (the Ask button beside Reddit's search bar) a full sentence question such as "what do people hate about their plumber's website" or "what makes you trust a tradie online". Open the threads it cites and copy the exact phrases people use. Feed those phrases in as extra seed keywords and use them in page copy and FAQs. Run it in Byron's Chrome; Reddit blocks plain fetches.
+
 ## 2. Judge relevance yourself (the script cannot)
 
 Autocomplete returns plenty of noise: people looking for a plumber, not a plumber's
