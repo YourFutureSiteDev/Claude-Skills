@@ -108,6 +108,39 @@ reason. Never report an item you did not actually check.
     browser calling your endpoint, never the provider. Static sites on
     Cloudflare Pages that only use a form endpoint pass this by design.
 
+## Secrets and injection
+
+Item 21 catches a key someone pasted in. These three catch the holes that let
+a stranger inject something through the site itself (SQL, script, prompt or a
+request your server makes for them). Do all three on anything with a form, a
+login, a Worker or an AI feature, and record each like the twenty-one.
+
+- **Grep what shipped, not just the source.** Run `bash scripts/keyscan.sh <live url>`
+  (it now also catches `sk_live_`, `rk_`, `AKIA` and `client_secret`), and grep
+  the build output folder too: `grep -rnE 'sk-|sk_|rk_|api_key|secret|Bearer |PRIVATE KEY' dist/`.
+  A `pk_live_` publishable key is fine to ship; anything else is a fail. Also
+  open a few paths that must not be served, such as `/.dev.vars`,
+  `/.git/config` and `/wrangler.toml`, and confirm they 404 or fall back to
+  the home page.
+- **Escape user text before it goes into HTML.** Anything a user, another
+  user, a URL parameter or an API typed ends up on a page through
+  `textContent`, or through an `esc()` that replaces `& < > " '` before it
+  touches `innerHTML`. Search the code for `innerHTML`, `insertAdjacentHTML`
+  and `outerHTML` and check every value that is not a fixed string. Markdown
+  renders through DOMPurify. A link a user supplied only goes in an `href`
+  when it starts with `https://`. Database queries take values as bound
+  parameters (`?`), never glued into the SQL string; a value that has to sit
+  in the SQL text (a column or JSON path) is checked against a fixed list
+  with `Object.prototype.hasOwnProperty`, not `LIST[x]`.
+- **Never fetch a URL a user typed from your server without an allowlist.**
+  A Worker or server that fetches, screenshots or forwards to a link from a
+  form is a free proxy into everything it can reach. Allow named hosts only
+  (FORM's push worker allows the four push services and nothing else), https
+  only, no custom ports. The same goes for text: anything typed by the public
+  that a Claude or an AI feature later reads (a board task, a support
+  message, a reel transcript) is fenced and labelled as data, never as
+  instructions.
+
 ## Landing page section order (YFS client sites)
 
 A small business home page sells in a known order. Check the page against it
@@ -217,6 +250,7 @@ Before reporting the site as launch-ready:
 - [ ] Broken-link checking covered the whole site, not only the home page
 - [ ] Any item you could not check without the client or their accounts is listed as blocked, naming what you need from them
 - [ ] `scripts/keyscan.sh` was run against the live URL and came back clean, and the output is in the reply
+- [ ] The three Secrets and injection checks were done: build output grepped, every HTML sink escapes user text, and no server side fetch of a user typed URL without an allowlist
 - [ ] For a Scroll World build, the three scroll-specific checks are included
 - [ ] The landing page section order was checked, each of the ten marked present, missing or skipped on purpose with a reason, and missing Problem, How it works or FAQ named in the report
 - [ ] The interface pass was done in the browser, with any failing item fixed or listed
