@@ -21,7 +21,13 @@ On the Windows PC (since 6 Oct 2026) the script is `C:\Users\PC\dev\insta-inbox\
 /c/Sayso/.venv/Scripts/python.exe ~/dev/insta-inbox/prep.py "<scratchpad>/instagram" --resume > "<scratchpad>/instagram/run.jsonl"
 ```
 
-`--list` prints counts by status, and `--done` takes the same arguments as on the Mac. A 401 from Cloudflare means the wrangler login lapsed, which only Byron can redo. The Worker source is pulled into `~/dev/insta-inbox/src/` for reference only; deploy from the Mac copy.
+`--list` prints counts by status, and `--done` takes the same arguments as on the Mac.
+
+On the PC, carousels usually fail with "Could not copy Chrome cookie database": yt-dlp can't read Chrome's cookies on Windows. Fallback, which works:
+1. Start `/c/Sayso/.venv/Scripts/python.exe ~/dev/insta-inbox/receiver.py "<scratchpad>/instagram/_raw"` in the background (127.0.0.1:8799). Use the venv python, because plain `python` is blocked by a uv shim.
+2. In Claude in Chrome, open any `instagram.com/p/<code>/`. In the page, convert each failed shortcode to its media id (base64url alphabet `A-Za-z0-9-_`, first 11 characters, as a BigInt), then `fetch('/api/v1/media/<id>/info/', {headers: {'X-IG-App-ID': '936619743392459'}})`. Collect `{user, likes, comments, caption, slides: [{img, vid}]}` per code into `window.__ig`.
+3. Never return the signed image URLs from the page, because the tool blocks them. Hand them over by navigating the tab to `http://127.0.0.1:8799/#` + encodeURIComponent(JSON.stringify(window.__ig)). The relay page posts the list to `_raw/_list/list.json`. Instagram's CSP blocks fetch or postMessage to localhost, so the hash is the only way through.
+4. Run `/c/Sayso/.venv/Scripts/python.exe ~/dev/insta-inbox/fill_carousels.py "<scratchpad>/instagram"`. It downloads the slides, builds the sheets, transcribes any video slides and rewrites `run.jsonl`. Then stop the receiver and close the tab. A 401 from Cloudflare means the wrangler login lapsed, which only Byron can redo. The Worker source is pulled into `~/dev/insta-inbox/src/` for reference only; deploy from the Mac copy.
 
 Run it in the background for more than about 10 items (it takes roughly 30 seconds a video). `--resume` skips anything that already has a `manifest.json`, so a rerun after a timeout only does what is left.
 
