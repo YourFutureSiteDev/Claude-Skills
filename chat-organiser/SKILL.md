@@ -26,6 +26,8 @@ Do the real work first. Organising must never delay or replace the answer.
    `Filed as **<title>** in **<group>**.` Add `(new group)` when you created it.
 5. If the first message is too vague to name (just "hi"), wait and do it on the first reply where the topic is clear.
 
+If the topic clearly changes partway through a chat, retitle it (and move it to a better group if needed) so the sidebar never shows a stale name.
+
 If Byron later says a chat belongs somewhere else, move it and use that choice for similar chats from then on.
 
 ## Group guide
@@ -51,7 +53,7 @@ Do not recreate groups he has deleted (School, Personal, Scroll World, Websites 
 
 ## Weekly clean up
 
-The app always asks before archiving inside a scheduled routine, even in bypass mode, so this does not run on a schedule (the `chat-archive-weekly` task is switched off). Instead the SessionStart hook (`~/.claude/hooks/chat-organiser-start.sh`) checks `~/.claude/chat-organiser-last-cleanup`. When a week has passed, it asks the first new chat to do the clean up in its first reply and then write the stamp with `date +%s > ~/.claude/chat-organiser-last-cleanup`. Byron's own sessions run in bypass mode, so the archives go through without prompts. Byron can also just ask for it.
+The app always asks before archiving inside a scheduled routine, even in bypass mode, so this does not run on a schedule (the `chat-archive-weekly` task is switched off). Instead the SessionStart hook (`~/.claude/hooks/chat-organiser-start.ps1`, registered in `~/.claude/settings.json`) checks `~/.claude/chat-organiser-last-cleanup`. When a week has passed, it asks the first new chat to do the clean up in its first reply and then write the stamp with `date +%s > ~/.claude/chat-organiser-last-cleanup`. Byron's own sessions run in bypass mode, so the archives go through without prompts. Byron can also just ask for it.
 
 1. `mcp__ccd_session_mgmt__list_sessions` with a high limit (200).
 2. Archive, with `mcp__ccd_session_mgmt__archive_session`, every session whose `lastActivityAt` is more than 30 days ago, except ones that are pinned, running, or the current session. Give the reason "Unused for 30 days (weekly clean up)".
