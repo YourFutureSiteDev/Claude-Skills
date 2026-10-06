@@ -15,6 +15,14 @@ Byron shares reels from Instagram on his iPhone to the "Insta Inbox" share short
 python3 ~/dev/insta-inbox/prep.py --resume "<scratchpad>/instagram" > "<scratchpad>/instagram/run.jsonl"
 ```
 
+On the Windows PC (since 6 Oct 2026) the script is `C:\Users\PC\dev\insta-inbox\prep.py`, a rebuild that reads the Worker's KV store through the wrangler login, so it needs no `.token`. Run it with the Sayso venv (faster-whisper on the GPU) and the sandbox off, since it calls Cloudflare and Instagram:
+
+```bash
+/c/Sayso/.venv/Scripts/python.exe ~/dev/insta-inbox/prep.py "<scratchpad>/instagram" --resume > "<scratchpad>/instagram/run.jsonl"
+```
+
+`--list` prints counts by status, and `--done` takes the same arguments as on the Mac. A 401 from Cloudflare means the wrangler login lapsed, which only Byron can redo. The Worker source is pulled into `~/dev/insta-inbox/src/` for reference only; deploy from the Mac copy.
+
 Run it in the background for more than about 10 items (it takes roughly 30 seconds a video). `--resume` skips anything that already has a `manifest.json`, so a rerun after a timeout only does what is left.
 
 It prints one JSON line per waiting video, oldest first: `id, url, note, uploader, description, like_count, comment_count, duration, transcript (timestamped lines), frames (jpg paths), sheet (one contact sheet of all frames, 4 across, in time order), error`. `{"waiting": 0}` means nothing is saved: say so in one line and stop.
