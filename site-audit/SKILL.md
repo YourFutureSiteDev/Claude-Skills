@@ -100,6 +100,13 @@ during the first build of this tool, and each one is now handled. If a new one
 appears, fix the detector rather than working around it: an audit that cries
 wolf gets ignored, which is worse than no audit.
 
+**Try to disprove every fail before reporting it.** Before a `fail` goes into
+the report, look at the rendered page yourself and try to show the finding
+is wrong. A detector can trip on an element that is hidden, decorative or
+already handled elsewhere on the page. If it holds up, report it. If it
+doesn't, fix the detector. On a run over every site, a separate subagent
+does this pass, so the audit isn't marking its own work.
+
 **Never weaken a check to make a score look better.** If an item cannot be
 closed without the client, mark it blocked and name exactly what you need.
 

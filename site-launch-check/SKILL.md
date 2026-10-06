@@ -225,6 +225,32 @@ desktop, after the twenty-one.
 - **Locale.** Prices, dates and phone numbers are written the Australian
   way (en-AU), and currency is either always whole dollars or always
   cents on one page, never mixed.
+- **One main action per screen (Hick's law).** Each screenful has one
+  primary call to action that looks like the primary one. Two equal
+  buttons side by side slow the decision, so make one of them secondary.
+  The nav has seven items or fewer.
+- **Main buttons big and in thumb reach (Fitts's law).** On a phone, the
+  enquiry or call button is full width or close to it and sits in the
+  lower half of the screen where the thumb rests, not tucked in a corner
+  of the header.
+- **The ending is designed (peak end rule).** People remember the best
+  moment and the last one. The form success state says what happens next
+  and when ("We'll reply within one business day"), not just "Sent". The
+  footer finishes the page properly: contact details, hours, and one last
+  call to action.
+
+## Skeptic pass
+
+Run this after the twenty-one, before writing the report. For every item
+marked failing, and every bug found along the way, try to prove the finding
+wrong. Reload the page, test at the other width, check the live URL rather
+than the local copy, and read the actual code. Only findings that survive
+go into the report. Anything you could not reproduce is dropped or marked
+"could not reproduce" with what you tried. This stops false alarms reaching
+a client, which costs more trust than a missed nitpick. The idea came from
+a reel about a security audit skill that hands every finding to a separate
+agent whose only job is to disprove it. For a big site, run the skeptic as
+its own subagent, so it isn't marking its own work.
 
 ## For a Scroll World build
 
@@ -254,3 +280,4 @@ Before reporting the site as launch-ready:
 - [ ] For a Scroll World build, the three scroll-specific checks are included
 - [ ] The landing page section order was checked, each of the ten marked present, missing or skipped on purpose with a reason, and missing Problem, How it works or FAQ named in the report
 - [ ] The interface pass was done in the browser, with any failing item fixed or listed
+- [ ] Every finding in the report survived the skeptic pass; anything that could not be reproduced is dropped or marked as such

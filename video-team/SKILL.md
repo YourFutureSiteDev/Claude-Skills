@@ -80,6 +80,12 @@ specific documented method in detail, and the table below is only the index.
 | 5 | **Producer** | The background ladder, measured text-collision behaviour | [roles/05-producer.md](references/roles/05-producer.md) |
 | 6 | **Editor** | Assemble, render, grade, send | [roles/06-editor.md](references/roles/06-editor.md) |
 
+For roles 2, 5 and 6, also skim `references/formats-from-reels.md`. It has
+on-screen formats lifted from reels Byron saved that measurably held
+attention: floating UI cards, chapter pills, a taped headline strip, split
+screen, a screenshot freeze, and carousel templates. It also lists what not
+to copy.
+
 Each file cites its sources so the method can be checked and updated when those
 people publish something new. `references/roles.md` also records where two of the
 sources flatly contradict each other on format lifespan, and which side wins at
