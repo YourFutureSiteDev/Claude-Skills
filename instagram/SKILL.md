@@ -81,6 +81,7 @@ After merging the batch agents' rows:
 
 1. Check each `adapt.lane` against the lane table. One niche and one CTA style per account. `none` is right for most trading, client site and tool posts.
 2. For each keep or maybe post with a lane, write a brief file, `Content Engine/instagram-research/<date>/adapt/<id>.json`, in video-team's `brief.json` shape as `adapt.md` describes, and put its path in `adapt.brief`. Skip posts and `none` keep `brief: null`.
+   `/c/Sayso/.venv/Scripts/python.exe -I ~/.claude/skills/instagram/scripts/write_briefs.py "<batch folder>/results.json"` does all of this: run it with `--dry-run` first, it keeps any brief already on disk unless you pass `--force`, then add the beat prose by hand where a job line is thin. Tests: `python -W error -I scripts/test_write_briefs.py`.
 3. Run the self test before building the page:
 
    ```bash
