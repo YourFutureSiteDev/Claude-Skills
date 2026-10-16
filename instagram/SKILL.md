@@ -81,6 +81,6 @@ For each video analysed:
 python3 ~/dev/insta-inbox/prep.py --done "<id>" "<two or three line summary>" "<artifact url or omit>"
 ```
 
-For a whole batch, `scripts/mark_done.py <results.json> <artifact url>` does the same for every row in one process, with the summary `#rank of N · Use x/10 · Tier` then the row's `phone` lines, and the report link pointing at that post's card.
+For a whole batch, `scripts/mark_done.py <results.json> <artifact url>` does the same for every row in one process, with the summary `#rank of N · Use x/10 · Tier`, then the row's `phone` lines, then one line from the adapt field when it has a lane (`Adapt: B1, empty list, 30s. Five slots fill as each moment plays.`, under 100 characters), and the report link pointing at that post's card. Run it with `--dry-run` first: it prints every summary and never loads `prep.py`, so nothing reaches the phone. `--only 13,27` limits either run to those ranks. Tests: `python -I scripts/test_mark_done.py`.
 
 The phone app then moves it to the Analysed tab with that summary and a Full report link. Finish with one line: how many analysed, how many still waiting (failed downloads).

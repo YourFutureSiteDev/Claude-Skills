@@ -106,6 +106,7 @@ shape (plain strings, UK spelling, no em dashes or en dashes as punctuation, no 
     "words": 84,
     "angle": "the idea for that lane, in our own words",
     "why_lane": "one line",
+    "phone": "the idea in under 60 characters",
     "brief": null
   }
 }

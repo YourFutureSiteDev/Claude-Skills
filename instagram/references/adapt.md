@@ -40,6 +40,7 @@ Every post gets it, in the row the batch agent writes (`analysis-shape.md`):
   "words": 84,
   "angle": "the idea for that lane, in our own words",
   "why_lane": "one line",
+  "phone": "the idea in under 60 characters, for the phone summary",
   "brief": "instagram-research/<date>/adapt/<id>.json or null"
 }
 ```
@@ -51,6 +52,10 @@ Every post gets it, in the row the batch agent writes (`analysis-shape.md`):
   2.8 words a second, 2.29 for `en-AU-NatashaNeural`. So 30 s is 84 words, 15 s is
   42. In a lane with no voice (B1, D1) `words` counts the on screen text instead,
   and the clip lengths set `seconds`.
+- `phone` is the idea in a few words. `mark_done.py` puts it after
+  `Adapt: B1, empty list, 30s.` and keeps the whole line under 100 characters,
+  cutting on a word if it runs long. Without it, the angle gets cut instead,
+  which reads worse.
 - `brief` is a file only for keep and maybe posts with a lane (Byron, 17 Oct 2026).
   Skip posts and `none` get `null`.
 - `lane: none` needs only `lane`, `hook_type` and `why_lane`; leave the rest null.

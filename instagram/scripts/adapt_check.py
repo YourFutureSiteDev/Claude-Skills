@@ -5,7 +5,7 @@
 For every row with an adapt field it builds the source text from the row's hook
 and structure (the on screen and slide text the analysis quoted) plus, when a
 manifest root is given, that post's transcript and caption. A row fails if any
-run of six words from the source turns up in adapt.angle, adapt.beats[].job,
+run of six words from the source turns up in adapt.angle, adapt.phone, adapt.beats[].job,
 or the brief file's _angle and _beats[].beat, after lower casing and stripping
 punctuation. Exit code 1 on any failure. See references/adapt.md.
 """
@@ -41,7 +41,7 @@ def source(r, root):
 
 def ours(r, base):
     a = r["adapt"]
-    texts = [("angle", a.get("angle"))] + [(f"beat {b.get('at')}", b.get("job")) for b in a.get("beats") or []]
+    texts = [("angle", a.get("angle")), ("phone", a.get("phone"))] + [(f"beat {b.get('at')}", b.get("job")) for b in a.get("beats") or []]
     brief = a.get("brief")
     if brief:
         f = os.path.join(base, brief)
