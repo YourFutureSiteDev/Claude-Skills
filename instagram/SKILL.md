@@ -52,7 +52,7 @@ put this paragraph in their prompt too.
 
 ## 2. Watch each video
 
-More than about 8 items: split the manifests into batches of 8 and hand each batch to a parallel general purpose agent with the same scoring rules (usefulness to his real work and craft, 1 to 10, a verdict, red flags, a phone summary) and have each return JSON. Merge and rank yourself.
+More than about 8 items: split the manifests into batches of 8 and hand each batch to a parallel general purpose agent with the same scoring rules (usefulness to his real work and craft, 1 to 10, a verdict, red flags, a phone summary) and have each return JSON. Merge and rank yourself. The agent prompt and the exact row shape are in `references/analysis-shape.md`; paste it in whole, since the page builder reads exactly those fields.
 
 `Read` the `sheet` for each video first (one image, frames in time order left to right, top to bottom). Read single frames only where you need a closer look, such as small on screen text. Combine with the transcript and caption. For each video work out:
 
@@ -71,6 +71,8 @@ When he asks to rank them, rank by usefulness first, craft second, and say plain
 
 Byron's format: short dot points in chat; anything big goes in an artifact, ranked. One video: answer in chat. Two or more: load `artifact-design`, build one page with Patterns first, then a card per video (link to the reel, the analysis), and publish it. No dashes as punctuation, no emojis.
 
+The page builder is `scripts/build_page.py`. Batch agents write `<scratchpad>/analysis/*.json`, you write `<scratchpad>/patterns.json` (`lede`, `act`, `patterns`, `topics`), then `python -I build_page.py <scratchpad> "Content Engine/instagram-research/<YYYY-MM-DD>"` writes `results.json`, `patterns.json`, `sheets/` and `report.html` there. A past batch rebuilds with no scratchpad: `python -I build_page.py --from "<batch folder>/results.json"`. `~/dev/insta-inbox/report.py` is superseded (older schema).
+
 ## 4. Mark them analysed on his phone
 
 For each video analysed:
@@ -78,5 +80,7 @@ For each video analysed:
 ```bash
 python3 ~/dev/insta-inbox/prep.py --done "<id>" "<two or three line summary>" "<artifact url or omit>"
 ```
+
+For a whole batch, `scripts/mark_done.py <results.json> <artifact url>` does the same for every row in one process, with the summary `#rank of N · Use x/10 · Tier` then the row's `phone` lines, and the report link pointing at that post's card.
 
 The phone app then moves it to the Analysed tab with that summary and a Full report link. Finish with one line: how many analysed, how many still waiting (failed downloads).
