@@ -28,17 +28,57 @@ grep -c "^Dialogue" "<out>.ass"
 Compare that to the word count the renderer reported. A large mismatch means the
 timings and the audio disagree, and the captions will drift visibly.
 
+### The contact sheet: 30 frames across the whole video
+
+Three frames (start, middle, end) miss whatever happens between them. Read the
+whole video on one page instead:
+
 ```bash
-# Eyeball three frames rather than trusting the numbers: start, middle, end.
-ffmpeg -y -loglevel error -ss 0.6 -i "<out>.mp4" -frames:v 1 work/check-start.png
-ffmpeg -y -loglevel error -ss <half> -i "<out>.mp4" -frames:v 1 work/check-mid.png
-ffmpeg -y -loglevel error -sseof -1.2 -i "<out>.mp4" -frames:v 1 work/check-end.png
+node "C:/Users/PC/.claude/skills/video-team/scripts/contact-sheet.mjs" --in "<project>/out/<slug>.mp4"
 ```
 
-Read those three images. The start frame is the one that decides whether anyone
-watches, so check the hook text is fully on screen and not colliding with the
-footage's own text. The end frame confirms the end card rendered rather than the
-video stopping dead.
+It writes three files to `<project>/work/<slug>/` and prints their paths as JSON:
+
+- `sheet.png`: 30 tiles, 6 across and 5 down, one every `duration / 30` seconds
+  from 0. Each tile is stamped with its time, and carries a red line and tint
+  over the bottom 300px of the frame.
+- `start.png`: full size at 0.6s, for the hook check.
+- `end.png`: full size 1.2s from the end, for the end card. The last tile sits
+  `duration / 30` from the end, 2.07s on a 62s video, and the end card holds for
+  only 2.0s, so the sheet alone can miss it.
+
+Under the hood it is the plain command below plus the stamps and the rail line.
+Use the plain one when node is not to hand:
+
+```bash
+dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "<out>.mp4")
+ffmpeg -y -loglevel error -i "<out>.mp4" -vf "fps=30/$dur,scale=180:320,tile=6x5" -frames:v 1 work/sheet.png
+```
+
+Read `sheet.png` for three things, then the two full size grabs:
+
+1. **Text over text.** Captions or a hook on top of text already in the footage,
+   or a title box covering the thing the video is about. Checks 7 and 9 below.
+2. **Anything inside the red tint.** That is the bottom 300px, where TikTok's
+   caption bar and action rail sit, so it is hidden on a phone. Hashtags sit at
+   `MarginV 300`, right on the line, which is correct.
+3. **A shot held past 4 seconds.** The JSON's `heldIfInARow` says how many
+   matching tiles in a row that takes (5 on a 31s video, 3 on a 62s one). It
+   means the same picture with nothing moving, not the same layout: a talking
+   head that keeps talking is not held. Check 6 below.
+
+Then `start.png`: the hook text fully on screen and not colliding with the
+footage's own text. That frame decides whether anyone watches. And `end.png`:
+the end card rendered rather than the video stopping dead.
+
+A tile's time is what check 9 needs: look the stamp up in `words.json` to see
+what was being said when that frame was on screen.
+
+On its first run (17 Oct 2026, the drama lane's placeholder episode) the sheet
+showed what three frames only hint at: the footage's own burned captions
+straddled the red line in every one of the 30 tiles, not just the one grab, and
+a landscape title card cropped to its middle letters ("NAR LANDIN") sat between
+the old start and middle grabs, where nothing looked.
 
 ## The judgement checks
 

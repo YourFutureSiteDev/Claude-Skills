@@ -167,6 +167,13 @@ checks that map to the six roles, so a fail names the role to redo rather than
 sending you back to the top. A video that fails the grade does not get handed
 over as done; fix the named role and re-render.
 
+The grade reads the whole video, not three frames: `scripts/contact-sheet.mjs`
+puts 30 time stamped tiles on one page with the phone's bottom rail zone marked.
+
+```bash
+node "C:/Users/PC/.claude/skills/video-team/scripts/contact-sheet.mjs" --in "<project>/out/<slug>.mp4"
+```
+
 Then show him the file. He judges visual work by eye in seconds, so send the MP4
 itself, not a description of it.
 
@@ -232,6 +239,9 @@ again. Do not report it as finished until all of them pass.
       reading the first-frame grab rather than the script
 - [ ] The first frame reads with the sound off, and its text does not overlap
       text already in the footage
+- [ ] The 30 tile contact sheet (`scripts/contact-sheet.mjs`, grade.md) was read
+      end to end: no text over text, nothing inside the red bottom 300px rail
+      zone, and no shot held past 4 seconds
 - [ ] Script word count is within 5% of the budget role 3 set
 - [ ] The script contains no em dash, en dash, spaced hyphen, emoji or
       parenthesis, because TTS reads them as pauses and Byron rejects them in
