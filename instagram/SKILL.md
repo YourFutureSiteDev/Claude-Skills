@@ -71,7 +71,7 @@ When he asks to rank them, rank by usefulness first, craft second, and say plain
 
 Byron's format: short dot points in chat; anything big goes in an artifact, ranked. One video: answer in chat. Two or more: load `artifact-design`, build one page with Patterns first, then a card per video (link to the reel, the analysis), and publish it. No dashes as punctuation, no emojis.
 
-The page builder is `scripts/build_page.py`. Batch agents write `<scratchpad>/analysis/*.json`, you write `<scratchpad>/patterns.json` (`lede`, `act`, `patterns`, `topics`), then `python -I build_page.py <scratchpad> "Content Engine/instagram-research/<YYYY-MM-DD>"` writes `results.json`, `patterns.json`, `sheets/` and `report.html` there. A past batch rebuilds with no scratchpad: `python -I build_page.py --from "<batch folder>/results.json"`. `~/dev/insta-inbox/report.py` is superseded (older schema).
+The page builder is `scripts/build_page.py`. Batch agents write `<scratchpad>/analysis/*.json`, you write `<scratchpad>/patterns.json` (`lede`, `act`, `patterns`, `topics`), then `python -I build_page.py <scratchpad> "Content Engine/instagram-research/<YYYY-MM-DD>"` writes `results.json`, `patterns.json`, `sheets/` and `report.html` there. A past batch rebuilds with no scratchpad: `python -I build_page.py --from "<batch folder>/results.json"`. Rows with an `adapt` field get an "Adapt it" block and an "Adapt to" lane chip. After changing the builder, run `python -I scripts/test_build_page.py`. `~/dev/insta-inbox/report.py` is superseded (older schema).
 
 ## 4. Mark them analysed on his phone
 

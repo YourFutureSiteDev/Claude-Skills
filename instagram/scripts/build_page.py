@@ -91,12 +91,44 @@ for a in P["act"]:
 tiers = {"keep": "Keep", "maybe": "Maybe", "skip": "Skip"}
 topics = sorted({r["topic"] for r in rows})
 count = lambda pred: sum(1 for r in rows if pred(r))
+# lane names from Content Engine's config/accounts.json; B1 and D1 have no voice, so
+# their word count is on screen text (references/adapt.md)
+LANES = {"A1": "AI story", "A2": "Drama", "B1": "Streamer", "B2": "Movie", "C1": "Build in public",
+         "D1": "Drama affiliate", "serials": "Globe serial"}
+SILENT = {"B1", "D1"}
+
+
+def lane_of(r):
+    lane = (r.get("adapt") or {}).get("lane")
+    return lane if lane in LANES else ""
 
 
 def num(n):
     if n is None:
         return None
     return f"{n/1000:.1f}k".replace(".0k", "k") if n >= 10000 else f"{n:,}"
+
+
+def span(at):
+    a, _, b = str(at).partition("-")
+    return f"{a} to {b} s" if b else f"{a} s"
+
+
+def adapt_block(r):
+    a = r.get("adapt")
+    if not a:
+        return ""
+    lane = lane_of(r)
+    if not lane:
+        return f'<div class="adapt"><h4>Adapt it</h4><p class="ahead"><span class="pill craft">No lane</span>{E(a.get("why_lane"))}</p></div>'
+    unit = "on screen words" if lane in SILENT else "words"
+    beats = "".join(f'<li class="beat"><span class="at">{E(span(b.get("at")))}</span><span>{E(b.get("job"))}</span></li>'
+                    for b in a.get("beats") or [])
+    brief = f'<p class="brief">Brief: {E(a["brief"])}</p>' if a.get("brief") else ""
+    return f"""<div class="adapt"><h4>Adapt it</h4>
+<p class="ahead"><span class="pill lane">{lane} {LANES[lane]}</span><span>{E(str(a.get('hook_type') or '').replace('-', ' '))} hook</span><span>{E(a.get('seconds'))} s, {E(a.get('words'))} {unit}</span></p>
+<p class="angle">{E(a.get('angle'))}</p>
+<ol class="abeats">{beats}</ol>{brief}</div>"""
 
 
 def card(r):
@@ -112,7 +144,7 @@ def card(r):
     img = (f'<img class="sheet" loading="lazy" alt="Frames from the post, in order" src="data:image/jpeg;base64,{r["sheet_b64"]}">'
            if r.get("sheet_b64") else '<div class="sheet none">No frames</div>')
     hype = '<span class="pill hype">Hype</span>' if r.get("hype") else ""
-    return f"""<article class="card {t}" id="r{r['rank']}" data-tier="{t}" data-topic="{E(r['topic'])}">
+    return f"""<article class="card {t}" id="r{r['rank']}" data-tier="{t}" data-topic="{E(r['topic'])}" data-lane="{lane_of(r)}">
 <header class="ch"><span class="rank">{r['rank']}</span>
 <div class="who"><h3>{E(r['creator'])}</h3><p class="what">{E(r['what'])}</p></div>
 <div class="scores"><span class="pill {t}">Use {r['use']}/10</span><span class="pill craft">Craft {r['craft']}/10</span>{hype}</div></header>
@@ -124,28 +156,32 @@ def card(r):
 <dt>Editing</dt><dd>{E(r['editing'])}</dd>
 <dt>Why it works</dt><dd>{E(r['why'])}</dd></dl></div>
 <div class="foot"><div><h4>Steal this</h4><ul>{steal}</ul></div>
-{'<div class="flags"><h4>Red flags</h4><ul>' + flags + '</ul></div>' if flags else ''}</div>
+{'<div class="flags"><h4>Red flags</h4><ul>' + flags + '</ul></div>' if flags else ''}{adapt_block(r)}</div>
 <p class="meta"><span class="tag">{E(r['topic'])}</span>{''.join(f'<span>{E(x)}</span>' for x in meta)}<a href="{E(r['url'])}" target="_blank" rel="noopener">Open on Instagram</a></p>
 </article>"""
 
 
 pats = "".join(f"<li><strong>{E(p['title'])}</strong> <span class='cnt'>{E(p['count'])}</span><p>{E(p['body'])}</p></li>" for p in P["patterns"])
 acts = "".join(f"<li><a href='#r{a['rank']}'>{E(a['text'])}</a></li>" for a in P["act"])
-toc = "".join(f"<li data-tier='{r['tier']}' data-topic='{E(r['topic'])}'><a href='#r{r['rank']}'><span class='tn'>{r['rank']}</span><span class='tc'>{E(r['creator'])}</span><span class='ts {r['tier']}'>{r['use']}</span></a></li>" for r in rows)
+toc = "".join(f"<li data-tier='{r['tier']}' data-topic='{E(r['topic'])}' data-lane='{lane_of(r)}'><a href='#r{r['rank']}'><span class='tn'>{r['rank']}</span><span class='tc'>{E(r['creator'])}</span><span class='ts {r['tier']}'>{r['use']}</span></a></li>" for r in rows)
 chips_t = "".join(f"<button type='button' class='chip' data-k='tier' data-v='{k}' aria-pressed='false'>{v} <span>{count(lambda r, k=k: r['tier'] == k)}</span></button>" for k, v in tiers.items())
 chips_c = "".join(f"<button type='button' class='chip' data-k='topic' data-v='{E(t)}' aria-pressed='false'>{E(t)} <span>{count(lambda r, t=t: r['topic'] == t)}</span></button>" for t in topics)
+chips_l = "".join(f"<button type='button' class='chip' data-k='lane' data-v='{k}' aria-pressed='false'>{k} {v} <span>{count(lambda r, k=k: lane_of(r) == k)}</span></button>"
+                  for k, v in LANES.items() if count(lambda r, k=k: lane_of(r) == k))
+row_l = f"<div class='row'><span class='rlab'>Adapt to</span>{chips_l}</div>" if chips_l else ""
 nv, nc = count(lambda r: r["kind"] != "carousel"), count(lambda r: r["kind"] == "carousel")
 
 page = f"""<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Saved Reels, {label}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 /* Same family as the 6 October page: a ranked reading list, patterns first, one card per post with a frame strip beside the notes */
-:root{{--bg:#F2F3F6;--surface:#FFFFFF;--ink:#15171C;--muted:#5D6270;--line:#DADDE5;--accent:#2B48C8;--keep:#1F7A4D;--keep-bg:#E2F2E9;--maybe:#8A5A00;--maybe-bg:#FBF0D9;--skip:#9A2B2B;--skip-bg:#F8E4E4;--hype:#7A3FA0;--hype-bg:#F1E6F8;
+:root{{--bg:#F2F3F6;--surface:#FFFFFF;--ink:#15171C;--muted:#5D6270;--line:#DADDE5;--accent:#2B48C8;--keep:#1F7A4D;--keep-bg:#E2F2E9;--maybe:#8A5A00;--maybe-bg:#FBF0D9;--skip:#9A2B2B;--skip-bg:#F8E4E4;--hype:#7A3FA0;--hype-bg:#F1E6F8;--accent-bg:#E6EBFB;
  --d:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;--b:"Instrument Sans",ui-sans-serif,system-ui,sans-serif;--m:"JetBrains Mono",ui-monospace,Consolas,monospace}}
-@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{color-scheme:dark;--bg:#111318;--surface:#1A1D24;--ink:#E8EAF0;--muted:#9AA0AE;--line:#2C303A;--accent:#8EA3FF;--keep:#6BD39E;--keep-bg:#16302A;--maybe:#F0C060;--maybe-bg:#33290F;--skip:#F08A8A;--skip-bg:#3A1C1C;--hype:#D3A6F0;--hype-bg:#2E2038}}}}
-:root[data-theme="dark"]{{color-scheme:dark;--bg:#111318;--surface:#1A1D24;--ink:#E8EAF0;--muted:#9AA0AE;--line:#2C303A;--accent:#8EA3FF;--keep:#6BD39E;--keep-bg:#16302A;--maybe:#F0C060;--maybe-bg:#33290F;--skip:#F08A8A;--skip-bg:#3A1C1C;--hype:#D3A6F0;--hype-bg:#2E2038}}
+@media (prefers-color-scheme:dark){{:root:not([data-theme="light"]){{color-scheme:dark;--bg:#111318;--surface:#1A1D24;--ink:#E8EAF0;--muted:#9AA0AE;--line:#2C303A;--accent:#8EA3FF;--keep:#6BD39E;--keep-bg:#16302A;--maybe:#F0C060;--maybe-bg:#33290F;--skip:#F08A8A;--skip-bg:#3A1C1C;--hype:#D3A6F0;--hype-bg:#2E2038;--accent-bg:#1E2645}}}}
+:root[data-theme="dark"]{{color-scheme:dark;--bg:#111318;--surface:#1A1D24;--ink:#E8EAF0;--muted:#9AA0AE;--line:#2C303A;--accent:#8EA3FF;--keep:#6BD39E;--keep-bg:#16302A;--maybe:#F0C060;--maybe-bg:#33290F;--skip:#F08A8A;--skip-bg:#3A1C1C;--hype:#D3A6F0;--hype-bg:#2E2038;--accent-bg:#1E2645}}
 body{{background:var(--bg);color:var(--ink);font:15px/1.55 var(--b);padding-inline:16px;padding-block:32px 64px}}
 .wrap{{max-width:980px;margin:0 auto;display:grid;gap:28px}}
 h1,h2,h3{{font-family:var(--d);text-wrap:balance;margin:0;line-height:1.1}}
@@ -171,7 +207,7 @@ h1{{font-size:clamp(30px,5vw,46px)}} h2{{font-size:24px}} h3{{font-size:19px}}
 .tn{{font:500 12px var(--m);color:var(--muted);min-width:20px;font-variant-numeric:tabular-nums}} .tc{{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}}
 .ts{{margin-left:auto;font:500 12px var(--m)}} .ts.keep{{color:var(--keep)}} .ts.maybe{{color:var(--maybe)}} .ts.skip{{color:var(--skip)}}
 .cards{{display:grid;gap:18px}}
-.card{{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:14px;border-left:4px solid var(--line);scroll-margin-top:120px}}
+.card{{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:14px;border-left:4px solid var(--line);scroll-margin-top:calc(var(--fh,120px) + 16px)}}
 .card.keep{{border-left-color:var(--keep)}} .card.maybe{{border-left-color:var(--maybe)}} .card.skip{{border-left-color:var(--skip)}}
 .ch{{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}}
 .rank{{font:700 28px var(--d);color:var(--accent);min-width:38px;font-variant-numeric:tabular-nums}}
@@ -190,6 +226,14 @@ dl{{margin:0;display:grid;gap:6px;min-width:0}} dt{{font:500 11px var(--m);lette
 .foot{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}}
 .foot h4{{margin:0 0 4px;font:500 11px var(--m);letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}}
 .flags h4{{color:var(--skip)}} .foot ul{{margin:0;padding-left:18px;display:grid;gap:4px}}
+.pill.lane{{background:var(--accent-bg);color:var(--accent)}}
+.foot .adapt{{grid-column:1/-1;border-top:1px solid var(--line);padding-top:14px}}
+.ahead{{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:0 0 6px;font:500 12px var(--m);color:var(--muted)}}
+.angle{{margin:0 0 8px;max-width:70ch}}
+.abeats{{margin:0;padding:0;list-style:none;display:grid;gap:4px}}
+.beat{{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px}} .beat .at{{font:500 12px var(--m);color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}}
+.brief{{margin:8px 0 0;font:500 12px var(--m);color:var(--muted);overflow-wrap:anywhere}}
+.rlab{{font:500 11px var(--m);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-right:4px}}
 .meta{{margin:0;display:flex;gap:14px;flex-wrap:wrap;align-items:center;font:500 12px var(--m);color:var(--muted)}}
 .tag{{color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:2px 7px}}
 .meta a{{color:var(--accent);margin-left:auto}}
@@ -202,16 +246,20 @@ dl{{margin:0;display:grid;gap:6px;min-width:0}} dt{{font:500 11px var(--m);lette
 <div class="stats"><span class="pill keep">{count(lambda r: r['tier']=='keep')} keep</span><span class="pill maybe">{count(lambda r: r['tier']=='maybe')} maybe</span><span class="pill skip">{count(lambda r: r['tier']=='skip')} skip</span><span class="pill hype">{count(lambda r: r.get('hype'))} hype</span></div></header>
 <section class="panel act"><div class="eyebrow">Act on these first</div><h2>Worth your time this week</h2><ol>{acts}</ol></section>
 <section class="panel"><div class="eyebrow">Patterns across the batch</div><h2>What keeps showing up</h2><ol>{pats}</ol></section>
-<nav class="filters" aria-label="Filter posts"><div class="row">{chips_t}<span class="shown" id="shown">{len(rows)} shown</span></div><div class="row">{chips_c}</div></nav>
+<nav class="filters" aria-label="Filter posts"><div class="row">{chips_t}<span class="shown" id="shown">{len(rows)} shown</span></div><div class="row">{chips_c}</div>{row_l}</nav>
 <nav class="toc"><div class="eyebrow">Ranked by usefulness, then craft</div><ol id="toc">{toc}</ol></nav>
 <section class="cards" id="cards">{''.join(card(r) for r in rows)}<p class="empty" id="empty" hidden>Nothing matches those filters.</p></section>
 </div>
 <script>
 (function(){{
- var on={{tier:null,topic:null}};
+ // jumps to a card clear the sticky filter bar, however many chip rows it wraps to
+ var bar=document.querySelector('.filters');
+ function fh(){{document.documentElement.style.setProperty('--fh',(getComputedStyle(bar).position==='sticky'?bar.offsetHeight:0)+'px');}}
+ fh();addEventListener('resize',fh);
+ var on={{tier:null,topic:null,lane:null}};
  var chips=[].slice.call(document.querySelectorAll('.chip'));
  var cards=[].slice.call(document.querySelectorAll('.card')), items=[].slice.call(document.querySelectorAll('#toc li'));
- function ok(el){{return (!on.tier||el.dataset.tier===on.tier)&&(!on.topic||el.dataset.topic===on.topic);}}
+ function ok(el){{return (!on.tier||el.dataset.tier===on.tier)&&(!on.topic||el.dataset.topic===on.topic)&&(!on.lane||el.dataset.lane===on.lane);}}
  function apply(){{var n=0;cards.forEach(function(c){{var s=ok(c);c.hidden=!s;if(s)n++;}});items.forEach(function(i){{i.hidden=!ok(i);}});
   document.getElementById('shown').textContent=n+' shown';document.getElementById('empty').hidden=n>0;
   chips.forEach(function(c){{c.setAttribute('aria-pressed',on[c.dataset.k]===c.dataset.v?'true':'false');}});}}
