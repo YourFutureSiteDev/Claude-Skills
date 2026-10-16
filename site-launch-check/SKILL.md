@@ -1,6 +1,6 @@
 ---
 name: site-launch-check
-description: Run the twenty-one-point pre-launch check on a website before it goes live or gets handed to a client, and fix what fails. Covers legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile, performance and exposed API keys in the shipped code, then a landing page section order check for Your Future Site client sites (Hero to final call to action, flagging a missing Problem, How it works or FAQ) and a short interface pass from the Vercel Web Interface Guidelines. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
+description: Run the twenty-one-point pre-launch check on a website before it goes live or gets handed to a client, and fix what fails. Covers legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile, performance and exposed API keys in the shipped code, then a landing page section order check for Your Future Site client sites (Hero to final call to action, flagging a missing Problem, How it works or FAQ), a service page section order check for every service subpage in the sitemap, and a short interface pass from the Vercel Web Interface Guidelines. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
 ---
 
 # Pre-launch check
@@ -145,7 +145,7 @@ login, a Worker or an AI feature, and record each like the twenty-one.
 
 A small business home page sells in a known order. Check the page against it
 after the twenty-one, and flag what is missing. Run
-`bash scripts/sections.sh <url>` first: it prints every h1, h2 and
+`bash scripts/sections.sh <url>` first: it prints every h1, h2, h3 and
 section id in order, so the outline is one screen of text.
 
 | # | Section | What it has to do |
@@ -179,6 +179,55 @@ How to report it:
 - **Order matters less than presence**, with three exceptions worth
   flagging: the call to action must be in the hero, proof must come before
   pricing, and the final call to action must be last.
+
+## Service page section order (YFS client sites)
+
+The home page and a service page do different jobs. The home page positions
+the business and routes people: who and where, the call to action above the
+fold, proof near the top, a link to every service page, and a booking path
+that works from all of them. The ten rows above check that. A service
+subpage has one job, selling one service to someone who already knows they
+need it, and it sells in this order:
+
+| # | Section | What it has to do |
+|---|---|---|
+| 1 | **Service value proposition** | The h1 names the one service and the line under it says the outcome, in the visitor's words, with the call to action right there. |
+| 2 | **What to expect** | What it is like for the customer: who turns up, how long it takes, what to do first (access, keys, pets, kids), any mess or time off the premises. |
+| 3 | **Concrete deliverables** | Exactly what they get: what is inspected, installed or treated, what the report contains, the receipt, the warranty. A list beats adjectives. |
+| 4 | **Process steps** | Three to five steps from first contact to done (ring, quote, the job, the follow up). Numbered is best; a short paragraph that walks the steps in order counts. |
+| 5 | **Proof** | Evidence for this service that someone other than the owner would accept: reviews that name it, a licence number, real job photos, an accreditation. "20 years" on its own is a claim, not proof. Never invented. |
+| 6 | **Differentiator** | Why this business rather than the next search result, for this service: one person start to finish, a report written in plain English, no lock in plan. |
+| 7 | **How pricing works** | A price, a "from" price, or how quoting works: on the phone, free on site, call out fee or none. Never skipped: quote only work says how quoting works. |
+| 8 | **FAQ** | The questions the owner answers about this one service every week. |
+| 9 | **One call to action** | One action, in the hero and again as the last thing on the page, phone tappable. Anything else (send a photo, see the checklist) looks secondary. |
+
+Run `bash scripts/sections.sh --sitemap <live url>` first. It reads the
+site's `sitemap.xml` and prints the h1, h2, h3 and section ids of every page
+in it, so the home page and every service page are outlined in one pass.
+
+How to report it:
+
+- One table per service page, the nine rows down the side, each **present**,
+  **missing** or **skipped on purpose**, the same as the landing page check.
+- **A row is present only when a heading `sections.sh` printed introduces
+  it, or the first lines under one do.** Name that heading in the report. A
+  line that only shows up in a hero button or the contact band ("Ring for a
+  price") does not count: mark the row missing and quote the line, so the
+  fix is obvious.
+- **Process steps, Proof, How pricing works and FAQ** are the four service
+  pages usually leave out. Look for those first and name them when absent.
+- If the home page already has the missing block (a "how it works" strip, an
+  FAQ, a price line), say so: the fix is moving or copying the part that
+  belongs to this service, not writing new copy.
+- Proof and FAQ are often blocked on the owner: no public reviews yet, no
+  licence number supplied, nobody has said what customers ask. Mark them
+  missing with "needs X from the owner". Never fill them with invented
+  reviews or invented questions (item 20 applies).
+- Order matters less than presence, with the same three exceptions: the
+  call to action is in the hero, proof comes before pricing, and the final
+  call to action is the last section.
+- A service the home page lists that has no page of its own is a finding
+  too. Every service gets its own page.
 
 ## Interface pass (from the Vercel Web Interface Guidelines)
 
@@ -279,5 +328,6 @@ Before reporting the site as launch-ready:
 - [ ] The three Secrets and injection checks were done: build output grepped, every HTML sink escapes user text, and no server side fetch of a user typed URL without an allowlist
 - [ ] For a Scroll World build, the three scroll-specific checks are included
 - [ ] The landing page section order was checked, each of the ten marked present, missing or skipped on purpose with a reason, and missing Problem, How it works or FAQ named in the report
+- [ ] Every service page in the sitemap was checked against the service page section order with `sections.sh --sitemap`, each of the nine marked present, missing or skipped on purpose, and every present row names the heading that carries it
 - [ ] The interface pass was done in the browser, with any failing item fixed or listed
 - [ ] Every finding in the report survived the skeptic pass; anything that could not be reproduced is dropped or marked as such
