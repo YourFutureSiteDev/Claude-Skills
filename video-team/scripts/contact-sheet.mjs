@@ -75,8 +75,11 @@ async function main() {
   const dir = path.dirname(video);
   const project = path.basename(dir) === 'out' ? path.dirname(dir) : dir;
   const sheet = path.resolve(a.out || path.join(project, 'work', slug, 'sheet.png'));
-  const start = path.join(path.dirname(sheet), 'start.png');
-  const end = path.join(path.dirname(sheet), 'end.png');
+  // In work/<slug>/ the folder already names the video. With --out, several
+  // sheets can share a folder, so the grabs take the sheet's name.
+  const stem = a.out ? `${path.basename(sheet, path.extname(sheet))}-` : '';
+  const start = path.join(path.dirname(sheet), `${stem}start.png`);
+  const end = path.join(path.dirname(sheet), `${stem}end.png`);
   await mkdir(path.dirname(sheet), { recursive: true });
 
   const duration = Number((await run('ffprobe', [
