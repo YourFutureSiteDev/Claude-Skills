@@ -16,7 +16,7 @@
 // Exits non-zero with the reason on any failure. Prints one JSON line on
 // success.
 
-import { readFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
@@ -44,7 +44,7 @@ function args(argv) {
   const out = {};
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    if (a.startsWith('--')) out[a.slice(2)] = argv[i + 1]?.startsWith('--') ? true : argv[++i];
+    if (a.startsWith('--')) out[a.slice(2)] = argv[i + 1] === undefined || argv[i + 1].startsWith('--') ? true : argv[++i];
   }
   return out;
 }
@@ -81,7 +81,7 @@ async function python() {
 async function main() {
   const a = args(process.argv);
   if (!a.brief) {
-    console.error('usage: node render-brief.mjs --brief path/to/brief.json [--engine <Content Engine root>]');
+    console.error('usage: node render-brief.mjs --brief path/to/brief.json [--engine <Content Engine root>] [--narrate-only]');
     process.exit(2);
   }
 
@@ -119,19 +119,32 @@ async function main() {
     console.error(`  warning: over 60s. Retention falls off past this; cut to about ${Math.floor(60 * rate)} words.`);
   }
 
-  const py = await python();
   const audio = path.join(work, 'voice.mp3');
   const wordsPath = path.join(work, 'words.json');
+  const scriptPath = path.join(work, 'script.txt');
 
-  const tts = await run(py, [
-    path.join(engine, 'src/tts.py'),
-    brief.script,
-    audio,
-    wordsPath,
-    brief.voice || 'en-US-AvaNeural',
-    brief.rate || '+8%',
-  ]);
-  const ttsInfo = JSON.parse(tts.trim().split('\n').pop());
+  // Narrate once per script. edge-tts is not deterministic between runs, so a
+  // background timed from one narration (role 5's list states, slide cuts) must
+  // be rendered against that same narration. The audio is reused while the
+  // script, voice and rate are unchanged; any edit narrates again.
+  const stamp = JSON.stringify([brief.script, brief.voice || 'en-US-AvaNeural', brief.rate || '+8%']);
+  let ttsInfo;
+  if (existsSync(audio) && existsSync(wordsPath) && existsSync(scriptPath) && (await readFile(scriptPath, 'utf8')) === stamp) {
+    ttsInfo = { voice: brief.voice || 'en-US-AvaNeural', reused: true };
+    console.error('voice: reusing work/voice.mp3 (script, voice and rate unchanged)');
+  } else {
+    const py = await python();
+    const tts = await run(py, [
+      path.join(engine, 'src/tts.py'),
+      brief.script,
+      audio,
+      wordsPath,
+      brief.voice || 'en-US-AvaNeural',
+      brief.rate || '+8%',
+    ]);
+    ttsInfo = JSON.parse(tts.trim().split('\n').pop());
+    await writeFile(scriptPath, stamp);
+  }
   const timings = JSON.parse(await readFile(wordsPath, 'utf8'));
   if (!timings.length) throw new Error('edge-tts returned no word timings; captions would be empty');
   const speech = timings[timings.length - 1].end;
@@ -145,6 +158,13 @@ async function main() {
   if (Math.abs(speech - predicted) > 2.5) {
     console.error(`  WORD BUDGET DRIFT: planned ${predicted.toFixed(1)}s, got ${speech.toFixed(1)}s.`);
     console.error(`  ${voice} really reads ${actualRate.toFixed(2)} w/s here. For ${Math.round(predicted)}s use about ${Math.round(predicted * actualRate)} words.`);
+  }
+
+  // --narrate-only: stop here so role 5 can build a background timed from
+  // these exact word timings, then run again without the flag to render.
+  if (a['narrate-only']) {
+    console.log(JSON.stringify({ voice: ttsInfo.voice, words: timings.length, speech: Number(speech.toFixed(2)), wordsPath, audio }));
+    return;
   }
 
   // --- 2. background ------------------------------------------------------
