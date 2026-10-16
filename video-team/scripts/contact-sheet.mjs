@@ -98,8 +98,12 @@ async function main() {
 
   // fps=30/duration takes one frame every duration/30 seconds starting at 0,
   // so a 31s video and a 62s video both come out as exactly 30 tiles.
+  // round=up matters: the default (near) fills each slot with the last frame
+  // before the next one, so every picture sat half a tile after its stamp. On
+  // 17 Oct 2026 the tile stamped 6.5s showed the word spoken at 7.05s, which
+  // makes the check 9 lookup against words.json wrong by a whole word.
   const vf = [
-    `fps=${TILES}/${duration}`,
+    `fps=fps=${TILES}/${duration}:round=up`,
     `scale=${TILE_W}:${TILE_H}:force_original_aspect_ratio=decrease`,
     `pad=${TILE_W}:${TILE_H}:(ow-iw)/2:(oh-ih)/2`,
     `drawbox=x=0:y=${RAIL_Y}:w=iw:h=ih-${RAIL_Y}:color=red@0.16:t=fill`,
