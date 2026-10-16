@@ -97,9 +97,24 @@ shape (plain strings, UK spelling, no em dashes or en dashes as punctuation, no 
   "flags": [],
   "verdict": "one sentence, plain and direct",
   "phone": "two or three short lines for his phone app summary",
-  "topic": "one of: Claude tooling | AI video | App building | Web design | UI/UX | Marketing | Faceless content | Business | Other"
+  "topic": "one of: Claude tooling | AI video | App building | Web design | UI/UX | Marketing | Faceless content | Business | Other",
+  "adapt": {
+    "lane": "A1|A2|B1|B2|C1|D1|serials|none",
+    "hook_type": "contrast|levels|empty-list|proof-first|number|prohibition|fear|remix|authority|question",
+    "beats": [{"at": "0-2", "job": "hook"}, {"at": "2-9", "job": "what this beat does"}],
+    "seconds": 30,
+    "words": 84,
+    "angle": "the idea for that lane, in our own words",
+    "why_lane": "one line",
+    "brief": null
+  }
 }
 ```
+
+The `adapt` field follows `references/adapt.md` (the lane table, the hook types and
+the rule). Paste that file in after this one. Carry the structure and timings, never
+the words: no six word run from the transcript, caption or slide text may appear in
+`angle` or `beats`. Leave `brief` null; the merging session writes the brief files.
 
 When finished, reply with only: the output file path, how many posts you wrote, and any
 post you could not analyse and why.
