@@ -60,6 +60,21 @@ Every post gets it, in the row the batch agent writes (`analysis-shape.md`):
   Skip posts and `none` get `null`.
 - `lane: none` needs only `lane`, `hook_type` and `why_lane`; leave the rest null.
 
+## The source's pace
+
+A video's `manifest.json` carries `speech: {words, wps, first_word_at}` (prep.py,
+since 17 Oct 2026), counted the way video-team counts a script.
+
+- `first_word_at` is how fast the source starts talking. Card 27 on 16 Oct spoke
+  at 0.0 s; anything past a second means the hook is visual, so plan the first
+  beat as a picture, not a line.
+- `wps` is the source's speaking rate over its spoken span. Compare it with the
+  lane voice's 2.8: card 27 ran at 2.92, so its beat timings carry into a voiced
+  30 s lane at about the same density. A source well above 3.2 packs more words
+  than our voice can say in the same beats; cut words, keep the timings.
+- `speech` is `null` for swipe posts and silent or music only reels. Time those
+  from the slides or the cuts instead.
+
 ## Lanes
 
 Formats from `Content Engine\config\accounts.json`, CTA styles from

@@ -31,7 +31,7 @@ On the PC, carousels usually fail with "Could not copy Chrome cookie database" o
 
 Run it in the background for more than about 10 items (it takes roughly 30 seconds a video). `--resume` skips anything that already has a `manifest.json`, so a rerun after a timeout only does what is left.
 
-It prints one JSON line per waiting video, oldest first: `id, url, note, uploader, description, like_count, comment_count, duration, transcript (timestamped lines), frames (jpg paths), sheet (one contact sheet of all frames, 4 across, in time order), error`. `{"waiting": 0}` means nothing is saved: say so in one line and stop.
+It prints one JSON line per waiting video, oldest first: `id, url, note, uploader, description, like_count, comment_count, duration, transcript (timestamped lines), speech ({words, wps, first_word_at} for a video with speech, else null; the adapt step reads it), frames (jpg paths), sheet (one contact sheet of all frames, 4 across, in time order), error`. Manifests from before 17 Oct 2026 have no `speech`. The speech block's tests: `python -I ~/dev/insta-inbox/test_prep_speech.py`. `{"waiting": 0}` means nothing is saved: say so in one line and stop.
 
 - `kind` is `video` or `carousel`. Carousels (swipe posts, most of his UI/UX saves) are fetched through Instagram's web API with his Chrome login, one `slide_NN.jpg` per slide; their content is the text on the slides, so read the slides.
 - Downloads try anonymous first, then his Chrome login, then the web API. If `error` is set, report that video as not downloadable (private account or deleted) and leave it waiting.
