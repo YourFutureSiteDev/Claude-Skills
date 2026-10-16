@@ -84,7 +84,9 @@ For roles 2, 5 and 6, also skim `references/formats-from-reels.md`. It has
 on-screen formats lifted from reels Byron saved that measurably held
 attention: floating UI cards, chapter pills, a taped headline strip, split
 screen, a screenshot freeze, and carousel templates. It also lists what not
-to copy.
+to copy. When a shot is a UI or product motion render, role 5 pastes
+`references/motion-brief.md` as the fixed style prompt and changes only the
+scene line, so every clip reads as one set.
 
 Each file cites its sources so the method can be checked and updated when those
 people publish something new. `references/roles.md` also records where two of the
