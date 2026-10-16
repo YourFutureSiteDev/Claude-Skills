@@ -1,12 +1,12 @@
 ---
 name: site-launch-check
-description: Run the twenty-one-point pre-launch check on a website before it goes live or gets handed to a client, and fix what fails. Covers legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile, performance and exposed API keys in the shipped code, then a landing page section order check for Your Future Site client sites (Hero to final call to action, flagging a missing Problem, How it works or FAQ), a service page section order check for every service subpage in the sitemap, and a short interface pass from the Vercel Web Interface Guidelines. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
+description: Run the twenty-four-point pre-launch check on a website before it goes live or gets handed to a client, and fix what fails. Covers legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile, performance, exposed API keys in the shipped code, LocalBusiness structured data, a plain facts block (licence, ABN, suburbs, hours) and an HTML sitemap with no orphan pages, then a landing page section order check for Your Future Site client sites (Hero to final call to action, flagging a missing Problem, How it works or FAQ), a service page section order check for every service subpage in the sitemap, and a short interface pass from the Vercel Web Interface Guidelines. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
 ---
 
 # Pre-launch check
 
 A site that looks finished and a site that is finished are different things.
-The gap is always the same twenty-one items, and it is always the same ones that
+The gap is always the same twenty-four items, and it is always the same ones that
 get missed: the legal pages nobody wants to write, the meta tags nobody sees,
 and the contact form nobody actually submitted.
 
@@ -26,7 +26,7 @@ a fail, and only the rendered page shows you that.
 At the end, report every item with a pass, a fix applied, or a blocked with a
 reason. Never report an item you did not actually check.
 
-## The twenty-one
+## The twenty-four
 
 **Legal and trust**
 
@@ -108,12 +108,50 @@ reason. Never report an item you did not actually check.
     browser calling your endpoint, never the provider. Static sites on
     Cloudflare Pages that only use a form endpoint pass this by design.
 
+**Getting found, part two: what search engines and AI assistants read**
+
+These belong with 4 to 8. They sit at the end so the item numbers above
+never move.
+
+22. **LocalBusiness JSON-LD** — one `application/ld+json` block on the home
+    page, using the closest schema.org subtype for the trade (Electrician,
+    Plumber, HousePainter, RoofingContractor, Locksmith, HVACBusiness and so
+    on). If schema.org has no subtype for the trade, plain `LocalBusiness`
+    is right; never pick a wrong one to look specific. It carries name, url,
+    areaServed (the region or suburbs, named as the site names them), opening
+    hours, and telephone or email, each worded exactly as on the Google
+    Business Profile. Run `bash scripts/schema.sh <live url>`: it prints each
+    block's `@type` and fields, names what item 22 is missing, checks the same
+    facts appear in the visible text, and reports the Schema.org validator's
+    item, error and warning count (if it cannot reach the validator, open
+    validator.schema.org by hand). A validator error is a fail. A field the
+    client has not supplied, such as hours they have never confirmed, is
+    blocked, not filled.
+23. **Plain facts block** — the same facts in visible text on the page,
+    usually the footer or the contact band: trade, licence number, ABN,
+    suburbs served and hours, worded like the JSON-LD and the profile, so a
+    person, Google and an AI assistant all read the same thing. `schema.sh`
+    prints any licence number, ABN and hours it finds in the text. A licence
+    number or ABN the client has not supplied is blocked, naming what is
+    needed from them, never guessed or copied from a public lookup they have
+    not confirmed. On a mockup it can be a clearly marked slot. No separate
+    "AI info" page: one honest block does the job.
+24. **HTML sitemap and internal linking** — every build has an HTML sitemap
+    page at `/sitemap`, linked from the footer, listing every page in
+    `sitemap.xml`. Every page in `sitemap.xml` is linked from at least one
+    other page, and each service page links to its sibling service pages and
+    to contact. Run `bash scripts/orphans.sh <live url>`: it counts inbound
+    links per sitemap page (0 is an orphan), lists what each page links to
+    and whether it links to contact, lists pages the site links to that
+    `sitemap.xml` leaves out (fix one or the other, item 5 applies), and
+    checks the HTML sitemap covers every page.
+
 ## Secrets and injection
 
 Item 21 catches a key someone pasted in. These three catch the holes that let
 a stranger inject something through the site itself (SQL, script, prompt or a
 request your server makes for them). Do all three on anything with a form, a
-login, a Worker or an AI feature, and record each like the twenty-one.
+login, a Worker or an AI feature, and record each like the twenty-four.
 
 - **Grep what shipped, not just the source.** Run `bash scripts/keyscan.sh <live url>`
   (it now also catches `sk_live_`, `rk_`, `AKIA` and `client_secret`), and grep
@@ -144,7 +182,7 @@ login, a Worker or an AI feature, and record each like the twenty-one.
 ## Landing page section order (YFS client sites)
 
 A small business home page sells in a known order. Check the page against it
-after the twenty-one, and flag what is missing. Run
+after the twenty-four, and flag what is missing. Run
 `bash scripts/sections.sh <url>` first: it prints every h1, h2, h3 and
 section id in order, so the outline is one screen of text.
 
@@ -233,7 +271,7 @@ How to report it:
 
 A short pass over the checks from vercel.com/design/guidelines that matter
 on a small static business site. Do it in the browser at 375px and on
-desktop, after the twenty-one.
+desktop, after the twenty-four.
 
 - **Focus states.** Tab through the page: every link, button and field
   shows a visible `:focus-visible` ring that is not clipped or hidden under
@@ -290,7 +328,7 @@ desktop, after the twenty-one.
 
 ## Skeptic pass
 
-Run this after the twenty-one, before writing the report. For every item
+Run this after the twenty-four, before writing the report. For every item
 marked failing, and every bug found along the way, try to prove the finding
 wrong. Reload the page, test at the other width, check the live URL rather
 than the local copy, and read the actual code. Only findings that survive
@@ -317,7 +355,7 @@ not catch, so check these too:
 
 Before reporting the site as launch-ready:
 
-- [ ] All twenty-one items have an explicit result: pass, fixed, or blocked with a reason
+- [ ] All twenty-four items have an explicit result: pass, fixed, or blocked with a reason
 - [ ] Nothing is marked as passing that you did not load in a browser and look at
 - [ ] Every form on the site was actually submitted and the message confirmed as received
 - [ ] The share preview was checked by rendering the URL, not by reading the tags
@@ -325,6 +363,8 @@ Before reporting the site as launch-ready:
 - [ ] Broken-link checking covered the whole site, not only the home page
 - [ ] Any item you could not check without the client or their accounts is listed as blocked, naming what you need from them
 - [ ] `scripts/keyscan.sh` was run against the live URL and came back clean, and the output is in the reply
+- [ ] `scripts/schema.sh` was run on the live home page with its output in the reply, the validator shows no errors, and the JSON-LD and the visible facts block match the Google Business Profile word for word (or the profile is listed as blocked)
+- [ ] `scripts/orphans.sh` was run on the live URL with its output in the reply: no sitemap page is an orphan, every service page links its siblings and contact, and `/sitemap` links every page
 - [ ] The three Secrets and injection checks were done: build output grepped, every HTML sink escapes user text, and no server side fetch of a user typed URL without an allowlist
 - [ ] For a Scroll World build, the three scroll-specific checks are included
 - [ ] The landing page section order was checked, each of the ten marked present, missing or skipped on purpose with a reason, and missing Problem, How it works or FAQ named in the report
