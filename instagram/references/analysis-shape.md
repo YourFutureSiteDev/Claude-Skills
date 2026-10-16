@@ -6,7 +6,7 @@ drifts from this shape breaks the page. Rescued from the 16 Oct 2026 session
 scratchpad (`brief.md`) on 17 Oct 2026; the 58 rows in
 `Content Engine\instagram-research\2026-10-16\results.json` follow it.
 
-Paste everything below the line into each batch agent's prompt, with its list of
+Paste everything between the two lines into each batch agent's prompt, with its list of
 manifest folders and the output file path.
 
 ---
