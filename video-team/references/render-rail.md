@@ -151,6 +151,7 @@ Full list: `py -m edge_tts --list-voices`.
 | Error | Cause and fix |
 |---|---|
 | `no python with edge_tts installed` | `py -m pip install edge-tts` |
+| `WSServerHandshakeError: 403, message='Invalid response status'` | Microsoft changed edge-tts's token scheme and the installed version is stale. `py -m pip install -U edge-tts`. 7.2.8 started failing on 17 Oct 2026; 7.3.1 fixed it. |
 | `edge-tts returned no word timings` | Usually a script of only punctuation or emoji. Captions would be empty, so it stops rather than shipping a silent video. |
 | `no stills downloaded` | Every URL failed. Check they are direct image URLs, not page URLs. |
 | `buildShotReel` produces a stuttery reel | The source had no detectable cuts, so it fell back to even sampling. Set `reel: false` or use a different source. |
