@@ -16,7 +16,7 @@
 // Exits non-zero with the reason on any failure. Prints one JSON line on
 // success.
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
@@ -223,8 +223,44 @@ async function main() {
       ...(bg.holdSecs ? { holdSecs: bg.holdSecs } : {}),
       workDir: path.join(work, 'stills'),
     });
+  } else if (bg.kind === 'html') {
+    // An HTML scene under Content Engine/motion that keeps the seek(t) contract
+    // (motion/scenes/click-to-done.html is the reference). Rendered to MP4 at
+    // the narration's length, then used as-is, never cut into a reel.
+    //
+    // HyperFrames first (Byron's call, 19 Oct 2026: it matched the exact render
+    // frame for frame and was a third faster at 30 s), always through hf.cmd,
+    // which keeps its telemetry, update check and self install off and points
+    // it at the Chrome already on this PC. Playwright --step is the zero install
+    // fallback: same frames, one page at a time.
+    if (!bg.scene) throw new Error('background.kind is "html" but scene is empty (a path under Content Engine/motion)');
+    const scene = path.resolve(engine, 'motion', bg.scene);
+    if (!existsSync(scene)) throw new Error(`scene not found: ${scene}`);
+    background = path.join(work, 'scene.mp4');
+    // The scene loops (seek wraps), so a 6s scene covers any length.
+    const secs = Math.ceil(targetSecs);
+    const hf = 'C:/HyperFrames/hf.cmd';
+    const useHf = bg.renderer !== 'playwright' && existsSync(hf);
+    console.error(`  rendering scene with ${useHf ? 'HyperFrames' : 'Playwright --step'} for ${secs}s`);
+    if (useHf) {
+      // HyperFrames reads the length from the stage's data-duration and has no
+      // flag for it, so render a copy of the scene with that one attribute set.
+      // The copy sits beside the original so its ../fonts links still resolve.
+      const html = await readFile(scene, 'utf8');
+      if (!/data-duration="\d+(\.\d+)?"/.test(html)) throw new Error(`${bg.scene} has no data-duration on its stage; HyperFrames needs one`);
+      const copy = path.join(path.dirname(scene), `.${brief.slug}-${secs}s.html`);
+      await writeFile(copy, html.replace(/data-duration="\d+(\.\d+)?"/, `data-duration="${secs}"`));
+      try {
+        await run('cmd.exe', ['/c', hf, 'render', path.join(engine, 'motion'), '-c', path.relative(path.join(engine, 'motion'), copy).split(path.sep).join('/'),
+          '-o', background, '--crf', '18', '--fps', '30', '--quiet']);
+      } finally {
+        await rm(copy, { force: true });
+      }
+    } else {
+      await run('node', [path.join(engine, 'motion/render-html.mjs'), scene, '--step', '--secs', String(secs), '--out', background]);
+    }
   } else {
-    throw new Error(`unknown background.kind "${bg.kind}". Use file, youtube or stills.`);
+    throw new Error(`unknown background.kind "${bg.kind}". Use file, youtube, stills or html.`);
   }
 
   // --- 3. render ----------------------------------------------------------

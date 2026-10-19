@@ -94,6 +94,33 @@ result nobody can tell apart.
 
 It needs about `targetSecs / holdSecs + 1` images and cycles if there are fewer.
 
+### `html`
+
+```json
+{ "kind": "html", "scene": "scenes/click-to-done.html" }
+```
+
+An HTML scene under `Content Engine/motion/` rendered to MP4 at the
+narration's length and used as-is. Since 19 Oct 2026 (Byron's call after the
+head to head in `Content Engine/motion/SCORECARD.md`) it renders through
+**HyperFrames** at `C:\HyperFrames`, always via `hf.cmd` (telemetry, update
+check and self install off, uses the Chrome already on the PC). Add
+`"renderer": "playwright"` to use `motion/render-html.mjs --step` instead: the
+same frames, one page at a time, nothing installed.
+
+A scene is one HTML file that keeps three contracts: every pixel is a function
+of `window.seek(t)`, it sets `window.scene` and `window.sceneReady`, and its
+stage carries HyperFrames' `data-composition-id`, `data-duration`,
+`data-width`, `data-height` and `data-no-timeline` plus an `hf-seek` listener.
+`motion/scenes/click-to-done.html` is the reference; copy it. The scene loops
+(seek wraps), so a 6 s scene covers any narration. Fonts self hosted under
+`motion/fonts/`, never from the network. Style rules in `motion-brief.md`.
+
+First real render, 19 Oct 2026: `motion/out/2026-10-19-button-that-answers-back.mp4`,
+98 words in Andrew's voice, 29.7 s, 69 s end to end. Note Andrew read clipped
+sentences at 3.5 w/s, not the table's 2.94; the rail's drift warning gave the
+right word count on the first pass.
+
 ### Generated visuals
 
 Not handled here. Hand the shot to the **`generate`** skill, which owns the
@@ -127,6 +154,9 @@ Worth knowing so they are not rediscovered mid-render.
   lower and they sit behind the interface on most phones.
 - **One background per video.** No multi-source timeline. A video needing
   intercut sources has to be assembled into one file first.
+- **Light scenes need the caption outline.** The `html` scenes are light
+  (motion-brief.md), and the rail's white captions and end card only read on
+  them because of their black outline. Do not thin it for those videos.
 
 ## Voices
 

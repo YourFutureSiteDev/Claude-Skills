@@ -142,13 +142,19 @@ the free options are genuinely good enough for most of these.
    `PLAN.md` settled this and the reasoning holds.
 3. **Stills with a slow drift** — `buildStillReel` moves a crop window over each
    one, which reads as camera rather than animation. Free.
-4. **Generated visuals** — hand off to the `generate` skill. It owns the backend
+4. **An HTML scene** — for UI and product motion (a button, a card, a counter, a
+   chart): write the scene to `references/motion-brief.md`, one file under
+   `Content Engine/motion/scenes/`, and set `background.kind: "html"`. The rail
+   renders it through HyperFrames (`C:\HyperFrames\hf.cmd`, never the bare CLI)
+   with Playwright as the zero install fallback. Free, exact, loops. Details in
+   `render-rail.md`.
+5. **Generated visuals** — hand off to the `generate` skill. It owns the backend
    ladder (WanGP local and free first, Everygen paid last), the price quote and
    the ledger. Do not call Everygen directly from here; the money rule lives in
    one place on purpose.
 
 Everygen's balance was **0 credits with no subscription** as of 24 Sep 2026, so
-option 4 means WanGP or it means nothing. Check before offering it.
+option 5 means WanGP or it means nothing. Check before offering it.
 
 ### Step 4 — render
 
