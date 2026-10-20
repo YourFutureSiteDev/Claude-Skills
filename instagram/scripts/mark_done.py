@@ -62,7 +62,6 @@ def main(a):
     if not base:
         sys.exit("a live run needs the report url; use --dry-run to only print")
     sys.path.insert(0, INBOX)
-    import urllib.request
     import prep  # the only code that reaches the phone, loaded for live runs only
 
     ok = 0
@@ -70,8 +69,7 @@ def main(a):
         s = summary(r, len(rows))
         for attempt in range(3):
             try:
-                raw = prep.cf("/values/" + urllib.request.quote("v:" + r["id"], safe=""), raw=True)
-                item = json.loads(raw)
+                item = prep.get_item(r["id"])
                 item.update(status="analysed", analysedAt=int(time.time() * 1000), summary=s[:4000],
                             report=f"{base}#r{r['rank']}")
                 prep.put_item(item)
