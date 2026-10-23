@@ -1,6 +1,6 @@
 ---
 name: site-launch-check
-description: Run the twenty-four-point pre-launch check on a website before it goes live or gets handed to a client, and fix what fails. Covers legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile, performance, exposed API keys in the shipped code, LocalBusiness structured data, a plain facts block (licence, ABN, suburbs, hours) and an HTML sitemap with no orphan pages, then a landing page section order check for Your Future Site client sites (Hero to final call to action, flagging a missing Problem, How it works or FAQ), a service page section order check for every service subpage in the sitemap, and a short interface pass from the Vercel Web Interface Guidelines. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
+description: Run the twenty-four-point pre-launch check on a website before it goes live or is handed to a client, and fix what fails: legal pages, SEO plumbing, share previews, forms, links, accessibility, mobile, performance, exposed API keys, LocalBusiness structured data, a facts block (licence, ABN, suburbs, hours) and an HTML sitemap with no orphans. Then, for Your Future Site client sites, the landing page and service page section order checks, a short interface pass from the Vercel Web Interface Guidelines, and a nine point design check (hierarchy, copy, spacing, images, components, information, brand, flow, polish) so the site does not look like it could belong to any business. Use when a site is about to be published, deployed, handed over or invoiced, or when the user says "is this ready to launch", "check the site before it goes live", "pre-launch check", "did we miss anything", or asks what is left to do on a build. Also use before sending any client a preview link.
 ---
 
 # Pre-launch check
@@ -326,6 +326,41 @@ desktop, after the twenty-four.
   footer finishes the page properly: contact details, hours, and one last
   call to action.
 
+## Nine point design check (YFS client sites)
+
+The twenty-four prove the site works. These nine prove it does not look
+like it could belong to any business, which is the reason a client pays
+for a built site instead of a DIY builder or an instant AI site. They come
+from a reel that set a designed landing page against a generated one on
+nine points; the sales version of the same nine is the one pager in
+`YourFutureSite/marketing` that gets shown on calls, so every site handed
+over has to pass what that page promises.
+
+Do it after the interface pass, in the browser, on the home page and at
+least one service page, at 375px and on desktop. Run
+`bash scripts/generic-copy.sh --sitemap <url>` first: it prints every stock
+phrase and leftover placeholder on every page with the words around it.
+Mark each point pass or fail with one line of evidence (what you saw, or
+the heading or file it lives in). A fail is fixed before handover, or
+listed with the reason it stays. Fails go through the skeptic pass like
+any other finding.
+
+| # | Point | Passes when |
+|---|---|---|
+| 1 | **Visual hierarchy** | At 375px the first screen shows one headline that names the trade and the area, and one primary action. No slideshow, no second button of equal weight, no chat bubble over it. Blur a screenshot: the headline and the button are still the two things you see. |
+| 2 | **Content and copy** | `generic-copy.sh` is clean, or every hit is kept on purpose with a reason. Swap test: put a competitor's name in place of the business name; any heading that still reads true is too generic and gets rewritten in the owner's words, with their suburb, their customer's problem or their numbers. |
+| 3 | **Spacing and layout** | Spacing comes from a small scale of tokens, not one-off values. Things that belong together sit closer than things that do not. Body text runs 45 to 75 characters a line on desktop, has at least a 16px gutter at 375px, and nothing scrolls sideways. |
+| 4 | **Images and visuals** | Every photo is the client's own: their work, van, team or premises, or it is listed as a placeholder they still owe. No stock people, no AI made people or AI made photos of their work (a real product photo may sit on a generated background), no children lifted from their socials. Nothing stretched or blurry on a phone screen. |
+| 5 | **Components** | At least two pieces are built for how this business works, such as the suburbs or service area they cover, a call button that stays in thumb reach, or a quote form that asks the questions the owner asks on the phone. No library default left as it came (a stock three card icon row, the template's default buttons and radius). |
+| 6 | **Data and information** | The home page carries only what a customer needs to decide: what, where, proof, prices or how quoting works, how to book. Long service lists, full price tables and policy text live on their own pages. Every section has one job and none repeats another. |
+| 7 | **Brand identity** | Colours, logo and type come from the client's brand or the DESIGN.md agreed for them, the same on every page and in the favicon. No YFS palette and no template palette left in. The words sound like the owner talks, not like the template. |
+| 8 | **User experience flow** | The home page follows the landing page section order above, the main action is the same at the top and the foot, a call or the quote form is one tap from every page, and every page ends with a next step rather than a dead end. |
+| 9 | **Overall polish** | No leftovers: no placeholder text, no "YOUR PHOTO HERE", no console errors, no layout jump while fonts and images load. Radius, shadow and button styles match across the site, everything tappable has hover and focus states, and the 404 page matches the rest. |
+
+Never put "hand built", "human designed" or "no AI" in a client site, a
+report or the handover note to make this point. The claim is that the site
+is built for this business, never how it was made.
+
 ## Skeptic pass
 
 Run this after the twenty-four, before writing the report. For every item
@@ -370,4 +405,5 @@ Before reporting the site as launch-ready:
 - [ ] The landing page section order was checked, each of the ten marked present, missing or skipped on purpose with a reason, and missing Problem, How it works or FAQ named in the report
 - [ ] Every service page in the sitemap was checked against the service page section order with `sections.sh --sitemap`, each of the nine marked present, missing or skipped on purpose, and every present row names the heading that carries it
 - [ ] The interface pass was done in the browser, with any failing item fixed or listed
+- [ ] The nine point design check was done in the browser on the home page and at least one service page, at 375px and desktop, each point marked pass or fail with one line of evidence, and the `scripts/generic-copy.sh --sitemap` output is in the reply with every hit rewritten or kept with a reason
 - [ ] Every finding in the report survived the skeptic pass; anything that could not be reproduced is dropped or marked as such
